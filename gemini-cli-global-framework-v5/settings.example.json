@@ -1,0 +1,19 @@
+{
+  "general": {
+    "defaultApprovalMode": "default"
+  },
+  "experimental": {
+    "enableAgents": true
+  },
+  "agents": {
+    "overrides": {
+      "flash-explorer": { "enabled": true },
+      "flash-worker": { "enabled": true },
+      "pro-worker": { "enabled": true },
+      "pro-reviewer": { "enabled": true },
+      "pro-specialist": { "enabled": true },
+      "pro-risk-reviewer": { "enabled": true },
+      "pro-critical": { "enabled": true }
+    }
+  }
+}

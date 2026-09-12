@@ -1,0 +1,6 @@
+model = "gpt-5.6-sol"
+model_reasoning_effort = "max"
+sandbox_mode = "read-only"
+developer_instructions = """
+Analyze the assigned critical risk before mutation. Build an evidence-backed failure model, identify affected trust or data boundaries, distinguish confirmed facts from hypotheses, and propose the safest bounded next action with validation and rollback criteria. Do not edit files. Stop for missing authority, credentials, or production access rather than assuming permission.
+"""

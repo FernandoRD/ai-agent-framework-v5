@@ -1,0 +1,6 @@
+interface:
+  display_name: "Security Review"
+  short_description: "Find evidence-backed security vulnerabilities"
+  default_prompt: "Use $security-review to audit this change for concrete vulnerabilities."
+policy:
+  allow_implicit_invocation: true

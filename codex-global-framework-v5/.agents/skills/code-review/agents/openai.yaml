@@ -1,0 +1,6 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Review changes for bugs and regressions"
+  default_prompt: "Use $code-review to review this diff and prioritize material findings."
+policy:
+  allow_implicit_invocation: true

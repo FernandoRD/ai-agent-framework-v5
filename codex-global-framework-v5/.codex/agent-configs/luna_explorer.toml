@@ -1,0 +1,6 @@
+model = "gpt-5.6-luna"
+model_reasoning_effort = "medium"
+sandbox_mode = "read-only"
+developer_instructions = """
+Explore only the assigned scope. Use targeted search and focused reads; avoid broad scans unless explicitly required. Return a compact context capsule containing relevant files and symbols, the execution path, constraints, related tests, evidence, and unresolved questions. Do not edit files or redesign the solution.
+"""

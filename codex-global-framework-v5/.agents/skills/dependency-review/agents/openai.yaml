@@ -1,0 +1,6 @@
+interface:
+  display_name: "Dependency Review"
+  short_description: "Assess upgrades, advisories, and compatibility"
+  default_prompt: "Use $dependency-review to assess this package update and its risks."
+policy:
+  allow_implicit_invocation: true

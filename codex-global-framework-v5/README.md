@@ -8,6 +8,15 @@ roles explicitly in `config.toml`, pointing to non-autodiscovered layers under
 `~/.codex/agent-configs`. This avoids the duplicate role discovery observed with
 standalone files under `~/.codex/agents` on Codex for Windows.
 
+The policy assigns each bounded unit to the smallest capable named agent. A
+larger parent delegates lower-tier units unless a documented concrete exception
+applies. It requires targeted `luna_explorer` discovery for large or unfamiliar
+repositories, a delegated unit for uncertain or coordinated multi-file work,
+and independent review before applicable multi-component, compatibility,
+public-contract, or high-risk changes are completed.
+
+Routine, authorized publication of validated changes is a separate Luna unit: delegate scoped staging, commit, push, and remote-hash verification to `luna_worker`, even after a higher-tier implementation. Reuse completed validation and escalate only an affected step when its risk requires it. Credentials and sandbox restrictions require access handling, not a stronger model. Publication authority and safety checks remain unchanged.
+
 ## What the installer discovers and cleans
 
 - marked v1-v4 framework blocks in global `AGENTS.md`;
@@ -41,6 +50,19 @@ Linux:
 ./scripts/install.sh
 ./scripts/diagnose.sh
 ```
+
+The ZIP contains a top-level `codex-global-framework-v5/` directory, keeping
+package files separate from installed configuration even when extracted into
+your home directory. Enter that directory before running the commands above:
+
+```bash
+unzip codex-global-framework-v5.zip
+cd codex-global-framework-v5
+```
+
+If an older package failed with `shutil.SameFileError`, extract this ZIP and
+run the installer from its new directory. Keep existing configuration and
+backups in place.
 
 Fish:
 

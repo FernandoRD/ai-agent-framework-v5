@@ -70,6 +70,24 @@ O Gemini CLI atual permite que o principal chame subagentes locais, mas um
 subagente não pode chamar outro subagente. Por isso o principal deve manter a
 orquestração, a espera, a integração e a validação final.
 
+## Publicação autorizada
+
+Publicação rotineira é uma unidade separada da implementação. Com mudanças
+validadas, branch e remotes conhecidos e autorização explícita, o principal
+delega ao `flash-worker` o fluxo completo: status e diff no escopo, staging de
+caminhos explícitos, commit pedido, push aos remotes autorizados e conferência
+do hash de cada remote. O repasse contém evidência compacta (repositório,
+branch, arquivos permitidos, destinos, autorização, verificações e limites),
+reutilizada até surgir mudança, falha ou dúvida nova. O `flash-worker` não
+delegará esse trabalho: a orquestração continua exclusivamente no principal.
+
+Conflito, escopo incerto, compatibilidade, release, deploy ou outro risco
+material elevam somente a unidade afetada para Pro. Ausência de credencial,
+rede ou permissão exige o fluxo normal de acesso, nunca modelo mais forte ou
+contorno de aprovação. A política não concede autoridade para novos destinos,
+mudança de privacidade, release, deploy, force push ou reescrita de histórico;
+a delegação indisponível deve ser reportada com o bloqueio concreto.
+
 ## Limites de permissão
 
 `flash-explorer`, `pro-reviewer`, `pro-risk-reviewer` e

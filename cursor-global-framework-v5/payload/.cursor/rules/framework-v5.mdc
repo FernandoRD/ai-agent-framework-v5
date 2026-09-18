@@ -116,23 +116,119 @@ the blocker instead.
 
 ## Execution strategy
 
-Use the least expensive model that can safely complete each bounded unit.
+### Primary principle: the smallest capable agent for each unit
 
-- If the active model already meets the required tier and delegation adds no
-  clear quality, isolation, or context benefit, execute directly.
-- If the active model is below the required tier, delegate the affected unit to
-  an agent at or above the required tier.
-- Never escalate the entire request when only one bounded unit requires a
-  stronger model.
-- Do not delegate work merely because it is non-trivial; delegation must improve
-  capability, independent review, parallelism, or context efficiency.
-- Parallelize only independent tasks with non-overlapping write scopes. Default
-  to 2-4 concurrent agents and avoid redundant exploration or review.
+First analyze what needs to be done, then assign each bounded unit to the
+smallest available agent that can safely complete and validate it. This is the
+primary execution objective; increasing the number of agents is not a goal.
+Use the routing score and risk floors above to choose Luna, Terra, or Sol for
+each unit independently, including discovery, implementation, and review.
 
-For a large or unfamiliar repository, use `luna-explorer` once for targeted,
-read-only discovery. Its context capsule must contain only relevant files and
-symbols, the execution path, constraints, likely tests, and unresolved
-questions. Reuse that capsule; stronger agents must not repeat a broad scan.
+- Before substantial execution, identify the deliverables, dependencies,
+  acceptance criteria, and minimum safe tier of each unit. Do only the initial
+  reconnaissance needed to route the work; do not complete the investigation
+  in the parent before delegating it.
+- Explicitly delegate lower-tier units to the matching named agent role when
+  the parent is a larger model, subject to the boundaries below. The parent's
+  ability to do the work is not a reason to retain it. Reducing unnecessary
+  higher-tier execution is itself a concrete delegation benefit.
+- Keep the parent focused on decomposition, coordination, integration, and
+  acceptance of results. Retain execution only where its capability or
+  exclusive access is required, or a concrete exception below applies. Do not
+  repeat an agent's full investigation or implementation as routine validation.
+- Select the smallest sufficient tier immediately. Do not try Luna first when
+  the score or a risk floor already requires Terra or Sol. Escalate only the
+  affected unit when evidence shows the assigned capability is insufficient;
+  keep remaining lower-tier work at its original tier.
+- Choose an explicit named role so a subagent does not accidentally inherit
+  the parent's larger model. Reuse agents when their tier and scope still fit.
+- Model capability and independence are separate requirements: use the
+  smallest reviewer meeting the review's risk floor, and preserve independent
+  review even when the parent is capable of implementing the change.
+
+### Publication uses the smallest capable agent
+
+Commit, push, repository synchronization, and release preparation are separate
+units. Route them independently from the implementation they publish; do not
+inherit its capability tier because publication is in the same conversation.
+
+- When Cursor's native Task tool is available, delegate routine, explicitly
+  authorized publication with known destinations and validated changes to
+  `luna-worker` (Composer): inspect status and scoped diff, preserve unrelated
+  work, stage explicit paths, create the requested commit, push the authorized
+  branch to authorized remotes, and verify each remote hash. Reuse a Luna
+  worker when available.
+- Send compact evidence: repository, branch, allowed files, destinations,
+  authorization, completed checks, and known limits. Reuse valid evidence;
+  rerun checks only for new changes, failures, or unresolved concerns.
+- A larger parent coordinates and accepts the result. It must not retain a
+  whole routine publication workflow under the tiny-operation exception. If
+  native Task delegation is unavailable or prohibited, state the concrete
+  blocker and use only the necessary authorized fallback without claiming
+  Composer execution.
+- Escalate only the affected unit when conflicts, uncertain scope,
+  compatibility, release semantics, deployment, or material risk requires
+  Terra or Sol. Routine Git commit/push is not itself a migration or
+  production infrastructure change; deployment has a separate risk assessment.
+- Missing credentials, network access, or sandbox approval requires normal
+  access handling, not a stronger model or weakened approval.
+- Preserve publication authority and safety: check destinations and privacy,
+  stage explicit paths, never imply force-push or history rewrite, and verify
+  every remote. This policy grants no new authority to publish, deploy, create
+  releases, or change repository visibility.
+
+### Required delegation checkpoints
+
+This policy explicitly requests subagent work for the cases below, subject to
+higher-priority instructions and available tools. Evaluate the whole active
+task, including earlier turns; do not split a substantial task into apparently
+trivial turns to avoid these checkpoints.
+
+- For a large or unfamiliar repository, delegate one targeted read-only
+  discovery task to `luna-explorer` before broad local exploration. Its capsule
+  must contain relevant files and symbols, execution path, constraints, likely
+  tests, and unresolved questions. Reuse it instead of repeating the scan.
+- For an uncertain root cause, multiple components, coordinated multi-file
+  changes, or compatibility-sensitive work, delegate at least one concrete
+  analysis, implementation, or validation unit. Keep useful complementary work
+  with the parent.
+- Before completing multi-component, compatibility-sensitive, public-contract,
+  or high-risk changes, obtain an independent read-only review from a reviewer
+  at the required tier. A discovery or implementation agent does not count as
+  an independent reviewer of its own work. Address findings and run relevant
+  checks before reporting completion. Schedule this review while useful parent
+  validation or integration work remains. If higher-priority instructions
+  require parallel useful work and none remains, report the exception below
+  instead of spawning solely to wait.
+- Re-evaluate these checkpoints when scope grows, a new component is involved,
+  a regression appears, or the investigation changes direction. Reuse existing
+  agents for related work instead of repeatedly spawning new ones.
+
+### Boundaries and exceptions
+
+- Handle trivial work directly. Do not create agents just to meet a quota.
+- For bounded non-trivial work without the mandatory checkpoints, direct
+  execution is allowed if the parent already matches the smallest sufficient
+  tier and delegation adds no independent benefit. A larger parent must route
+  lower-tier work to the matching agent unless a concrete exception applies.
+- For a tiny, fully specified operation, direct execution is allowed when the
+  handoff and verification would clearly exceed the operation itself. Do not
+  generalize this exception to an entire investigation or multi-file task.
+- If the active model is below the required tier, delegate that unit to an
+  agent at or above the required tier. Never escalate the entire request when
+  only one bounded unit requires a stronger model.
+- Parallelize only independent tasks with non-overlapping write scopes; use
+  2-4 agents only when that many useful independent units exist. A reviewer can
+  inspect a stable artifact while the parent performs separate validation.
+- Keep a shared browser session, live mutation, or other exclusive resource
+  under one owner's control. Delegate local artifact analysis or review of
+  captured evidence instead of letting agents interfere with the live session.
+- Exceptions to required delegation must identify a concrete blocker: a
+  higher-priority restriction, unavailable tools, explicit user request for
+  solo work, or no bounded independent unit that can run alongside useful
+  parent work. Parent capability, task familiarity, or a generic desire to
+  save time is not enough. State the exception briefly and continue authorized
+  work; do not claim an independent review that did not happen.
 
 ## Agent selection
 
@@ -184,7 +280,9 @@ For substantial work, report the outcome, checks performed, unresolved issues,
 and relevant assumptions. If subagents ran, include actual execution counts by
 model and percentages of subagent executions. Do not present execution share as
 token usage or invent unavailable token, credit, or cost telemetry. If no
-subagent ran, mention that only when a usage report would otherwise be expected.
+subagent ran on non-trivial work, state that fact and the concrete reason for
+direct execution. Report which required delegation/review checkpoints were
+completed or blocked; do not expose the full numeric routing calculation.
 <!-- CURSOR-GLOBAL-FRAMEWORK:END v5 -->
 
 ## Cursor adaptation

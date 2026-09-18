@@ -20,6 +20,23 @@ Use **Sonnet com effort `high`** como agente principal para a maior parte dos pr
 
 Os sete agentes usam frontmatter nativo com `name`, `description`, `tools`, `model`, `permissionMode` e `effort` quando configurado. Os nomes usam letras minúsculas e hífens, conforme a regra do Claude Code. Agentes de descoberta e revisão recebem somente ferramentas de leitura; os workers podem editar. Todos usam `permissionMode: default`; este pacote não usa `bypassPermissions`, `dontAsk` ou outro bypass de permissões.
 
+## Publicação autorizada
+
+Publicação rotineira é uma unidade separada da implementação. Com mudanças
+validadas, branch e remotes conhecidos e autorização explícita, o principal
+delega ao `haiku-worker` o fluxo completo: status e diff no escopo, staging de
+caminhos explícitos, commit pedido, push aos remotes autorizados e conferência
+do hash de cada remote. O repasse contém evidência compacta (repositório,
+branch, arquivos permitidos, destinos, autorização, verificações e limites),
+reutilizada até surgir mudança, falha ou dúvida nova.
+
+Conflito, escopo incerto, compatibilidade, release, deploy ou outro risco
+material elevam somente a unidade afetada para Sonnet ou Opus. Ausência de
+credencial, rede ou permissão exige o fluxo normal de acesso, nunca modelo mais
+forte ou contorno de aprovação. A política não concede autoridade para novos
+destinos, mudança de privacidade, release, deploy, force push ou reescrita de
+histórico; a delegação indisponível deve ser reportada com o bloqueio concreto.
+
 ## Instalação por projeto
 
 O pacote é um payload para instalação em um repositório-alvo. O instalador está incluído em `scripts/`; requer Python 3.10+:

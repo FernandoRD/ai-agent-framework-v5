@@ -40,7 +40,9 @@ Os pisos de risco substituem o score: autenticação, APIs públicas, persistên
 
 ## Delegação e responsabilidades
 
-O principal usa a capacidade menos cara que possa concluir cada unidade delimitada. Se ele próprio já atende ao nível e delegar não melhora capacidade, isolamento, paralelismo, revisão independente ou uso de contexto, executa diretamente. Delegação não é obrigatória para toda tarefa não trivial.
+O principal atribui cada unidade delimitada ao menor agente nomeado que possa concluí-la e validá-la com segurança. Quando o principal tem capacidade maior, ele delega as unidades de nível inferior; a capacidade do principal não é motivo para retê-las. A delegação não é uma meta de quantidade: trabalho trivial segue direto, e uma operação minúscula e totalmente especificada pode seguir direta quando o repasse e a verificação excederiam o próprio trabalho. Para outro trabalho não trivial sem checkpoint obrigatório, execução direta só é permitida se o principal já estiver no menor nível suficiente e a delegação não trouxer benefício independente. Uma exceção a checkpoint obrigatório deve registrar bloqueio concreto, como restrição superior, ferramenta indisponível, pedido explícito de trabalho individual ou ausência de unidade independente que possa avançar em paralelo.
+
+Para repositório grande ou desconhecido, o principal delega descoberta somente leitura ao `luna_explorer` antes de exploração ampla. Para causa incerta, múltiplos componentes, mudança coordenada em vários arquivos ou compatibilidade, delega ao menos uma unidade concreta de análise, implementação ou validação. Antes de concluir mudança com múltiplos componentes, compatibilidade, contrato público ou risco elevado, obtém revisão independente no menor nível que atenda ao piso de risco. A revisão deve ocorrer enquanto ainda há integração ou validação útil; um agente que descobriu ou implementou a mudança não a revisa de forma independente.
 
 Cada subagente recebe objetivo, escopo autorizado, contexto relevante, critérios de aceitação, validação esperada e condição de parada. O principal espera, verifica e integra a entrega; a responsabilidade final não é transferida. Revisores são independentes e somente leitura. Paralelismo só é apropriado para trabalhos independentes, com escopos de escrita sem sobreposição.
 
@@ -53,6 +55,21 @@ Cada subagente recebe objetivo, escopo autorizado, contexto relevante, critério
 | Critical | Análise somente leitura antes de mutação em risco elevado |
 
 Para repositórios grandes ou desconhecidos, o explorer produz uma cápsula com arquivos e símbolos relevantes, caminho de execução, restrições, testes prováveis e dúvidas abertas. Os demais agentes reutilizam essa cápsula em vez de repetir uma varredura ampla.
+
+## Publicação com o menor agente adequado
+
+Commit, push e sincronização de repositório são unidades separadas da implementação. Para mudanças já validadas, destinos conhecidos e autorização existente, o worker de menor nível executa o fluxo delimitado inteiro: conferir status e diff, preservar alterações alheias, selecionar arquivos explicitamente, criar o commit solicitado, enviar a branch autorizada e confirmar o hash em cada remote.
+
+O repasse contém repositório, branch, arquivos permitidos, destinos, autorização, verificações concluídas e limitações. Resultados válidos são reaproveitados; novos testes dependem de mudanças, falhas ou dúvidas remanescentes. Conflitos e riscos de release ou implantação elevam apenas a etapa afetada. Ausência de credenciais, rede, permissão ou delegação disponível é um bloqueio a tratar, não motivo para trocar por um modelo mais caro nem contornar controles.
+
+| Variante | Worker de publicação rotineira | Particularidade |
+| --- | --- | --- |
+| Codex | `luna_worker` / Luna | Registro das camadas na configuração global |
+| Claude Code | `haiku-worker` / Haiku | Respeitar as permissões efetivas do subagente |
+| Gemini CLI | `flash-worker` / Flash | Orquestração fica com o principal; faixas superiores usam Pro |
+| Cursor | `luna-worker` / Composer | Confirmar modelo e delegação disponíveis no ambiente |
+
+Se a delegação estiver indisponível, o agente registra o bloqueio e usa somente a alternativa autorizada necessária, sem alegar execução pelo modelo menor. A política não concede autorização nova para publicar, implantar, criar releases ou alterar visibilidade. Equivalência da política não significa igualdade de recursos nativos ou de capacidade medida entre modelos.
 
 ## Pacotes e instalação
 

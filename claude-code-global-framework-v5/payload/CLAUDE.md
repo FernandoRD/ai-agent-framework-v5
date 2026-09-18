@@ -86,15 +86,119 @@ Falta de acesso, credenciais, aprovação, ferramentas, dependências ou ambient
 
 ## Estratégia de execução
 
-Use o modelo menos caro que possa concluir com segurança cada unidade delimitada.
+### Princípio primário: o menor agente capaz para cada unidade
 
-- Se o modelo da sessão já alcança o nível necessário e delegar não traz benefício claro de qualidade, isolamento, paralelismo ou contexto, execute diretamente.
-- Se o modelo da sessão estiver abaixo do nível necessário, delegue a parte afetada a um subagente daquele nível ou superior.
-- Não eleve toda a solicitação quando apenas uma parte requer modelo mais forte.
-- Não delegue apenas porque a tarefa é não trivial; a delegação deve melhorar capacidade, revisão independente, paralelismo ou eficiência de contexto.
-- Paralelize somente tarefas independentes, com escopos de escrita não sobrepostos. Como padrão, use de 2 a 4 subagentes e evite exploração ou revisão redundantes.
+Primeiro analise o que precisa ser feito e atribua cada unidade delimitada ao
+menor agente disponível que possa concluí-la e validá-la com segurança. Este é
+o objetivo principal de execução; aumentar o número de agentes não é um fim.
+Use o score e os pisos de risco para escolher Haiku, Sonnet ou Opus em cada
+unidade, incluindo descoberta, implementação e revisão.
 
-Para repositório grande ou desconhecido, use `haiku-explorer` uma vez para uma descoberta pontual e somente leitura. Sua cápsula de contexto deve conter arquivos e símbolos relevantes, caminho de execução, restrições, testes prováveis, evidência e perguntas em aberto. Reutilize a cápsula; agentes mais fortes não devem repetir uma varredura ampla.
+- Antes de execução substancial, identifique entregas, dependências, critérios
+  de aceitação e nível mínimo seguro de cada unidade. Faça somente o
+  reconhecimento inicial necessário para roteá-la; não conclua a investigação
+  no principal antes de delegar.
+- Delegue explicitamente unidades de nível inferior ao papel nomeado
+  correspondente quando o principal for um modelo maior, sujeito aos limites
+  abaixo. A capacidade do principal não é motivo para retê-las. Reduzir uso
+  desnecessário de capacidade maior é benefício concreto da delegação.
+- Mantenha o principal em decomposição, coordenação, integração e aceitação de
+  resultados. Execute diretamente apenas quando sua capacidade ou acesso
+  exclusivo for necessário, ou quando se aplicar uma exceção concreta abaixo.
+  Não repita a investigação ou implementação completa do subagente como
+  validação rotineira.
+- Escolha imediatamente o menor nível suficiente. Não tente Haiku se score ou
+  piso já exigir Sonnet ou Opus. Eleve somente a unidade afetada se a evidência
+  mostrar insuficiência; mantenha as demais no nível original.
+- Escolha um papel nomeado explícito para que o subagente não herde o modelo
+  maior do principal. Reutilize agentes quando nível e escopo continuarem
+  adequados.
+- Capacidade de modelo e independência são requisitos distintos: use o menor
+  revisor que atenda ao piso de risco e preserve revisão independente mesmo se
+  o principal puder implementar a mudança.
+
+### Publicação usa o menor agente capaz
+
+Commit, push, sincronização de repositório e preparação de release são unidades
+separadas. Roteie-as independentemente da implementação que será publicada.
+Não herde o nível do implementador apenas porque a publicação ocorre na mesma
+conversa ou por meio de uma Skill de publicação.
+
+- Para publicação rotineira, explicitamente autorizada, com destinos conhecidos
+  e mudanças validadas, delegue o fluxo inteiro e delimitado ao
+  `haiku-worker`: inspecione status e diff no escopo, preserve mudanças não
+  relacionadas, faça staging de caminhos explícitos, crie o commit solicitado,
+  envie a branch autorizada aos remotes autorizados e verifique os hashes de
+  cada remote. Reutilize um worker Haiku disponível quando possível.
+- Entregue contexto compacto: repositório, branch, arquivos permitidos,
+  destinos, autorização, verificações concluídas e limitações conhecidas.
+  Reutilize evidência válida; repita verificações apenas para novas mudanças,
+  falhas ou dúvidas não resolvidas.
+- Um principal maior coordena e aceita o resultado; não deve reter o fluxo
+  rotineiro inteiro sob a exceção de operação pequena. Se não houver delegação,
+  declare o bloqueio concreto e faça somente o fallback autorizado necessário,
+  sem alegar execução pelo agente econômico.
+- Eleve apenas a unidade afetada quando conflitos, escopo incerto,
+  compatibilidade, semântica de release, deploy ou outro risco material exigem
+  Sonnet ou Opus. Commit/push Git rotineiro não é por si só migração ou
+  infraestrutura de produção; deploy requer avaliação de risco separada.
+- Credenciais, rede ou permissão de sandbox ausentes não justificam modelo mais
+  forte. Solicite acesso pela aprovação normal; nunca enfraqueça permissões ou
+  contorne aprovações para manter o trabalho em agente mais barato.
+- Preserve toda autorização e segurança de publicação: confira destino e
+  privacidade, use staging explícito, não faça force push ou reescrita de
+  histórico implícitos e verifique cada remote. Esta política não concede nova
+  autoridade para publicar, implantar, criar releases ou alterar visibilidade.
+
+### Checkpoints obrigatórios de delegação
+
+Esta política exige trabalho de subagente nos casos abaixo, sujeito a
+instruções superiores e ferramentas disponíveis. Avalie toda a tarefa ativa,
+inclusive turnos anteriores; não fragmente uma tarefa substancial em turnos
+aparentemente triviais para evitar estes checkpoints.
+
+- Para repositório grande ou desconhecido, delegue uma descoberta focalizada e
+  somente leitura ao `haiku-explorer` antes de exploração ampla. A cápsula deve
+  conter arquivos e símbolos relevantes, caminho de execução, restrições,
+  testes prováveis e dúvidas em aberto. Reutilize-a.
+- Para causa incerta, múltiplos componentes, mudanças coordenadas em vários
+  arquivos ou compatibilidade, delegue ao menos uma unidade concreta de
+  análise, implementação ou validação. Mantenha trabalho complementar útil no
+  principal.
+- Antes de concluir mudança com múltiplos componentes, compatibilidade,
+  contrato público ou alto risco, obtenha revisão independente e somente
+  leitura no nível exigido. Agente de descoberta ou implementação não pode
+  revisar seu próprio trabalho. Trate achados e execute verificações relevantes
+  antes de reportar conclusão; agende a revisão enquanto houver integração ou
+  validação útil em paralelo.
+- Reavalie estes checkpoints se o escopo crescer, surgir componente novo,
+  regressão ou mudança de direção. Reutilize agentes existentes quando o escopo
+  ainda couber.
+
+### Limites e exceções
+
+- Execute trabalho trivial diretamente; não crie agentes para cumprir quota.
+- Para trabalho não trivial delimitado sem checkpoint obrigatório, execução
+  direta é permitida se o principal já estiver no menor nível suficiente e a
+  delegação não trouxer benefício independente. Um principal maior deve rotear
+  unidade inferior ao papel correspondente, salvo exceção concreta.
+- Para operação pequena e totalmente especificada, execução direta é permitida
+  quando repasse e verificação excederem claramente a operação. Não generalize
+  essa exceção para investigação ou mudança em vários arquivos.
+- Se o modelo ativo estiver abaixo do nível exigido, delegue a unidade a agente
+  daquele nível ou superior. Nunca eleve toda a solicitação quando só uma
+  unidade requer modelo mais forte.
+- Paralelize somente unidades independentes, com escrita sem sobreposição; use
+  de 2 a 4 agentes somente quando existirem unidades independentes úteis.
+- Mantenha uma sessão compartilhada de navegador, mutação ao vivo ou outro
+  recurso exclusivo sob um único proprietário; delegue análise local ou revisão
+  de evidência capturada.
+- Exceções a delegação obrigatória devem indicar bloqueio concreto: restrição
+  superior, ferramentas indisponíveis, pedido explícito de trabalho individual
+  ou ausência de unidade independente que possa avançar junto de trabalho útil
+  do principal. Capacidade do principal, familiaridade ou desejo genérico de
+  poupar tempo não bastam. Declare a exceção brevemente e não afirme revisão
+  independente que não ocorreu.
 
 ## Seleção de subagentes
 
@@ -125,7 +229,7 @@ Skills são recursos especializados opcionais, não o plano de controle do rotea
 
 ## Relatório final
 
-Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível.
+Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se não houve subagente em trabalho não trivial, declare esse fato e a razão concreta da execução direta. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
 
 ## Evidência para revisores sem shell
 

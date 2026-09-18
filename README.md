@@ -1,8 +1,10 @@
 # AI Agent Framework v5
 
-Framework de roteamento de tarefas de engenharia entre agentes de IA. A v5 faz o agente principal classificar cada solicitação, avaliar complexidade e risco e escolher a menor capacidade que possa executá-la com segurança. Ela também define quando delegar, como limitar o escopo de subagentes e como validar o resultado.
+Framework de roteamento de tarefas de engenharia entre agentes de IA. A v5 faz o agente principal classificar cada solicitação, avaliar complexidade e risco e escolher a menor capacidade que possa executá-la com segurança. A prioridade é decompor o trabalho e encaminhar cada unidade ao menor agente capaz de executá-la e validá-la com segurança. O principal coordena e integra; sua capacidade maior não justifica reter unidades de menor complexidade. A política também define delegação e revisão obrigatórias quando houver benefício concreto, exceções delimitadas e validação proporcional.
 
 O repositório distribui uma implementação nativa para Codex e adaptações por projeto para Claude Code, Gemini CLI e Cursor. As adaptações preservam a política de decisão; os nomes e a disponibilidade dos modelos dependem de cada plataforma.
+
+Em todas as variantes, a publicação é roteada separadamente: commits e pushes rotineiros, autorizados e com mudanças validadas são delegados ao worker de menor capacidade suficiente (Luna no Codex, Haiku no Claude Code, Flash no Gemini CLI e Composer no Cursor), mesmo quando a implementação usou um agente maior. O fluxo reaproveita as validações disponíveis, preserva alterações alheias e confere o hash em cada remote. Conflitos e riscos adicionais elevam apenas a etapa afetada; falta de acesso não justifica trocar por um modelo mais caro.
 
 ## Pacotes
 
@@ -13,7 +15,7 @@ O repositório distribui uma implementação nativa para Codex e adaptações po
 | [gemini-cli-global-framework-v5](gemini-cli-global-framework-v5/) | Gemini CLI | Por projeto | Flash e Pro |
 | [cursor-global-framework-v5](cursor-global-framework-v5/) | Cursor | Por projeto | Composer, Sonnet e Opus |
 
-Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transporte. Veja as diferenças de cada variante em [VARIANTES-V5.md](VARIANTES-V5.md) e a arquitetura em [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md).
+Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transporte. Cada ZIP inclui uma pasta principal com o nome da distribuição; após extrair, entre nessa pasta para executar o instalador. Isso mantém os arquivos do pacote separados das configurações instaladas, mesmo ao extrair no diretório pessoal. Veja as diferenças de cada variante em [VARIANTES-V5.md](VARIANTES-V5.md) e a arquitetura em [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md).
 
 ## Como usar
 

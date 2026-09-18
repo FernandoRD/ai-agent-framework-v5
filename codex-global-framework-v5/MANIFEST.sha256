@@ -6,7 +6,7 @@ d46660d744ff20c65069902b25e00f953f85ea6af96f0aa38d99570a960e8798  ./.agents/skil
 ab81e0b262f6a4308487f9d882078d1dc47b04df4eceb4a34a53e84152430bf1  ./.agents/skills/documentation/agents/openai.yaml
 2e6186f9cec182068658a039ca4aa846b7a195ae9a9519a699356136659762ae  ./.agents/skills/security-review/SKILL.md
 287b5b82785aae19edacf4a0ed5be4cc7ed7f0b64746acbf6af905c76faa6f77  ./.agents/skills/security-review/agents/openai.yaml
-fb152a8f563bab00f673b1d21ded3118912f14aa5502ae55da561278e501cc1b  ./.codex/AGENTS.md
+26065e8cf60c4e041145d9f4db3805a87b09d66eeeb76bb3c245f24cbec666ff  ./.codex/AGENTS.md
 794ba190beaad312ae39f2d41c93e1d601cdffd6f4ddfc254bf0771235392fc8  ./.codex/agent-configs/luna_explorer.toml
 fe105d314d6368bf5a78bebbc9d77ba897bfbecfb613192a74e33815dc5cc3bb  ./.codex/agent-configs/luna_worker.toml
 5c5dd8b01ecb7ffd8abd7e15a504eb51a39b53db6a1a80595c7c5b801ff74f17  ./.codex/agent-configs/sol_critical.toml
@@ -16,11 +16,11 @@ a9c1db15e574a4e152bdb6517004b444564686c55560d7ffce32f4b1a779289a  ./.codex/agent
 80d6059f19efcea2872c556b029f2847b6d2795fc6a2e7edd9960a83288b1f73  ./.codex/agent-configs/terra_worker.toml
 0cd9f326c1f1c2843dd0b54d61745e3399edf336ae0ea36cb29183d50825a2f1  ./.codex/hooks/mandatory-router.ps1
 727ca9f4eff24f45808df8b9e1218e9131a9695205050265f69f18fec7972c1e  ./.codex/hooks/mandatory-router.sh
-4821c7e98b6821ed105777cb220c16eb083e6572ffd3129e3ba6734cf7b3a201  ./README.md
+1b90349c8f409ae7503b41338e6651982bdcd19ad6ede388e1b0c97fa07a378a  ./README.md
 1cc3d76ac7c21a664e79848fd481e9791016451b244e7de5feeeb9bea5fd2184  ./VERSION
 442719398b389fe63dad4d2a5a0f249452003698e9c7b88987d2f5b865400ff1  ./docs/LINUX.md
 45474207105c0376a8df189b64709230f78d1e853484474b7154f9b364188ca0  ./docs/MIGRATION-V3-V4.md
-cd15ca92bbf3090dc14b807b0329f8556346dbac49e7af6b5f0b75db299fe575  ./docs/SMOKE-TESTS.md
+7009827b493cf64cab35792dcd8b61dd3e378b72c95fb7818a71a0bd55f7c31d  ./docs/SMOKE-TESTS.md
 c6e80ee5d14d05b2f455f3aa879d48fa130e3683330acf11afedba7a6ee85693  ./docs/TOKEN-ECONOMY.md
 b983199c373815eaceaa346e7b2098c859771bac5b0cd40e6dcd40e30a63ea6f  ./docs/TROUBLESHOOTING.md
 f2fa1d6c113eca8e60e4c28dfdbd5b2e4dd4f1c7b4e75c1903021dd3f562f813  ./docs/WINDOWS.md

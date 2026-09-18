@@ -25,6 +25,25 @@ No Linux pode ser necessário `python3`; no Windows use `py -3` e caminho entre 
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.
 
+## Publicação autorizada
+
+Publicação rotineira é uma unidade separada da implementação. Quando a
+ferramenta nativa Task estiver disponível e houver mudanças validadas, branch e
+remotes conhecidos com autorização explícita, o principal delega ao
+`luna-worker` (Composer) o fluxo completo: status e diff no escopo, staging de
+caminhos explícitos, commit pedido, push aos remotes autorizados e conferência
+do hash de cada remote. O repasse contém evidência compacta (repositório,
+branch, arquivos permitidos, destinos, autorização, verificações e limites),
+reutilizada até surgir mudança, falha ou dúvida nova.
+
+Se a Task não estiver disponível ou a delegação for proibida, o principal
+registra o bloqueio concreto e usa somente o fallback autorizado necessário,
+sem alegar execução pelo Composer. Conflito, escopo incerto, compatibilidade,
+release, deploy ou outro risco material elevam apenas a unidade afetada para
+Terra ou Sol. Credencial, rede ou aprovação ausente exigem o fluxo normal de
+acesso. A política não concede autoridade para novos destinos, mudança de
+privacidade, release, deploy, force push ou reescrita de histórico.
+
 ## Verificação e limites
 
 Peça uma correção trivial: deve ser direta. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.

@@ -1,6 +1,6 @@
 # Variantes v5 para outras plataformas
 
-Geradas em 12/09/2026 a partir de `codex-global-framework-v5/.codex/AGENTS.md`.
+Geradas em 12/09/2026; política de execução e publicação sincronizada em 17/09/2026 com `codex-global-framework-v5/.codex/AGENTS.md`.
 
 | Pacote | Plataforma | Faixas de execução |
 | --- | --- | --- |
@@ -27,7 +27,11 @@ Para conferir o instalador sem acessar nenhum provedor:
 python scripts/test_install.py
 ```
 
-O pacote preserva classificação trivial/não trivial, pesos e faixas do score, pisos de risco, delegação delimitada, revisão independente e relatório de execuções. Os nomes dos modelos não representam equivalência de capacidade entre fornecedores. A política orienta o agente; não existe despachante externo que imponha cada decisão.
+O pacote preserva classificação trivial/não trivial, pesos e faixas do score, pisos de risco, delegação delimitada, revisão independente e relatório de execuções. Os nomes dos modelos não representam equivalência de capacidade entre fornecedores. A prioridade é analisar e decompor o trabalho, atribuir cada unidade ao menor agente suficiente dentro do mapeamento da plataforma e reservar ao principal a coordenação e integração. Isso não significa tentar sempre o modelo menor: os pisos de risco continuam obrigatórios. Delegação útil e revisão independente têm gatilhos explícitos; exceções devem ser justificadas. A política orienta o agente; não existe despachante externo que imponha cada decisão.
+
+## Publicação
+
+As três variantes seguem o mesmo contrato do Codex para publicação: delegação do fluxo rotineiro autorizado ao menor worker suficiente, repasse compacto, reaproveitamento de validações, staging explícito, preservação de alterações e confirmação de hashes por remote. Os mapeamentos são Haiku no Claude Code, Flash no Gemini CLI e Composer no Cursor. O modelo efetivo e suas permissões dependem do ambiente; indisponibilidade deve ser declarada, sem simular delegação nem enfraquecer controles. Somente etapas com riscos adicionais são escaladas. Nenhuma variante recebe nova autorização para publicar ou implantar por causa dessa regra.
 
 ## Diferenças do pacote Codex
 

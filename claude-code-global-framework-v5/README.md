@@ -39,10 +39,27 @@ histórico; a delegação indisponível deve ser reportada com o bloqueio concre
 
 ## Instalação por projeto
 
-O pacote é um payload para instalação em um repositório-alvo. O instalador está incluído em `scripts/`; requer Python 3.10+:
+O pacote é um payload para instalação em um repositório-alvo. Os instaladores estão incluídos em `scripts/` (Bash, Fish, PowerShell e Python 3.10+):
+
+No Linux/macOS (Bash ou Fish):
 
 ```bash
-python scripts/install.py --target /caminho/projeto
+./scripts/install.sh --target /caminho/projeto
+./scripts/install.sh --target /caminho/projeto --apply
+# ou no Fish:
+./scripts/install.fish /caminho/projeto --apply
+```
+
+No Windows (PowerShell):
+
+```powershell
+.\scripts\install.ps1 -Target "C:\caminho\projeto"
+.\scripts\install.ps1 -Target "C:\caminho\projeto" -Apply
+```
+
+Ou diretamente via Python:
+
+```bash
 python scripts/install.py --target /caminho/projeto --apply
 ```
 

@@ -69,7 +69,7 @@ Fish:
 ```fish
 ./scripts/install.fish --audit-only
 ./scripts/install.fish
-./scripts/diagnose.sh
+./scripts/diagnose.fish
 ```
 
 WSL from PowerShell:

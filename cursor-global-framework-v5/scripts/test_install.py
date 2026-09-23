@@ -1,5 +1,6 @@
 """Offline installer regression checks. Run with Python 3.10+."""
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -50,6 +51,33 @@ class InstallerTests(unittest.TestCase):
                 capture_output=True, text=True)
             self.assertEqual(result.returncode, 1)
             self.assertEqual(list(outside.iterdir()), [])
+
+    def test_shell_scripts_exist(self):
+        scripts_dir = SCRIPT.parent
+        self.assertTrue((scripts_dir / 'install.sh').is_file(), 'install.sh missing')
+        self.assertTrue((scripts_dir / 'install.fish').is_file(), 'install.fish missing')
+        self.assertTrue((scripts_dir / 'install.ps1').is_file(), 'install.ps1 missing')
+
+    def test_install_sh(self):
+        sh_script = SCRIPT.with_name('install.sh')
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project_sh'
+            res_audit = subprocess.run(['bash', str(sh_script), str(target)], capture_output=True, text=True)
+            self.assertEqual(res_audit.returncode, 0)
+            self.assertFalse(target.exists())
+            res_apply = subprocess.run(['bash', str(sh_script), '--target', str(target), '--apply'], capture_output=True, text=True)
+            self.assertEqual(res_apply.returncode, 0)
+            self.assertTrue(target.exists())
+
+    def test_install_fish(self):
+        if not shutil.which('fish'):
+            self.skipTest('fish shell not available on host')
+        fish_script = SCRIPT.with_name('install.fish')
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project_fish'
+            res = subprocess.run(['fish', str(fish_script), str(target), '--apply'], capture_output=True, text=True)
+            self.assertEqual(res.returncode, 0)
+            self.assertTrue(target.exists())
 
 
 if __name__ == '__main__':

@@ -37,16 +37,27 @@ Há instaladores equivalentes para PowerShell, Fish e WSL dentro de `scripts/`. 
 
 ### Claude Code, Gemini CLI e Cursor
 
-As três variantes usam um instalador conservador por projeto e requerem Python 3.10 ou superior. A auditoria não escreve; `--apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico.
+As três variantes usam instalador conservador por projeto com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish), PowerShell (`.ps1` para Windows) e Python (`.py`). A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico.
+
+No Linux/macOS (Bash ou Fish):
 
 ```bash
 cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-global-framework-v5
-python3 scripts/install.py --target "/caminho/do/projeto"
-python3 scripts/install.py --target "/caminho/do/projeto" --apply
+./scripts/install.sh --target "/caminho/do/projeto"
+./scripts/install.sh --target "/caminho/do/projeto" --apply
+# ou no Fish: ./scripts/install.fish "/caminho/do/projeto" --apply
 python3 scripts/test_install.py
 ```
 
-No Windows, substitua `python3` por `py -3` se necessário. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
+No Windows (PowerShell):
+
+```powershell
+cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-global-framework-v5
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto"
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+```
+
+Ou diretamente via Python (`python3` no Linux ou `py -3` no Windows): `python3 scripts/install.py --target "/caminho/do/projeto" --apply`. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
 
 ## Limites
 

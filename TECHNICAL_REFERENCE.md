@@ -82,12 +82,12 @@ cd codex-global-framework-v5
 python3 scripts/validate.py
 ```
 
-Claude Code, Gemini CLI e Cursor são payloads por projeto. Cada um possui `scripts/install.py`: sem `--apply`, apenas lista arquivos pendentes; com `--apply`, cria arquivos novos com criação exclusiva, preserva arquivos idênticos e recusa conflitos, links simbólicos e pais inválidos. Eles requerem Python 3.10+.
+Claude Code, Gemini CLI e Cursor são payloads por projeto. Cada um possui instaladores em Shell Script (`scripts/install.sh`, `scripts/install.fish`), PowerShell (`scripts/install.ps1`) e Python (`scripts/install.py`): sem `--apply` / `-Apply`, apenas listam arquivos pendentes; com `--apply` / `-Apply`, criam arquivos novos com criação exclusiva, preservam arquivos idênticos e recusam conflitos, links simbólicos e pais inválidos. Requerem Python 3.10+ no Linux/macOS ou PowerShell nativo no Windows.
 
 ```bash
 cd cursor-global-framework-v5  # substitua pela variante desejada
-python3 scripts/install.py --target "/caminho/do/projeto"
-python3 scripts/install.py --target "/caminho/do/projeto" --apply
+./scripts/install.sh --target "/caminho/do/projeto"
+./scripts/install.sh --target "/caminho/do/projeto" --apply
 python3 scripts/test_install.py
 ```
 
@@ -120,7 +120,7 @@ As pastas `Claude code/` e `Codex/` ficam somente como referência histórica. N
 | Codex `scripts/diagnose_core.py` | Diagnóstico da instalação |
 | Codex `scripts/uninstall_core.py` | Remoção dos componentes gerenciados |
 | Codex `scripts/validate.py` | Validação estática da distribuição e manifesto |
-| Variantes `scripts/install.py` | CLI `--target` obrigatório e `--apply` opcional |
+| Variantes `scripts/install.{sh,fish,ps1,py}` | Scripts de instalação conservadora com `--target` e `--apply` |
 | Variantes `scripts/test_install.py` | Testes offline em diretórios temporários |
 | `MANIFEST.sha256` | Digest SHA-256 e caminho relativo por arquivo distribuído |
 

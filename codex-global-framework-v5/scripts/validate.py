@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import hashlib, json, py_compile, re, subprocess, sys, tempfile, tomllib
+import hashlib, json, py_compile, re, shutil, subprocess, sys, tempfile, tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -52,6 +52,12 @@ except Exception as exc: ERRORS.append(f"invalid hook output: {exc}")
 for script in ("install.sh", "diagnose.sh", "uninstall.sh"):
     result = subprocess.run(["bash", "-n", str(ROOT / "scripts" / script)], capture_output=True, text=True)
     check(result.returncode == 0, f"bash syntax error in {script}: {result.stderr}")
+for script in ("install.fish", "diagnose.fish", "uninstall.fish"):
+    path = ROOT / "scripts" / script
+    check(path.exists(), f"missing fish script: {script}")
+    if shutil.which("fish") and path.exists():
+        result = subprocess.run(["fish", "-n", str(path)], capture_output=True, text=True)
+        check(result.returncode == 0, f"fish syntax error in {script}: {result.stderr}")
 with tempfile.TemporaryDirectory() as compiled:
     for script in ROOT.glob("scripts/*.py"):
         try: py_compile.compile(str(script), cfile=str(Path(compiled) / f"{script.name}.pyc"), doraise=True)

@@ -14,14 +14,31 @@ Principal sugerido: Sonnet 5 selecionado no Cursor. Esta escolha e o mapeamento 
 
 ## Instalar
 
-Requer Python 3.10+. Extraia o pacote e execute dentro dele:
+Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+):
+
+No Linux/macOS (Bash ou Fish):
 
 ```sh
-python scripts/install.py --target /caminho/do/projeto
+./scripts/install.sh --target /caminho/do/projeto
+./scripts/install.sh --target /caminho/do/projeto --apply
+# ou no Fish:
+./scripts/install.fish /caminho/do/projeto --apply
+```
+
+No Windows (PowerShell):
+
+```powershell
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto"
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+```
+
+Ou diretamente via Python:
+
+```sh
 python scripts/install.py --target /caminho/do/projeto --apply
 ```
 
-No Linux pode ser necessário `python3`; no Windows use `py -3` e caminho entre aspas. Primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.
+O primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.
 

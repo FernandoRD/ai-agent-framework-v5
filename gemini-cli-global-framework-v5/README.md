@@ -124,14 +124,31 @@ porque este pacote não instala nem inicia o runtime.
 
 ## Instalação por projeto
 
-Requer Python 3.10+. Dentro do pacote extraído:
+Dentro do pacote extraído, execute usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+):
+
+No Linux/macOS (Bash ou Fish):
 
 ```sh
-python scripts/install.py --target "/caminho/do/projeto"
-python scripts/install.py --target "/caminho/do/projeto" --apply
+./scripts/install.sh --target "/caminho/do/projeto"
+./scripts/install.sh --target "/caminho/do/projeto" --apply
+# ou no Fish:
+./scripts/install.fish "/caminho/do/projeto" --apply
 python scripts/test_install.py
 ```
 
-Use `python3` no Linux ou `py -3` no Windows, se necessário. A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.
+No Windows (PowerShell):
+
+```powershell
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto"
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+```
+
+Ou diretamente via Python:
+
+```sh
+python scripts/install.py --target "/caminho/do/projeto" --apply
+```
+
+A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.
 
 Reviewers recebem do principal o diff real ou um arquivo legível com o diff, caminhos modificados e resultados dos testes. Sem esses dados devem reportar revisão incompleta. Eles não executam git nem testes; o principal executa verificações adicionais solicitadas.

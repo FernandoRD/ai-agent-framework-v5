@@ -1,6 +1,6 @@
-c6f92c739e868dc75a7ff413814c879218d7438f8636e46efdcbd7bdd32eaf0b  ./README.md
+942a5b6e6cdc8a060d01d37a34fe8baef136a7a54f6750482390f75326906a98  ./README.md
 1e561510cd5e8ef3915bac79d2324a817c72c02f2bb03f52e6d1b2e8d92cad85  ./VALIDACAO.md
-e2d2b9da77c20785366bd2ac1312ec310d070f66af2b3c98e02cc8f9c9ab7d94  ./VARIANTES-V5.md
+0d4c9ffc6e420e13275f04b42e46269042ab56ab58c6232bc3e1fb6872b3cdd6  ./VARIANTES-V5.md
 025ed4580d9b7b451d96cf4fcf3ca366be6caf6cfc34b8b19efdee083360c7fb  ./VERSION
 592643a61ece4a9b8119f65754bfea1cef03097236e6d7bdac8c0e71915e6c92  ./payload/.gemini/agents/flash-explorer.md
 5942dab8e23d4ab4772c6af5377c756ee6523ea7a824839efafc141cbcdae3d8  ./payload/.gemini/agents/flash-worker.md
@@ -10,6 +10,9 @@ b9008388a2d611f3ea0bcf0fa86a38cb9cff0011eb65df6f0dcf8d6d9323ddef  ./payload/.gem
 78c4eb06e9ec04f115f2b6c0b190968ce5a22f5fbcd36796fb89f7285ba3cdf3  ./payload/.gemini/agents/pro-specialist.md
 5d8b80f56e1210609ab5f85f50308cdc5f036073dcd8aebc07717b9b853c1170  ./payload/.gemini/agents/pro-worker.md
 1f5ebd12de4e8584625499904fdaa147b43ba9547d7b406b16572e585e63766e  ./payload/GEMINI.md
+64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
+037da22518123aa427e5784a4e68459d56840049181702b9690a2f3a4fd4e11a  ./scripts/install.ps1
 97a738dc995bd565657d2609ec2c30277cc5a2928d066b49e7bd42226fb27a2d  ./scripts/install.py
-8d7a5109f3b02665252884a334e87be42d93c5327581cb874477c48d66f5ba72  ./scripts/test_install.py
+3a5923f93a1827d1cfe7108cc60f92705b1d31ecce20861830ea11f0cbc3469d  ./scripts/install.sh
+3b9a4c1dbbc6b034ff952828dbc6f72ada966a0bb89999f064a2770fd3ef6186  ./scripts/test_install.py
 e09578a8b97468a426b00c450793994d4237d1e534f55367bef7cea5e798d6b0  ./settings.example.json

@@ -12,14 +12,31 @@ Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalado
 
 ## Usar
 
-Extraia o ZIP da plataforma. Dentro da pasta extraída, execute:
+Extraia o ZIP da plataforma. Dentro da pasta extraída, execute com o instalador de sua preferência (Bash, Fish, PowerShell ou Python):
+
+No Linux/macOS (Bash ou Fish):
 
 ```sh
-python scripts/install.py --target "/caminho/do/projeto"
+./scripts/install.sh --target "/caminho/do/projeto"
+./scripts/install.sh --target "/caminho/do/projeto" --apply
+# ou no Fish:
+./scripts/install.fish "/caminho/do/projeto" --apply
+```
+
+No Windows (PowerShell):
+
+```powershell
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto"
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+```
+
+Ou diretamente via Python:
+
+```sh
 python scripts/install.py --target "/caminho/do/projeto" --apply
 ```
 
-O primeiro comando somente mostra o que seria criado. O segundo cria arquivos novos, preserva idênticos e recusa conflitos; não modifica configurações pessoais. No Linux use `python3`, se necessário; no Windows use `py -3`. Requer Python 3.10+. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
+O primeiro comando somente mostra o que seria criado. O segundo cria arquivos novos, preserva idênticos e recusa conflitos; não modifica configurações pessoais. Requer Python 3.10+ no Linux/macOS ou PowerShell no Windows. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
 
 Para conferir o instalador sem acessar nenhum provedor:
 

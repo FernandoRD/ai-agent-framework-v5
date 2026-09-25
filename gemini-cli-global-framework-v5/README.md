@@ -30,6 +30,10 @@ arquivos de agentes para um ID realmente disponível, como
 `gemini-3-flash-preview` ou `gemini-3-pro-preview`. Não altere o
 roteamento para depender de modelos em preview.
 
+### Relatório de utilização de modelos no Gemini CLI e Antigravity
+
+Em ambientes Google (Gemini CLI e Google Antigravity), o relatório final e a tabela de utilização de modelos devem reportar estritamente os modelos do Google (**Flash** e **Pro**), nunca modelos da OpenAI (**Luna**, **Terra**, **Sol**). Caso o projeto contenha um `AGENTS.md` legado ou voltado ao Codex com menção a Luna/Terra/Sol, a política do Gemini CLI / Antigravity sobrepõe essas definições para garantir a apresentação correta dos modelos Google na tabela final.
+
 ## Conteúdo e destino
 
 O instalador comum deve copiar, em modo de aplicação, o conteúdo de

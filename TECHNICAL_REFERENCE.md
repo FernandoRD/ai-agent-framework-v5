@@ -99,10 +99,10 @@ O instalador por projeto não é uma transação de múltiplos arquivos: uma fal
 | --- | --- | --- |
 | Codex | Sete camadas registradas em `.codex/agent-configs` | Luna, Terra e Sol; hook opcional; instalação global |
 | Claude Code | Sete arquivos em `.claude/agents` | Haiku, Sonnet e Opus; instalação por projeto |
-| Gemini CLI | Sete arquivos em `.gemini/agents` e exemplo de settings | Flash e Pro; o principal mantém a orquestração |
+| Gemini CLI / Antigravity | Sete arquivos em `.gemini/agents` e exemplo de settings | Flash e Pro; o principal mantém a orquestração |
 | Cursor | Sete arquivos em `.cursor/agents` e regra `.cursor/rules` | Composer, Sonnet e Opus; instalação por projeto |
 
-Gemini CLI não expõe uma terceira classe equivalente a Terra/Sol: os papéis acima de Flash usam Pro. Em todas as adaptações, os modelos são mapeamentos operacionais, não equivalências mensuradas entre fornecedores.
+Gemini CLI / Google Antigravity não expõe uma terceira classe equivalente a Terra/Sol: os papéis acima de Flash usam Pro. Relatórios de utilização de IA nessa plataforma devem listar estritamente os modelos Google (Flash e Pro), nunca modelos OpenAI (Luna/Terra/Sol). Em todas as adaptações, os modelos são mapeamentos operacionais, não equivalências mensuradas entre fornecedores.
 
 ## Validação e limitações
 

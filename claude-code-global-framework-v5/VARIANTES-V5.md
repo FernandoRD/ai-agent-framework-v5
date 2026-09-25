@@ -5,7 +5,7 @@ Geradas em 12/09/2026; política de execução e publicação sincronizada em 17
 | Pacote | Plataforma | Faixas de execução |
 | --- | --- | --- |
 | `claude-code-global-framework-v5.zip` | Claude Code | Haiku / Sonnet / Opus |
-| `gemini-cli-global-framework-v5.zip` | Gemini CLI | Flash / Pro; consultar limites na adaptação |
+| `gemini-cli-global-framework-v5.zip` | Gemini CLI / Antigravity | Flash / Pro; consultar limites na adaptação |
 | `cursor-global-framework-v5.zip` | Cursor | Composer / Sonnet / Opus |
 
 Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalador Python por projeto. O nome “global-framework” identifica a origem; estas distribuições instalam no projeto explicitamente indicado. Não são instaladores globais em equivalência com o pacote Codex.

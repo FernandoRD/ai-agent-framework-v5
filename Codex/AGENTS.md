@@ -969,6 +969,13 @@ Se algum modelo não tiver sido utilizado, mantenha-o na tabela com:
 
 `0 | 0%`
 
+> **Nota para Google Antigravity e Gemini CLI:** Caso este arquivo seja carregado por uma sessão do Antigravity ou Gemini CLI, o assistente DEVE utilizar exclusivamente os modelos do Google (**Flash** e **Pro**) na tabela de utilização, em vez dos modelos da OpenAI (Luna, Terra, Sol):
+>
+> | Modelo | Execuções | Utilização |
+> |---|---:|---:|
+> | Flash | X | XX% |
+> | Pro | X | XX% |
+
 ## Regras
 
 - O relatório deve ser curto.

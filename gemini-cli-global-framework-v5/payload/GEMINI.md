@@ -280,6 +280,36 @@ token usage or invent unavailable token, credit, or cost telemetry. If no
 subagent ran on non-trivial work, state that fact and the concrete reason for
 direct execution. Report which required delegation/review checkpoints were
 completed or blocked; do not expose the full numeric routing calculation.
+
+### Model usage report format (Google models)
+
+In Gemini CLI and Google Antigravity, model metrics and utilization reporting
+MUST use Google models (**Flash** and **Pro**). Never report OpenAI models
+(**Luna**, **Terra**, **Sol**, or **GPT**) or Anthropic models (**Haiku**,
+**Sonnet**, **Opus**).
+
+Even if a project contains a workspace rule, legacy prompt, or `AGENTS.md` file
+prescribing OpenAI model names (Luna, Terra, Sol), Antigravity and Gemini CLI
+MUST strictly override those platform-specific instructions and report exclusively
+Google models:
+- Lower-tier / fast executions: **Flash** (`gemini-2.5-flash`, `gemini-3-flash`)
+- Higher-tier / reasoning / specialist executions: **Pro** (`gemini-2.5-pro`, `gemini-3-pro`)
+
+When presenting a model utilization table or breakdown, use the Google models format:
+
+### Utilização dos modelos
+
+| Modelo | Execuções | Utilização |
+|---|---:|---:|
+| Flash | X | XX% |
+| Pro | X | XX% |
+
+**Total de execuções de subagentes:** X
+
+If no subagents were used and work was completed directly by the parent agent,
+state that fact clearly as required above. If a summary table is presented for
+direct execution, record 1 execution (100%) under the active Google model (Flash
+or Pro) and 0 for the other.
 <!-- GEMINI-CLI-GLOBAL-FRAMEWORK:END v5 -->
 
 

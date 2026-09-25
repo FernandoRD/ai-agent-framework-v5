@@ -36,6 +36,24 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(changed.read_text(encoding='utf-8'), 'user content')
             self.assertFalse(missing.exists())
 
+    def test_global_install(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'fake_home'
+            res = subprocess.run(
+                [sys.executable, str(SCRIPT), '--target', str(target), '--global', '--apply'],
+                capture_output=True, text=True)
+            self.assertEqual(res.returncode, 0)
+            for p in PAYLOAD.glob('*.md'):
+                self.assertFalse((target / p.name).exists(), f"{p.name} must not be in root during global install")
+            tool_dot_dir = None
+            for item in PAYLOAD.iterdir():
+                if item.is_dir() and item.name.startswith('.'):
+                    tool_dot_dir = item.name
+                    break
+            if tool_dot_dir:
+                for p in PAYLOAD.glob('*.md'):
+                    self.assertTrue((target / tool_dot_dir / p.name).exists(), f"{p.name} missing inside {tool_dot_dir}")
+
     def test_rejects_link_target(self):
         with tempfile.TemporaryDirectory() as temporary:
             base = Path(temporary)
@@ -68,6 +86,15 @@ class InstallerTests(unittest.TestCase):
             res_apply = subprocess.run(['bash', str(sh_script), '--target', str(target), '--apply'], capture_output=True, text=True)
             self.assertEqual(res_apply.returncode, 0)
             self.assertTrue(target.exists())
+
+    def test_install_sh_global(self):
+        sh_script = SCRIPT.with_name('install.sh')
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'global_sh'
+            res = subprocess.run(['bash', str(sh_script), '--target', str(target), '--global', '--apply'], capture_output=True, text=True)
+            self.assertEqual(res.returncode, 0)
+            for p in PAYLOAD.glob('*.md'):
+                self.assertFalse((target / p.name).exists())
 
     def test_install_fish(self):
         if not shutil.which('fish'):

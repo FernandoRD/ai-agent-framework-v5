@@ -38,16 +38,26 @@ Windows PowerShell:
 
 ```powershell
 Set-ExecutionPolicy -Scope Process Bypass
+# Global install (default):
 .\scripts\install.ps1 -AuditOnly
 .\scripts\install.ps1
+
+# Project install:
+.\scripts\install.ps1 -Target C:\path\to\project
+
 .\scripts\diagnose.ps1
 ```
 
 Linux:
 
 ```bash
+# Global install (default):
 ./scripts/install.sh --audit-only
 ./scripts/install.sh
+
+# Project install:
+./scripts/install.sh --target /path/to/project
+
 ./scripts/diagnose.sh
 ```
 

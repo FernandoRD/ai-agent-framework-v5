@@ -12,14 +12,16 @@ else
 fi
 
 has_target=false
+has_global=false
 for arg in "$@"; do
     if [[ "$arg" == "--target" ]] || [[ "$arg" == --target=* ]]; then
         has_target=true
-        break
+    elif [[ "$arg" == "--global" ]] || [[ "$arg" == "-g" ]]; then
+        has_global=true
     fi
 done
 
-if [ "$has_target" = false ] && [ "$#" -ge 1 ] && [[ "$1" != -* ]]; then
+if [ "$has_target" = false ] && [ "$has_global" = false ] && [ "$#" -ge 1 ] && [[ "$1" != -* ]]; then
     target="$1"
     shift
     exec "$PYTHON_BIN" "$script_dir/install.py" --target "$target" "$@"

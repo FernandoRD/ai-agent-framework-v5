@@ -75,14 +75,51 @@ def audit(codex: Path, skills: Path) -> list[tuple[str, str, str]]:
 
 
 def main() -> int:
-    home = Path.home()
+    home = Path.home().resolve()
     parser = argparse.ArgumentParser(description="Install Codex Global Framework v5")
-    parser.add_argument("--codex-home", default=os.environ.get("CODEX_HOME", str(home / ".codex")))
-    parser.add_argument("--skills-home", default=str(home / ".agents" / "skills"))
+    parser.add_argument("--target", default=None, help="Target directory (project or home)")
+    parser.add_argument("--global", "-g", dest="is_global", action="store_true", help="Install globally to home directory")
+    parser.add_argument("--codex-home", default=None, help="Explicit Codex home directory (defaults to ~/.codex)")
+    parser.add_argument("--skills-home", default=None, help="Explicit skills home directory (defaults to ~/.agents/skills)")
     parser.add_argument("--no-hook", action="store_true")
     parser.add_argument("--audit-only", action="store_true")
+    parser.add_argument("--apply", action="store_true", help="Apply installation (default when not --audit-only)")
     args = parser.parse_args()
-    codex, skills = Path(args.codex_home).expanduser().resolve(), Path(args.skills_home).expanduser().resolve()
+
+    is_project = False
+    if args.target:
+        target_path = Path(args.target).expanduser().resolve()
+        if not args.is_global and target_path != home:
+            is_project = True
+
+    if is_project:
+        target_path = Path(args.target).expanduser().resolve()
+        if not target_path.exists() or not target_path.is_dir():
+            raise SystemExit(f"Target directory does not exist or is not a directory: {target_path}")
+        agents_file = target_path / "AGENTS.md"
+        print("Codex Framework v5 project preflight")
+        print(f"Project target: {target_path}")
+        print(f"Agents file: {agents_file}")
+        if agents_file.exists():
+            text = agents_file.read_text(encoding="utf-8-sig")
+            if "CODEX-GLOBAL-FRAMEWORK:BEGIN" in text:
+                print("- legacy/existing AGENTS: replace marked framework block")
+            else:
+                print("- existing AGENTS: append framework block preserving personal text")
+        else:
+            print("- new AGENTS: create AGENTS.md with framework block")
+        if args.audit_only:
+            print("Audit-only mode: no files changed.")
+            return 0
+        existing = agents_file.read_text(encoding="utf-8-sig") if agents_file.exists() else ""
+        personal = re.sub(r"<!-- CODEX-GLOBAL-FRAMEWORK:BEGIN.*?<!-- CODEX-GLOBAL-FRAMEWORK:END.*?-->\s*", "", existing, flags=re.S).strip()
+        block = (PACKAGE / ".codex" / "AGENTS.md").read_text(encoding="utf-8").strip()
+        agents_file.write_text((personal + "\n\n" if personal else "") + block + "\n", encoding="utf-8")
+        print(f"\nCodex Framework v5 installed for project: {target_path}")
+        return 0
+
+    codex = Path(args.codex_home or os.environ.get("CODEX_HOME", str(home / ".codex"))).expanduser().resolve()
+    skills = Path(args.skills_home or str(home / ".agents" / "skills")).expanduser().resolve()
     if codex == Path(codex.anchor) or skills == Path(skills.anchor):
         raise SystemExit("Refusing unsafe target path.")
     hooks_file = codex / "hooks.json"

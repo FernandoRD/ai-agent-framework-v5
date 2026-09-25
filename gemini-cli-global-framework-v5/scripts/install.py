@@ -1,16 +1,35 @@
 #!/usr/bin/env python3
-"""Install new project files only; audit by default, never overwrite conflicts."""
+"""Install framework files for project or global home; audit by default, never overwrite conflicts."""
 import argparse
 from pathlib import Path
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--target', required=True, type=Path)
-    parser.add_argument('--apply', action='store_true')
+    parser.add_argument('--target', type=Path, default=None, help='Target directory for project installation')
+    parser.add_argument('--global', '-g', dest='is_global', action='store_true', help='Install globally to user home directory')
+    parser.add_argument('--apply', action='store_true', help='Apply changes (audit-only by default)')
     args = parser.parse_args()
-    target = args.target.absolute()
+
+    home = Path.home().resolve()
+    if args.is_global:
+        target = args.target.expanduser().absolute() if args.target else Path.home()
+        is_global = True
+    elif args.target is not None:
+        target = args.target.expanduser().absolute()
+        is_global = (target.resolve() == home)
+    else:
+        parser.error('one of --target <path> or --global is required')
+
     payload = Path(__file__).resolve().parents[1] / 'payload'
+
+    # Discover tool dot-directory in payload (e.g. .gemini, .claude, .cursor)
+    tool_dot_dir = None
+    for item in payload.iterdir():
+        if item.is_dir() and item.name.startswith('.'):
+            tool_dot_dir = item.name
+            break
+
     pending, errors = [], []
     for source in sorted(payload.rglob('*')):
         if source.is_symlink():
@@ -18,7 +37,12 @@ def main():
             continue
         if not source.is_file():
             continue
-        dest = target / source.relative_to(payload)
+        source_rel = source.relative_to(payload)
+        if is_global and tool_dot_dir and not source_rel.parts[0].startswith('.'):
+            dest = target / tool_dot_dir / source_rel
+        else:
+            dest = target / source_rel
+
         chain = [dest, *dest.parents]
         if any(p.is_symlink() for p in chain):
             errors.append(f'Link no destino: {dest}')

@@ -37,33 +37,47 @@ forte ou contorno de aprovação. A política não concede autoridade para novos
 destinos, mudança de privacidade, release, deploy, force push ou reescrita de
 histórico; a delegação indisponível deve ser reportada com o bloqueio concreto.
 
-## Instalação por projeto
+## Instalação por projeto e global
 
-O pacote é um payload para instalação em um repositório-alvo. Os instaladores estão incluídos em `scripts/` (Bash, Fish, PowerShell e Python 3.10+):
+O pacote é um payload para instalação tanto em um repositório de projeto quanto globalmente no `$HOME` do usuário. Os instaladores estão incluídos em `scripts/` (Bash, Fish, PowerShell e Python 3.10+):
+- **No projeto (`--target /caminho/projeto`)**: `CLAUDE.md` é copiado para a raiz do repositório e os subagentes para `.claude/agents/`.
+- **Global no `$HOME` (`--global` ou `--target ~`)**: `CLAUDE.md` e os subagentes ficam **dentro** de `~/.claude/` (`~/.claude/CLAUDE.md` e `~/.claude/agents/`), mantendo o `$HOME` limpo.
 
 No Linux/macOS (Bash ou Fish):
 
 ```bash
+# No projeto:
 ./scripts/install.sh --target /caminho/projeto
 ./scripts/install.sh --target /caminho/projeto --apply
+
+# Global ($HOME):
+./scripts/install.sh --global
+./scripts/install.sh --global --apply
 # ou no Fish:
-./scripts/install.fish /caminho/projeto --apply
+./scripts/install.fish --global --apply
 ```
 
 No Windows (PowerShell):
 
 ```powershell
+# No projeto:
 .\scripts\install.ps1 -Target "C:\caminho\projeto"
 .\scripts\install.ps1 -Target "C:\caminho\projeto" -Apply
+
+# Global:
+.\scripts\install.ps1 -Global
+.\scripts\install.ps1 -Global -Apply
 ```
 
 Ou diretamente via Python:
 
 ```bash
 python scripts/install.py --target /caminho/projeto --apply
+# ou global:
+python scripts/install.py --global --apply
 ```
 
-Sem `--apply`, o instalador apenas audita. Com `--apply`, copia `payload/CLAUDE.md` e `payload/.claude/agents/*.md` para o projeto-alvo após mostrar o plano. Ele não deve escrever em `~/.claude/`, nem sobrescrever `CLAUDE.md` ou agentes existentes sem uma estratégia explícita de mesclagem/backup. O Claude Code procura subagentes de projeto em `.claude/agents/`; arquivos nesse local podem ser versionados para que a equipe compartilhe as definições.
+Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e preserva idênticos sem sobrescrever arquivos com conflito.
 
 ## Estrutura
 

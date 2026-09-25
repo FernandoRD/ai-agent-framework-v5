@@ -1,6 +1,6 @@
-6f56a8f23155d973edbe348c5aeefe48abe179d9b61656bcfef3155ef2bac1dd  ./README.md
+11df94cccdbc77a6a54674ee878a1daa3000a5e15c96243073c86ccae0064d4a  ./README.md
 1185f3800da7dc7b31b52f997ecb2f9d93062e1a7036e903f234f6a533c2cd5d  ./VALIDACAO.md
-d11b043659cdb648e96bfd9ae57451866a61efda24705e5ebbf328ff89c1c91e  ./VARIANTES-V5.md
+697760a7f3743ceceb285478aa5a431afab5cd7e3dd1fb6ebc6a73760d25da96  ./VARIANTES-V5.md
 a23a00019419c07c4e92f33e8afd0f85ac5a0d2b9138059c2cdd1d10dce3ec3f  ./VERSION
 b8087510fcac213ffd1673d476abf7ab15b941c8172134729325a2a3c8f34b2e  ./payload/.cursor/agents/luna-explorer.md
 91e6491ccb06840e9a3cbd8979d7c3d3a11242628600692713ce67f5d8d62919  ./payload/.cursor/agents/luna-worker.md
@@ -11,7 +11,7 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
 ea0c7cb5780fd344c58f9da51e8cad331c8be17e0e564f8aa97be226e76929b8  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-037da22518123aa427e5784a4e68459d56840049181702b9690a2f3a4fd4e11a  ./scripts/install.ps1
-97a738dc995bd565657d2609ec2c30277cc5a2928d066b49e7bd42226fb27a2d  ./scripts/install.py
-3a5923f93a1827d1cfe7108cc60f92705b1d31ecce20861830ea11f0cbc3469d  ./scripts/install.sh
-3b9a4c1dbbc6b034ff952828dbc6f72ada966a0bb89999f064a2770fd3ef6186  ./scripts/test_install.py
+592a7b5942e00924772f60808fa25a60a8fdd45f5f2873b842844b0bf18ece17  ./scripts/install.ps1
+50d7cd85df716a600902791e239bb357514abb414cb64c59046b59529b29d778  ./scripts/install.py
+527afb69cf4d72f26e4a148f45402f24f7be61ca0b6695b9034bcc7a587f1f9f  ./scripts/install.sh
+70d04f1207e6ef4ffdb6163358f391d19717e0e1955d65ccad6b0afee73e110e  ./scripts/test_install.py

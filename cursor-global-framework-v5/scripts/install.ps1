@@ -4,25 +4,48 @@ param(
     [Alias("target")]
     [string]$Target,
 
+    [Alias("global", "g")]
+    [switch]$Global,
+
     [Alias("apply")]
     [switch]$Apply
 )
 
 $ErrorActionPreference = "Stop"
 
-if ([string]::IsNullOrWhiteSpace($Target)) {
+if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
     Write-Host "Uso: .\install.ps1 -Target <caminho> [-Apply]"
+    Write-Host "     .\install.ps1 -Global [-Apply]"
     Write-Host "     .\install.ps1 --target <caminho> [--apply]"
+    Write-Host "     .\install.ps1 --global [--apply]"
     exit 1
 }
 
-$targetPath = [IO.Path]::GetFullPath($Target)
+$homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
+$homeFullPath = [IO.Path]::GetFullPath($homeDir)
+
+if ($Global) {
+    $targetPath = if ([string]::IsNullOrWhiteSpace($Target)) { $homeFullPath } else { [IO.Path]::GetFullPath($Target) }
+    $isGlobal = $true
+} else {
+    $targetPath = [IO.Path]::GetFullPath($Target)
+    $isGlobal = ($targetPath.TrimEnd('\', '/') -eq $homeFullPath.TrimEnd('\', '/'))
+}
+
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $payloadDir = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $scriptDir) "payload"))
 
 if (-not (Test-Path -LiteralPath $payloadDir)) {
     Write-Error "Diretório de payload não encontrado em $payloadDir"
     exit 1
+}
+
+$toolDotDir = $null
+foreach ($d in (Get-ChildItem -LiteralPath $payloadDir -Directory)) {
+    if ($d.Name.StartsWith(".")) {
+        $toolDotDir = $d.Name
+        break
+    }
 }
 
 $pending = [System.Collections.Generic.List[object]]::new()
@@ -56,7 +79,11 @@ foreach ($item in ($files | Sort-Object FullName)) {
     }
 
     $relPath = $item.FullName.Substring($payloadDir.Length).TrimStart([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
-    $dest = [IO.Path]::Combine($targetPath, $relPath)
+    if ($isGlobal -and $toolDotDir -and -not $relPath.StartsWith(".")) {
+        $dest = [IO.Path]::Combine($targetPath, $toolDotDir, $relPath)
+    } else {
+        $dest = [IO.Path]::Combine($targetPath, $relPath)
+    }
 
     if (Check-ChainForSymlinks $dest) {
         $errors.Add("Link no destino: $dest")

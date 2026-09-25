@@ -14,28 +14,40 @@ Principal sugerido: Sonnet 5 selecionado no Cursor. Esta escolha e o mapeamento 
 
 ## Instalar
 
-Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+):
+Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`):
 
 No Linux/macOS (Bash ou Fish):
 
 ```sh
+# No projeto:
 ./scripts/install.sh --target /caminho/do/projeto
 ./scripts/install.sh --target /caminho/do/projeto --apply
+
+# Global ($HOME):
+./scripts/install.sh --global
+./scripts/install.sh --global --apply
 # ou no Fish:
-./scripts/install.fish /caminho/do/projeto --apply
+./scripts/install.fish --global --apply
 ```
 
 No Windows (PowerShell):
 
 ```powershell
+# No projeto:
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto"
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+
+# Global:
+.\scripts\install.ps1 -Global
+.\scripts\install.ps1 -Global -Apply
 ```
 
 Ou diretamente via Python:
 
 ```sh
 python scripts/install.py --target /caminho/do/projeto --apply
+# ou global:
+python scripts/install.py --global --apply
 ```
 
 O primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.

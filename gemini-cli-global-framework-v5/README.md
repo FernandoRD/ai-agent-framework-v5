@@ -4,10 +4,7 @@ Variante da política v5 para projetos usados com o Gemini CLI. O pacote é um
 payload de instalação: contém apenas os arquivos que devem chegar ao projeto.
 Inclui instalador Python por projeto e testes offline. O exemplo de settings fica separado para mesclagem manual.
 
-Apesar do nome de origem, esta distribuição é somente por projeto. Ela não
-migra nem altera `~/.gemini/GEMINI.md`, `~/.gemini/settings.json`, políticas
-globais, hooks ou Skills existentes. Também não instala hooks e não tenta
-converter configurações de outros assistentes.
+Esta distribuição suporta tanto instalação por projeto (`--target <projeto>`) quanto instalação global no `$HOME` do usuário (`--global` ou `--target ~`). Ela não altera configurações pessoais alheias, hooks ou Skills existentes de outros assistentes.
 
 ## Modelo de roteamento
 
@@ -36,8 +33,10 @@ Em ambientes Google (Gemini CLI e Google Antigravity), o relatório final e a ta
 
 ## Conteúdo e destino
 
-O instalador comum deve copiar, em modo de aplicação, o conteúdo de
-`payload/` para a raiz do projeto alvo:
+O instalador suporta dois destinos:
+
+### 1. No projeto (`--target /caminho/do/projeto`):
+O arquivo `GEMINI.md` é copiado para a raiz do projeto e os subagentes para a pasta oculta `.gemini/agents/`:
 
 ```text
 <pasta-do-projeto>/
@@ -51,6 +50,18 @@ O instalador comum deve copiar, em modo de aplicação, o conteúdo de
         ├── pro-specialist.md
         ├── pro-risk-reviewer.md
         └── pro-critical.md
+```
+
+### 2. Global no `$HOME` (`--global` ou `--target ~`):
+Tudo fica guardado **dentro** de `~/.gemini/`, evitando arquivos soltos no diretório pessoal:
+
+```text
+~/.gemini/
+├── GEMINI.md
+└── agents/
+    ├── flash-explorer.md
+    ├── flash-worker.md
+    ├── ...
 ```
 
 O arquivo `settings.example.json` permanece fora de `payload/`. Ele é um

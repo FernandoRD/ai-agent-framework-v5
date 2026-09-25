@@ -73,25 +73,31 @@ Se a delegação estiver indisponível, o agente registra o bloqueio e usa somen
 
 ## Pacotes e instalação
 
-O pacote Codex é global e específico do Codex. Os scripts de instalação fazem auditoria, backup do estado afetado e atualização controlada dos blocos marcados da v5; também tratam resíduos de v3/v4. A validação estática usa Python 3.11+ por importar `tomllib`.
+O pacote Codex oferece instalação global (padrão em `~/.codex/` e `~/.agents/skills/`) e também suporte a instalação por projeto (`--target "/caminho/do/projeto"`), gravando o `AGENTS.md` na raiz do projeto sem alterar configurações globais. Os scripts de instalação fazem auditoria, backup do estado afetado e atualização controlada dos blocos marcados da v5; também tratam resíduos de v3/v4. A validação estática usa Python 3.11+ por importar `tomllib`.
 
 ```bash
 cd codex-global-framework-v5
 ./scripts/install.sh --audit-only
 ./scripts/install.sh
+# ou para um projeto: ./scripts/install.sh --target "/caminho/do/projeto"
+./scripts/diagnose.sh
 python3 scripts/validate.py
 ```
 
-Claude Code, Gemini CLI e Cursor são payloads por projeto. Cada um possui instaladores em Shell Script (`scripts/install.sh`, `scripts/install.fish`), PowerShell (`scripts/install.ps1`) e Python (`scripts/install.py`): sem `--apply` / `-Apply`, apenas listam arquivos pendentes; com `--apply` / `-Apply`, criam arquivos novos com criação exclusiva, preservam arquivos idênticos e recusam conflitos, links simbólicos e pais inválidos. Requerem Python 3.10+ no Linux/macOS ou PowerShell nativo no Windows.
+Claude Code, Gemini CLI e Cursor oferecem suporte tanto a instalação por projeto (`--target "/caminho/do/projeto"`) quanto global (`--global` ou `--target ~`). Cada um possui instaladores em Shell Script (`scripts/install.sh`, `scripts/install.fish`), PowerShell (`scripts/install.ps1`) e Python (`scripts/install.py`): sem `--apply` / `-Apply`, apenas listam arquivos pendentes; com `--apply` / `-Apply`, criam arquivos novos com criação exclusiva, preservam arquivos idênticos e recusam conflitos, links simbólicos e pais inválidos:
+- No projeto, o arquivo de instruções (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) é gerado na raiz do repositório.
+- No global (`$HOME`), o arquivo de instruções é gerado **dentro** da respectiva pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), evitando poluir o `$HOME`.
 
 ```bash
-cd cursor-global-framework-v5  # substitua pela variante desejada
-./scripts/install.sh --target "/caminho/do/projeto"
+cd gemini-cli-global-framework-v5  # ou claude-code-global-framework-v5, cursor-global-framework-v5
+# No projeto:
 ./scripts/install.sh --target "/caminho/do/projeto" --apply
+# Global ($HOME):
+./scripts/install.sh --global --apply
 python3 scripts/test_install.py
 ```
 
-O instalador por projeto não é uma transação de múltiplos arquivos: uma falha de I/O pode deixar parte dos novos arquivos criada. Como não sobrescreve arquivos existentes, uma nova execução após resolver a falha completa apenas os faltantes. Atualizações com conflito devem ser comparadas e mescladas manualmente.
+O instalador não é uma transação de múltiplos arquivos: uma falha de I/O pode deixar parte dos novos arquivos criada. Como não sobrescreve arquivos existentes, uma nova execução após resolver a falha completa apenas os faltantes. Atualizações com conflito devem ser comparadas e mescladas manualmente.
 
 ## Mapeamento por plataforma
 

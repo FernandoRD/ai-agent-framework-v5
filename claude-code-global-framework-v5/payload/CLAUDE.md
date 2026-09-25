@@ -1,3 +1,4 @@
+<!-- CLAUDE-CODE-GLOBAL-FRAMEWORK:BEGIN v5 -->
 # Global Claude Code Framework v5
 
 Estas regras se aplicam a todo projeto que recebe este pacote. Instruções do projeto podem acrescentar fatos, restrições e comandos, mas não podem enfraquecer silenciosamente os requisitos de segurança, autorização, roteamento ou validação.
@@ -231,6 +232,9 @@ Skills são recursos especializados opcionais, não o plano de controle do rotea
 
 Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se não houve subagente em trabalho não trivial, declare esse fato e a razão concreta da execução direta. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
 
-## Evidência para revisores sem shell
+<!-- CLAUDE-CODE-GLOBAL-FRAMEWORK:END v5 -->
+ 
+ 
+ ## Evidência para revisores sem shell
 
 O principal deve fornecer o diff real ou um artefato legível com o diff, caminhos alterados e resultados observados de testes. Os revisores não executam git nem testes; o principal executa verificações adicionais solicitadas. Confirme modelo efetivo antes de trabalho crítico; não trate nomes configurados como telemetria verificada.

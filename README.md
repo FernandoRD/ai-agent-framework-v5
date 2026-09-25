@@ -37,15 +37,24 @@ Há instaladores equivalentes para PowerShell, Fish e WSL dentro de `scripts/`. 
 
 ### Claude Code, Gemini CLI (Antigravity) e Cursor
 
-As três variantes usam instalador conservador por projeto com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish), PowerShell (`.ps1` para Windows) e Python (`.py`). A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico.
+As três variantes usam instalador conservador com suporte a escopo por projeto ou global (`$HOME`), com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish), PowerShell (`.ps1` para Windows) e Python (`.py`). A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico:
+- **No projeto (`--target "/caminho/do/projeto"`)**: o arquivo de instruções (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) é gerado na raiz do repositório, e os subagentes na pasta oculta (`.claude/agents/`, `.gemini/agents/`, `.cursor/`).
+- **No Home / Global (`--global` ou `--target ~`)**: o arquivo de instruções fica **dentro** da pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), evitando poluir a raiz do diretório pessoal.
 
 No Linux/macOS (Bash ou Fish):
 
 ```bash
 cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-global-framework-v5
+
+# Para instalar em um projeto:
 ./scripts/install.sh --target "/caminho/do/projeto"
 ./scripts/install.sh --target "/caminho/do/projeto" --apply
-# ou no Fish: ./scripts/install.fish "/caminho/do/projeto" --apply
+
+# Para instalar globalmente no seu $HOME:
+./scripts/install.sh --global
+./scripts/install.sh --global --apply
+
+# ou no Fish: ./scripts/install.fish --global --apply
 python3 scripts/test_install.py
 ```
 
@@ -53,11 +62,17 @@ No Windows (PowerShell):
 
 ```powershell
 cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-global-framework-v5
+
+# Para instalar em um projeto:
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto"
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
+
+# Para instalar globalmente:
+.\scripts\install.ps1 -Global
+.\scripts\install.ps1 -Global -Apply
 ```
 
-Ou diretamente via Python (`python3` no Linux ou `py -3` no Windows): `python3 scripts/install.py --target "/caminho/do/projeto" --apply`. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
+Ou diretamente via Python (`python3` no Linux ou `py -3` no Windows): `python3 scripts/install.py --target "/caminho/do/projeto" --apply` ou `python3 scripts/install.py --global --apply`. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
 
 ## Limites
 

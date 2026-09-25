@@ -1,17 +1,75 @@
 [CmdletBinding()]
 param(
-    [string]$CodexHome = $(if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }),
-    [string]$SkillsHome = $(Join-Path $env:USERPROFILE ".agents\skills"),
+    [Parameter(Position=0, Mandatory=$false)]
+    [Alias("target")]
+    [string]$Target,
+
+    [Alias("global", "g")]
+    [switch]$Global,
+
+    [string]$CodexHome,
+    [string]$SkillsHome,
     [switch]$NoHook,
-    [switch]$AuditOnly
+    [switch]$AuditOnly,
+    [Alias("apply")]
+    [switch]$Apply
 )
 
 $ErrorActionPreference = "Stop"
 $packageDir = Split-Path -Parent $PSScriptRoot
+
+$homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
+$homeFullPath = [IO.Path]::GetFullPath($homeDir)
+
+$isProject = $false
+if (-not [string]::IsNullOrWhiteSpace($Target)) {
+    $targetPath = [IO.Path]::GetFullPath($Target)
+    if (-not $Global -and ($targetPath.TrimEnd('\', '/') -ne $homeFullPath.TrimEnd('\', '/'))) {
+        $isProject = $true
+    }
+}
+
+if ($isProject) {
+    if (-not (Test-Path -LiteralPath $targetPath -PathType Container)) {
+        throw "Target directory does not exist or is not a directory: $targetPath"
+    }
+    $agentsFile = Join-Path $targetPath "AGENTS.md"
+    Write-Host "Codex Framework v5 project preflight"
+    Write-Host "Project target: $targetPath"
+    Write-Host "Agents file: $agentsFile"
+    if (Test-Path -LiteralPath $agentsFile) {
+        $text = [IO.File]::ReadAllText($agentsFile)
+        if ($text -match 'CODEX-GLOBAL-FRAMEWORK:BEGIN') {
+            Write-Host "- legacy/existing AGENTS: replace marked framework block"
+        } else {
+            Write-Host "- existing AGENTS: append framework block preserving personal text"
+        }
+    } else {
+        Write-Host "- new AGENTS: create AGENTS.md with framework block"
+    }
+    if ($AuditOnly) {
+        Write-Host "Audit-only mode: no files changed."
+        exit 0
+    }
+    $existing = if (Test-Path -LiteralPath $agentsFile) { [IO.File]::ReadAllText($agentsFile) } else { "" }
+    $personal = [regex]::Replace($existing, '(?s)<!-- CODEX-GLOBAL-FRAMEWORK:BEGIN.*?<!-- CODEX-GLOBAL-FRAMEWORK:END.*?-->\s*', '').Trim()
+    $packageAgents = Join-Path $packageDir ".codex\AGENTS.md"
+    $block = [IO.File]::ReadAllText($packageAgents).Trim()
+    $finalContent = if ($personal) { "$personal`n`n$block`n" } else { "$block`n" }
+    [IO.File]::WriteAllText($agentsFile, $finalContent, [System.Text.Encoding]::UTF8)
+    Write-Host "`nCodex Framework v5 installed for project: $targetPath"
+    exit 0
+}
+
+if ([string]::IsNullOrWhiteSpace($CodexHome)) {
+    $CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $homeFullPath ".codex" }
+}
+if ([string]::IsNullOrWhiteSpace($SkillsHome)) {
+    $SkillsHome = Join-Path $homeFullPath ".agents\skills"
+}
 $fullCodexHome = [IO.Path]::GetFullPath($CodexHome)
 $fullSkillsHome = [IO.Path]::GetFullPath($SkillsHome)
-if ([string]::IsNullOrWhiteSpace($fullCodexHome) -or [string]::IsNullOrWhiteSpace($fullSkillsHome) -or
-    $fullCodexHome -eq [IO.Path]::GetPathRoot($fullCodexHome) -or $fullSkillsHome -eq [IO.Path]::GetPathRoot($fullSkillsHome)) {
+if ($fullCodexHome -eq [IO.Path]::GetPathRoot($fullCodexHome) -or $fullSkillsHome -eq [IO.Path]::GetPathRoot($fullSkillsHome)) {
     throw "Refusing unsafe target path."
 }
 

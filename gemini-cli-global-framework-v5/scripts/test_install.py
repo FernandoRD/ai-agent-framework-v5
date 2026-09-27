@@ -45,6 +45,20 @@ class InstallerTests(unittest.TestCase):
             self.assertEqual(specialist.read_bytes(), (GRAFANA_PAYLOAD / '.gemini' / 'skills' / 'grafana-specialist' / 'SKILL.md').read_bytes())
             self.assertFalse(native_agent.exists(), 'specialist must not install a model-pinned native agent')
 
+    def test_with_all_specialists(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project_all'
+            res = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-all-specialists', '--apply'], capture_output=True, text=True)
+            self.assertEqual(res.returncode, 0)
+            specs = [
+                "zabbix-specialist", "grafana-specialist", "ansible-specialist",
+                "loki-specialist", "prometheus-specialist", "netops-specialist",
+                "sre-incident-specialist", "database-tuning-specialist"
+            ]
+            for s in specs:
+                skill_file = target / '.gemini' / 'skills' / s / 'SKILL.md'
+                self.assertTrue(skill_file.exists(), f"Skill {s} missing with --with-all-specialists")
+
     def test_install_preserves_existing_data(self):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / 'project'

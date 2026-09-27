@@ -15,8 +15,27 @@ SKILLS_HOME="${SKILLS_HOME:-$HOME_DIR/.agents/skills}"
 NO_HOOK=false
 AUDIT_ONLY=false
 APPLY=false
-WITH_ZABBIX=false
-WITH_GRAFANA=false
+OPTIONAL_SPECS=()
+ALL_KNOWN_SPECS=(
+    "zabbix-specialist"
+    "grafana-specialist"
+    "ansible-specialist"
+    "loki-specialist"
+    "prometheus-specialist"
+    "netops-specialist"
+    "sre-incident-specialist"
+    "database-tuning-specialist"
+)
+
+add_specialist() {
+    local spec="$1"
+    if [ "${#OPTIONAL_SPECS[@]}" -gt 0 ]; then
+        for s in "${OPTIONAL_SPECS[@]}"; do
+            if [ "$s" = "$spec" ]; then return 0; fi
+        done
+    fi
+    OPTIONAL_SPECS+=("$spec")
+}
 
 usage() {
     echo "Uso: $0 [--target <dir>] [--global] [--apply] [--audit-only] [--no-hook]" >&2
@@ -62,11 +81,41 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         --with-zabbix-specialist)
-            WITH_ZABBIX=true
+            add_specialist "zabbix-specialist"
             shift
             ;;
         --with-grafana-specialist)
-            WITH_GRAFANA=true
+            add_specialist "grafana-specialist"
+            shift
+            ;;
+        --with-ansible-specialist)
+            add_specialist "ansible-specialist"
+            shift
+            ;;
+        --with-loki-specialist)
+            add_specialist "loki-specialist"
+            shift
+            ;;
+        --with-prometheus-specialist)
+            add_specialist "prometheus-specialist"
+            shift
+            ;;
+        --with-netops-specialist)
+            add_specialist "netops-specialist"
+            shift
+            ;;
+        --with-sre-specialist|--with-sre-incident-specialist)
+            add_specialist "sre-incident-specialist"
+            shift
+            ;;
+        --with-db-tuning-specialist|--with-database-tuning-specialist)
+            add_specialist "database-tuning-specialist"
+            shift
+            ;;
+        --with-all-specialists)
+            for s in "${ALL_KNOWN_SPECS[@]}"; do
+                add_specialist "$s"
+            done
             shift
             ;;
         -*)
@@ -232,13 +281,14 @@ if [ "$IS_PROJECT" = true ]; then
         printf "%s\n" "$package_block" > "$agents_file"
     fi
 
-    if [ "$WITH_ZABBIX" = true ]; then
-        zcount="$(install_optional_files "$PACKAGE_DIR/optional/zabbix-specialist" "$TARGET")"
-        echo "Optional Zabbix Specialist installed: $zcount file(s)."
-    fi
-    if [ "$WITH_GRAFANA" = true ]; then
-        gcount="$(install_optional_files "$PACKAGE_DIR/optional/grafana-specialist" "$TARGET")"
-        echo "Optional Grafana Specialist installed: $gcount file(s)."
+    if [ "${#OPTIONAL_SPECS[@]}" -gt 0 ]; then
+        for spec in "${OPTIONAL_SPECS[@]}"; do
+            spec_src="$PACKAGE_DIR/optional/$spec"
+            if [ -d "$spec_src" ]; then
+                scount="$(install_optional_files "$spec_src" "$TARGET")"
+                echo "Optional $spec installed: $scount file(s)."
+            fi
+        done
     fi
     echo -e "\nCodex Framework v5 installed for project: $TARGET"
     exit 0
@@ -439,13 +489,14 @@ for name in "${CURRENT_SKILLS[@]}"; do
 done
 
 # Install optional specialists
-if [ "$WITH_ZABBIX" = true ]; then
-    zcount="$(install_optional_files "$PACKAGE_DIR/optional/zabbix-specialist/.agents/skills/zabbix-specialist" "$SKILLS_HOME/zabbix-specialist")"
-    echo "Optional Zabbix Specialist installed: $zcount file(s)."
-fi
-if [ "$WITH_GRAFANA" = true ]; then
-    gcount="$(install_optional_files "$PACKAGE_DIR/optional/grafana-specialist/.agents/skills/grafana-specialist" "$SKILLS_HOME/grafana-specialist")"
-    echo "Optional Grafana Specialist installed: $gcount file(s)."
+if [ "${#OPTIONAL_SPECS[@]}" -gt 0 ]; then
+    for spec in "${OPTIONAL_SPECS[@]}"; do
+        spec_src="$PACKAGE_DIR/optional/$spec/.agents/skills/$spec"
+        if [ -d "$spec_src" ]; then
+            scount="$(install_optional_files "$spec_src" "$SKILLS_HOME/$spec")"
+            echo "Optional $spec installed: $scount file(s)."
+        fi
+    done
 fi
 
 # Update AGENTS.md

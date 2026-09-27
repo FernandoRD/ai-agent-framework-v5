@@ -134,6 +134,20 @@ Ative a extensão com `--with-grafana-specialist` (ou `-WithGrafanaSpecialist` n
 PowerShell). Assim como no Zabbix Specialist, a skill é executada pelo agente
 de capacidade escolhido pelo roteador v5 e não instala agentes de modelo fixo.
 
+### Especialistas de domínio adicionais e `--with-all-specialists`
+
+Os quatro pacotes disponibilizam um catálogo modular de 8 especialistas técnicos opt-in:
+- `zabbix-specialist`: monitoramento Zabbix, templates, LLD, proxies, API, HA e coletor RAG.
+- `grafana-specialist`: Grafana 12, HTML Graphics plugin, dashboards e automação API.
+- `ansible-specialist`: playbooks, roles, dynamic inventory, idempotência e Ansible Vault.
+- `loki-specialist`: agregação e consulta de logs em escala, LogQL, Promtail/Alloy e chunks.
+- `prometheus-specialist`: monitoramento métrico, PromQL avançado, exporters e Alertmanager.
+- `netops-specialist`: topologia de rede, BGP/OSPF, VLANs, firewalling e análise de pacotes.
+- `sre-incident-specialist`: runbooks de crise, gestão de incidentes, RCA e SLOs/error budgets.
+- `database-tuning-specialist`: tuning de banco de dados, queries, índices e mitigação de locks.
+
+Cada especialista possui sua respectiva flag `--with-<nome>-specialist` (Bash) e `-With<Nome>Specialist` (PowerShell). Para instalar todos os especialistas disponíveis simultaneamente, utilize a flag agregadora `--with-all-specialists` (Bash) ou `-WithAllSpecialists` (PowerShell).
+
 ### Alimentação RAG opcional (Zabbix)
 
 O Zabbix Specialist inclui uma CLI local de ingestão (`rag_ingest.py`) para

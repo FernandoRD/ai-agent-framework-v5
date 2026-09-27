@@ -7,13 +7,33 @@ set -euo pipefail
 TARGET=""
 IS_GLOBAL=false
 APPLY=false
-WITH_ZABBIX=false
-WITH_GRAFANA=false
+OPTIONAL_SPECS=()
+ALL_KNOWN_SPECS=(
+    "zabbix-specialist"
+    "grafana-specialist"
+    "ansible-specialist"
+    "loki-specialist"
+    "prometheus-specialist"
+    "netops-specialist"
+    "sre-incident-specialist"
+    "database-tuning-specialist"
+)
+
+add_specialist() {
+    local spec="$1"
+    if [ "${#OPTIONAL_SPECS[@]}" -gt 0 ]; then
+        for s in "${OPTIONAL_SPECS[@]}"; do
+            if [ "$s" = "$spec" ]; then return 0; fi
+        done
+    fi
+    OPTIONAL_SPECS+=("$spec")
+}
 
 usage() {
-    echo "Uso: $0 --target <caminho> [--apply] [--with-zabbix-specialist] [--with-grafana-specialist]" >&2
-    echo "     $0 --global [--apply] [--with-zabbix-specialist] [--with-grafana-specialist]" >&2
-    echo "     $0 <caminho> [--apply] [--with-zabbix-specialist] [--with-grafana-specialist]" >&2
+    echo "Uso: $0 --target <caminho> [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
+    echo "     $0 --global [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
+    echo "     $0 <caminho> [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
+    echo "Especialistas disponíveis: ${ALL_KNOWN_SPECS[*]}" >&2
     exit 1
 }
 
@@ -38,11 +58,41 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         --with-zabbix-specialist)
-            WITH_ZABBIX=true
+            add_specialist "zabbix-specialist"
             shift
             ;;
         --with-grafana-specialist)
-            WITH_GRAFANA=true
+            add_specialist "grafana-specialist"
+            shift
+            ;;
+        --with-ansible-specialist)
+            add_specialist "ansible-specialist"
+            shift
+            ;;
+        --with-loki-specialist)
+            add_specialist "loki-specialist"
+            shift
+            ;;
+        --with-prometheus-specialist)
+            add_specialist "prometheus-specialist"
+            shift
+            ;;
+        --with-netops-specialist)
+            add_specialist "netops-specialist"
+            shift
+            ;;
+        --with-sre-specialist|--with-sre-incident-specialist)
+            add_specialist "sre-incident-specialist"
+            shift
+            ;;
+        --with-db-tuning-specialist|--with-database-tuning-specialist)
+            add_specialist "database-tuning-specialist"
+            shift
+            ;;
+        --with-all-specialists)
+            for s in "${ALL_KNOWN_SPECS[@]}"; do
+                add_specialist "$s"
+            done
             shift
             ;;
         -*)
@@ -97,15 +147,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 PACKAGE_DIR="$(cd "$SCRIPT_DIR/.." && pwd -P)"
 
 PAYLOAD_DIRS=("$PACKAGE_DIR/payload")
-if [ "$WITH_ZABBIX" = true ]; then
-    zabbix_payload="$PACKAGE_DIR/optional/zabbix-specialist/payload"
-    [ -d "$zabbix_payload" ] || { echo "Pacote opcional não encontrado: $zabbix_payload" >&2; exit 1; }
-    PAYLOAD_DIRS+=("$zabbix_payload")
-fi
-if [ "$WITH_GRAFANA" = true ]; then
-    grafana_payload="$PACKAGE_DIR/optional/grafana-specialist/payload"
-    [ -d "$grafana_payload" ] || { echo "Pacote opcional não encontrado: $grafana_payload" >&2; exit 1; }
-    PAYLOAD_DIRS+=("$grafana_payload")
+if [ "${#OPTIONAL_SPECS[@]}" -gt 0 ]; then
+    for spec in "${OPTIONAL_SPECS[@]}"; do
+        opt_payload="$PACKAGE_DIR/optional/$spec/payload"
+        [ -d "$opt_payload" ] || { echo "Pacote opcional não encontrado: $opt_payload" >&2; exit 1; }
+        PAYLOAD_DIRS+=("$opt_payload")
+    done
 fi
 
 # Discover tool dot-directory in primary payload (e.g. .gemini, .claude, .cursor)

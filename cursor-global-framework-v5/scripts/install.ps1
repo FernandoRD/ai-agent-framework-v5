@@ -14,7 +14,28 @@ param(
     [switch]$WithZabbixSpecialist,
 
     [Alias("with-grafana-specialist")]
-    [switch]$WithGrafanaSpecialist
+    [switch]$WithGrafanaSpecialist,
+
+    [Alias("with-ansible-specialist")]
+    [switch]$WithAnsibleSpecialist,
+
+    [Alias("with-loki-specialist")]
+    [switch]$WithLokiSpecialist,
+
+    [Alias("with-prometheus-specialist")]
+    [switch]$WithPrometheusSpecialist,
+
+    [Alias("with-netops-specialist")]
+    [switch]$WithNetopsSpecialist,
+
+    [Alias("with-sre-specialist", "with-sre-incident-specialist")]
+    [switch]$WithSreSpecialist,
+
+    [Alias("with-db-tuning-specialist", "with-database-tuning-specialist")]
+    [switch]$WithDbTuningSpecialist,
+
+    [Alias("with-all-specialists")]
+    [switch]$WithAllSpecialists
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,19 +62,25 @@ if ($Global) {
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $payloadDir = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $scriptDir) "payload"))
 $payloadDirs = @($payloadDir)
-if ($WithZabbixSpecialist) {
-    $optionalPayload = Join-Path (Split-Path -Parent $scriptDir) "optional\zabbix-specialist\payload"
-    if (-not (Test-Path -LiteralPath $optionalPayload -PathType Container)) {
-        throw "Pacote opcional não encontrado em $optionalPayload"
+$knownSpecialists = @(
+    @{ Name = "zabbix-specialist"; Enabled = ($WithZabbixSpecialist -or $WithAllSpecialists) }
+    @{ Name = "grafana-specialist"; Enabled = ($WithGrafanaSpecialist -or $WithAllSpecialists) }
+    @{ Name = "ansible-specialist"; Enabled = ($WithAnsibleSpecialist -or $WithAllSpecialists) }
+    @{ Name = "loki-specialist"; Enabled = ($WithLokiSpecialist -or $WithAllSpecialists) }
+    @{ Name = "prometheus-specialist"; Enabled = ($WithPrometheusSpecialist -or $WithAllSpecialists) }
+    @{ Name = "netops-specialist"; Enabled = ($WithNetopsSpecialist -or $WithAllSpecialists) }
+    @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
+    @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
+)
+
+foreach ($spec in $knownSpecialists) {
+    if ($spec.Enabled) {
+        $opt = Join-Path (Split-Path -Parent $scriptDir) ("optional\" + $spec.Name + "\payload")
+        if (-not (Test-Path -LiteralPath $opt -PathType Container)) {
+            throw "Pacote opcional não encontrado em $opt"
+        }
+        $payloadDirs += [IO.Path]::GetFullPath($opt)
     }
-    $payloadDirs += [IO.Path]::GetFullPath($optionalPayload)
-}
-if ($WithGrafanaSpecialist) {
-    $optionalPayload = Join-Path (Split-Path -Parent $scriptDir) "optional\grafana-specialist\payload"
-    if (-not (Test-Path -LiteralPath $optionalPayload -PathType Container)) {
-        throw "Pacote opcional não encontrado em $optionalPayload"
-    }
-    $payloadDirs += [IO.Path]::GetFullPath($optionalPayload)
 }
 
 if (-not (Test-Path -LiteralPath $payloadDir)) {

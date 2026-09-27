@@ -19,33 +19,30 @@ Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transp
 
 ## Extensões opcionais
 
-Os especialistas de domínio (**Zabbix Specialist** e **Grafana Specialist**) são
-distribuídos em todos os quatro pacotes como skills opcionais, mas não fazem parte
-da instalação padrão nem alteram os sete papéis do framework. Eles adicionam
-instruções de domínio, módulos técnicos especializados, bases de conhecimento locais
-e cenários de avaliação. O roteamento de capacidade continua sendo decidido pela
-política v5; o especialista não escolhe nem reduz o nível do modelo.
+Os 8 especialistas de domínio são distribuídos em todos os quatro pacotes como skills opcionais, não fazendo parte da instalação padrão nem alterando os papéis centrais do framework:
 
-O **Grafana Specialist** prioriza o Grafana 12, desenvolvimento avançado no plugin
-HTML Graphics (ciclo `onInit`/`onRender`, SVG e manipulação de DataFrames sem memory
-leaks), boas práticas de design UI/UX de dashboards e automação segura via API.
+1. **Zabbix Specialist**: automação Zabbix, templates, LLD, proxies, API, HA e coletor RAG opcional.
+2. **Grafana Specialist**: foco em Grafana 12, desenvolvimento avançado em HTML Graphics (`gapit-htmlgraphics-panel`), UI/UX de NOC/dashboards e automação via API.
+3. **Ansible Specialist**: automação de infraestrutura, playbooks modulares, roles, dynamic inventory, idempotência e Ansible Vault.
+4. **Loki Specialist**: agregação e consulta de logs em escala, LogQL, Promtail/Alloy, otimização de labels e retenção em chunks.
+5. **Prometheus Specialist**: monitoramento e observabilidade métrica, PromQL avançado, exporters, Alertmanager e controle de cardinalidade.
+6. **NetOps Specialist**: engenharia de redes, topologia, BGP/OSPF, VLANs, firewalling, VPNs e análise de tráfego/pacotes.
+7. **SRE Incident Specialist**: resposta e gestão de incidentes, runbooks de crise, post-mortems estruturados (RCA), SLOs/SLIs e error budgets.
+8. **Database Tuning Specialist**: otimização de bancos relacionais e analíticos, tuning de queries/índices, pool de conexões e mitigação de locks/deadlocks.
 
 Instale-os somente quando o projeto precisar:
 
 ```bash
 # Codex (global ou por projeto)
-./scripts/install.sh --with-zabbix-specialist
 ./scripts/install.sh --with-grafana-specialist
-./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist
+./scripts/install.sh --with-all-specialists
 
 # Claude Code, Gemini CLI ou Cursor (inclua --apply para escrever)
-./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
-./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-ansible-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 ```
 
-Os instaladores Python aceitam as mesmas opções. No PowerShell, use
-`-WithZabbixSpecialist` e/ou `-WithGrafanaSpecialist`; nas variantes por projeto,
-combine com `-Apply`. Sem essas opções, o conteúdo dos especialistas não é instalado.
+No PowerShell, use os parâmetros correspondentes (`-WithAnsibleSpecialist`, `-WithGrafanaSpecialist`, etc.) ou `-WithAllSpecialists`. Nas variantes por projeto, combine com `-Apply`. Sem essas opções, o conteúdo dos especialistas não é instalado.
 
 O Zabbix Specialist inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
 dentro da skill, recebe configuração JSON criada pelo usuário e grava dados

@@ -71,18 +71,20 @@ No Windows (PowerShell):
 
 Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e preserva idênticos sem sobrescrever arquivos com conflito.
 
-### Especialistas opcionais (Zabbix e Grafana)
+### Especialistas opcionais
 
-Os especialistas (`zabbix-specialist` e `grafana-specialist`) não são instalados
-por padrão e não alteram os sete agentes ou o roteamento Haiku/Sonnet/Opus. Para
-incluir a skill, conhecimento e evals de domínio, acrescente a opção explícita:
+Os 8 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`
+e `database-tuning-specialist`) não são instalados por padrão e não alteram os sete
+agentes ou o roteamento Haiku/Sonnet/Opus. Para incluir a skill, conhecimento e
+evals de domínio, acrescente a opção explícita:
 
 ```bash
-./scripts/install.sh --target /caminho/projeto --with-zabbix-specialist --apply
-./scripts/install.sh --target /caminho/projeto --with-grafana-specialist --apply
+./scripts/install.sh --target /caminho/projeto --with-ansible-specialist --apply
+./scripts/install.sh --target /caminho/projeto --with-all-specialists --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist -Apply` ou `-WithGrafanaSpecialist -Apply`.
+No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 ## Estrutura

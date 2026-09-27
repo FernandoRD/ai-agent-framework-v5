@@ -18,7 +18,28 @@ param(
     [switch]$WithZabbixSpecialist,
 
     [Alias("with-grafana-specialist")]
-    [switch]$WithGrafanaSpecialist
+    [switch]$WithGrafanaSpecialist,
+
+    [Alias("with-ansible-specialist")]
+    [switch]$WithAnsibleSpecialist,
+
+    [Alias("with-loki-specialist")]
+    [switch]$WithLokiSpecialist,
+
+    [Alias("with-prometheus-specialist")]
+    [switch]$WithPrometheusSpecialist,
+
+    [Alias("with-netops-specialist")]
+    [switch]$WithNetopsSpecialist,
+
+    [Alias("with-sre-specialist", "with-sre-incident-specialist")]
+    [switch]$WithSreSpecialist,
+
+    [Alias("with-db-tuning-specialist", "with-database-tuning-specialist")]
+    [switch]$WithDbTuningSpecialist,
+
+    [Alias("with-all-specialists")]
+    [switch]$WithAllSpecialists
 )
 
 $ErrorActionPreference = "Stop"
@@ -99,11 +120,23 @@ if ($isProject) {
         Write-Host "- new AGENTS: create AGENTS.md with framework block"
     }
     $optionalPlan = @()
-    if ($WithZabbixSpecialist) {
-        $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist") $targetPath
-    }
-    if ($WithGrafanaSpecialist) {
-        $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\grafana-specialist") $targetPath
+    $allSpecs = @(
+        @{ Name = "zabbix-specialist"; Enabled = ($WithZabbixSpecialist -or $WithAllSpecialists) }
+        @{ Name = "grafana-specialist"; Enabled = ($WithGrafanaSpecialist -or $WithAllSpecialists) }
+        @{ Name = "ansible-specialist"; Enabled = ($WithAnsibleSpecialist -or $WithAllSpecialists) }
+        @{ Name = "loki-specialist"; Enabled = ($WithLokiSpecialist -or $WithAllSpecialists) }
+        @{ Name = "prometheus-specialist"; Enabled = ($WithPrometheusSpecialist -or $WithAllSpecialists) }
+        @{ Name = "netops-specialist"; Enabled = ($WithNetopsSpecialist -or $WithAllSpecialists) }
+        @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
+        @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
+    )
+    foreach ($spec in $allSpecs) {
+        if ($spec.Enabled) {
+            $optSrc = Join-Path $packageDir ("optional\" + $spec.Name)
+            if (Test-Path -LiteralPath $optSrc -PathType Container) {
+                $optionalPlan += Get-OptionalInstallPlan $optSrc $targetPath
+            }
+        }
     }
     if ($AuditOnly) {
         Write-Host "Audit-only mode: no files changed."
@@ -135,11 +168,26 @@ if ($fullCodexHome -eq [IO.Path]::GetPathRoot($fullCodexHome) -or $fullSkillsHom
     throw "Refusing unsafe target path."
 }
 $optionalPlan = @()
-if ($WithZabbixSpecialist) {
-    $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist\.agents\skills\zabbix-specialist") (Join-Path $fullSkillsHome "zabbix-specialist")
-}
-if ($WithGrafanaSpecialist) {
-    $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\grafana-specialist\.agents\skills\grafana-specialist") (Join-Path $fullSkillsHome "grafana-specialist")
+if (-not $isProject) {
+    $allSpecs = @(
+        @{ Name = "zabbix-specialist"; Enabled = ($WithZabbixSpecialist -or $WithAllSpecialists) }
+        @{ Name = "grafana-specialist"; Enabled = ($WithGrafanaSpecialist -or $WithAllSpecialists) }
+        @{ Name = "ansible-specialist"; Enabled = ($WithAnsibleSpecialist -or $WithAllSpecialists) }
+        @{ Name = "loki-specialist"; Enabled = ($WithLokiSpecialist -or $WithAllSpecialists) }
+        @{ Name = "prometheus-specialist"; Enabled = ($WithPrometheusSpecialist -or $WithAllSpecialists) }
+        @{ Name = "netops-specialist"; Enabled = ($WithNetopsSpecialist -or $WithAllSpecialists) }
+        @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
+        @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
+    )
+    foreach ($spec in $allSpecs) {
+        if ($spec.Enabled) {
+            $optSrc = Join-Path $packageDir ("optional\" + $spec.Name + "\.agents\skills\" + $spec.Name)
+            $optDest = Join-Path $fullSkillsHome $spec.Name
+            if (Test-Path -LiteralPath $optSrc -PathType Container) {
+                $optionalPlan += Get-OptionalInstallPlan $optSrc $optDest
+            }
+        }
+    }
 }
 
 $roles = [ordered]@{

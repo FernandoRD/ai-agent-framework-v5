@@ -7,7 +7,21 @@ param(
     [Alias("with-zabbix-specialist")]
     [switch]$WithZabbixSpecialist,
     [Alias("with-grafana-specialist")]
-    [switch]$WithGrafanaSpecialist
+    [switch]$WithGrafanaSpecialist,
+    [Alias("with-ansible-specialist")]
+    [switch]$WithAnsibleSpecialist,
+    [Alias("with-loki-specialist")]
+    [switch]$WithLokiSpecialist,
+    [Alias("with-prometheus-specialist")]
+    [switch]$WithPrometheusSpecialist,
+    [Alias("with-netops-specialist")]
+    [switch]$WithNetopsSpecialist,
+    [Alias("with-sre-specialist")]
+    [switch]$WithSreSpecialist,
+    [Alias("with-db-tuning-specialist")]
+    [switch]$WithDbTuningSpecialist,
+    [Alias("with-all-specialists")]
+    [switch]$WithAllSpecialists
 )
 $ErrorActionPreference = "Stop"
 $packageDir = Split-Path -Parent $PSScriptRoot
@@ -21,8 +35,15 @@ if ($ShareWindowsCodexHome) {
 }
 $hookArg = if ($NoHook) { " --no-hook" } else { "" }
 $auditArg = if ($AuditOnly) { " --audit-only" } else { "" }
-$zabbixArg = if ($WithZabbixSpecialist) { " --with-zabbix-specialist" } else { "" }
-$grafanaArg = if ($WithGrafanaSpecialist) { " --with-grafana-specialist" } else { "" }
-$command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$zabbixArg$grafanaArg"
+$specArgs = ""
+if ($WithZabbixSpecialist -or $WithAllSpecialists) { $specArgs += " --with-zabbix-specialist" }
+if ($WithGrafanaSpecialist -or $WithAllSpecialists) { $specArgs += " --with-grafana-specialist" }
+if ($WithAnsibleSpecialist -or $WithAllSpecialists) { $specArgs += " --with-ansible-specialist" }
+if ($WithLokiSpecialist -or $WithAllSpecialists) { $specArgs += " --with-loki-specialist" }
+if ($WithPrometheusSpecialist -or $WithAllSpecialists) { $specArgs += " --with-prometheus-specialist" }
+if ($WithNetopsSpecialist -or $WithAllSpecialists) { $specArgs += " --with-netops-specialist" }
+if ($WithSreSpecialist -or $WithAllSpecialists) { $specArgs += " --with-sre-specialist" }
+if ($WithDbTuningSpecialist -or $WithAllSpecialists) { $specArgs += " --with-db-tuning-specialist" }
+$command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$specArgs"
 & wsl.exe -d $Distro -- bash -lc $command
 if ($LASTEXITCODE -ne 0) { throw "WSL installation failed with exit code $LASTEXITCODE." }

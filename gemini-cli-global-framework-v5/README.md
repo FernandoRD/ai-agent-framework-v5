@@ -159,18 +159,20 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
 ```
 
-### Especialistas opcionais (Zabbix e Grafana)
+### Especialistas opcionais
 
-Os especialistas (`zabbix-specialist` e `grafana-specialist`) não são instalados
-por padrão e não alteram os sete agentes ou o roteamento Flash/Pro. Para incluir
-a skill, conhecimento e evals de domínio, use as opções explícitas junto à aplicação:
+Os 8 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`
+e `database-tuning-specialist`) não são instalados por padrão e não alteram os sete
+agentes centrais ou o roteamento Flash/Pro. Para incluir skills, conhecimento e evals,
+use as opções explícitas junto à aplicação:
 
 ```bash
-./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
-./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-ansible-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist -Apply` ou `-WithGrafanaSpecialist -Apply`.
+No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.

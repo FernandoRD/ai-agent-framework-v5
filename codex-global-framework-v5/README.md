@@ -34,21 +34,22 @@ personal AGENTS text, unrelated agents, Skills, and hooks are preserved.
 
 ## Install
 
-### Optional Specialists (Zabbix and Grafana)
+### Optional Specialists
 
-The optional specialists (`zabbix-specialist` and `grafana-specialist`) are not
-installed by default and do not change the seven framework roles or Luna/Terra/Sol
-routing. Add `--with-zabbix-specialist` and/or `--with-grafana-specialist` to
-install domain skills. For a project target it also installs optional knowledge
-and evaluations; global installation adds only the skill under `~/.agents/skills/`.
+The 8 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
+and `database-tuning-specialist`) are not installed by default and do not change the seven
+framework roles or Luna/Terra/Sol routing. Add `--with-<spec>-specialist` or `--with-all-specialists`
+to install domain skills. For a project target it also installs optional knowledge
+and evaluations; global installation adds only the skills under `~/.agents/skills/`.
 
 ```bash
-./scripts/install.sh --with-zabbix-specialist
-./scripts/install.sh --with-grafana-specialist
-./scripts/install.sh --target /path/to/project --with-grafana-specialist
+./scripts/install.sh --with-ansible-specialist
+./scripts/install.sh --with-all-specialists
+./scripts/install.sh --target /path/to/project --with-all-specialists
 ```
 
-PowerShell accepts `-WithZabbixSpecialist` and `-WithGrafanaSpecialist`. The options
+PowerShell accepts `-With<Name>Specialist` and `-WithAllSpecialists`. The options
 remain subject to the installer's normal audit, backup, and conflict behavior.
 
 Windows PowerShell:

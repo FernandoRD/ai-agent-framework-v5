@@ -45,13 +45,20 @@ for name in skill_names:
     meta_text = meta.read_text(encoding="utf-8")
     check(f"${name}" in meta_text and "allow_implicit_invocation: true" in meta_text, f"invalid metadata {name}")
 
-optional_skill = ROOT / "optional" / "zabbix-specialist" / ".agents" / "skills" / "zabbix-specialist"
-check((optional_skill / "SKILL.md").is_file(), "optional Zabbix Specialist skill missing")
-check(not any((ROOT / "optional" / "zabbix-specialist" / ".codex" / "agents").glob("*.toml")), "optional package must not ship a native Codex agent")
-
-optional_grafana = ROOT / "optional" / "grafana-specialist" / ".agents" / "skills" / "grafana-specialist"
-check((optional_grafana / "SKILL.md").is_file(), "optional Grafana Specialist skill missing")
-check(not any((ROOT / "optional" / "grafana-specialist" / ".codex" / "agents").glob("*.toml")), "optional package must not ship a native Codex agent")
+ALL_OPTIONAL_SPECS = [
+    "zabbix-specialist",
+    "grafana-specialist",
+    "ansible-specialist",
+    "loki-specialist",
+    "prometheus-specialist",
+    "netops-specialist",
+    "sre-incident-specialist",
+    "database-tuning-specialist",
+]
+for spec in ALL_OPTIONAL_SPECS:
+    opt_skill = ROOT / "optional" / spec / ".agents" / "skills" / spec
+    check((opt_skill / "SKILL.md").is_file(), f"optional {spec} skill missing")
+    check(not any((ROOT / "optional" / spec / ".codex" / "agents").glob("*.toml")), f"optional {spec} must not ship a native Codex agent")
 
 hook_result = subprocess.run(["sh", str(ROOT / ".codex" / "hooks" / "mandatory-router.sh")], capture_output=True, text=True)
 try: context = json.loads(hook_result.stdout)["hookSpecificOutput"]["additionalContext"]; check(len(context) <= 120, "hook context too long")

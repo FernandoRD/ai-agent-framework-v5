@@ -15,7 +15,7 @@ Os `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, regras e agentes dentro dos payloads s
 
 Mantenha a semântica da v5: classificação antes da estratégia, score de 0–100, pisos de risco, delegação delimitada, revisão independente e validação proporcional. Ao adaptar uma plataforma, documente claramente qualquer limitação dela; não prometa equivalência de capacidade entre modelos ou comportamento autenticado que não tenha sido observado.
 
-Evite sobrescrever configurações pessoais ou de projeto nos instaladores. Nas três variantes por projeto, mantenha auditoria por padrão, criação apenas com `--apply`, preservação de conteúdo idêntico e recusa de conflitos e links simbólicos. O instalador Codex usa `--audit-only` para auditoria; sua aplicação normal faz backup e atualiza os blocos gerenciados.
+Evite sobrescrever configurações pessoais ou de projeto nos instaladores. Nas três variantes por projeto, mantenha auditoria por padrão, criação apenas com `--apply`, preservação de conteúdo idêntico e recusa de conflitos e links simbólicos. O instalador Codex usa `--audit-only` para auditoria; sua aplicação normal faz backup e atualiza apenas blocos gerenciados. Skills v5 existentes só podem ser reutilizadas se forem idênticas ao pacote; conteúdo divergente interrompe a instalação para mesclagem manual.
 
 Não adicione caminhos pessoais, hostnames internos, tokens ou credenciais à documentação, scripts ou exemplos. Não invente licença, resultados de testes ou suporte a modelos.
 
@@ -40,4 +40,4 @@ python3 gemini-cli-global-framework-v5/scripts/test_install.py
 python3 cursor-global-framework-v5/scripts/test_install.py
 ```
 
-Após alterar conteúdo distribuído, atualize manifestos e arquivos ZIP somente depois de verificar seu conteúdo. Confira links relativos do README e da referência técnica antes de publicar. Registre limitações de ambiente no relatório da mudança.
+Após alterar conteúdo distribuído, atualize manifestos e arquivos ZIP somente depois de verificar seu conteúdo. Confira links relativos do README e da referência técnica antes de publicar. Registre limitações de ambiente no relatório da mudança. A validação Codex também deve cobrir uma instalação temporária com caminhos personalizados e o comportamento de conflito de Skills.

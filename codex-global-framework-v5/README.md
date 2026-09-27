@@ -30,7 +30,9 @@ Routine, authorized publication of validated changes is a separate Luna unit: de
 
 Every affected item is backed up under
 `$CODEX_HOME/backups/framework-v5-<timestamp>`. Unrelated configuration,
-personal AGENTS text, unrelated agents, Skills, and hooks are preserved.
+personal AGENTS text, unrelated agents, Skills, and hooks are preserved. A
+current Skill with the same name but different content is treated as a conflict:
+the installer stops before changing anything, so it can be merged manually.
 
 ## Install
 

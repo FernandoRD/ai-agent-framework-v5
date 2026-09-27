@@ -54,6 +54,7 @@ ALL_OPTIONAL_SPECS = [
     "netops-specialist",
     "sre-incident-specialist",
     "database-tuning-specialist",
+    "proxmox-specialist",
 ]
 for spec in ALL_OPTIONAL_SPECS:
     opt_skill = ROOT / "optional" / spec / ".agents" / "skills" / spec

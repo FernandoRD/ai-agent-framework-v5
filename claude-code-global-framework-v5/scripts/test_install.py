@@ -53,7 +53,8 @@ class InstallerTests(unittest.TestCase):
             specs = [
                 "zabbix-specialist", "grafana-specialist", "ansible-specialist",
                 "loki-specialist", "prometheus-specialist", "netops-specialist",
-                "sre-incident-specialist", "database-tuning-specialist"
+                "sre-incident-specialist", "database-tuning-specialist",
+                "proxmox-specialist"
             ]
             for s in specs:
                 skill_file = target / '.claude' / 'skills' / s / 'SKILL.md'

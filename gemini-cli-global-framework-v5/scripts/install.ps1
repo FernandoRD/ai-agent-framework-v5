@@ -26,8 +26,10 @@
     Instala a extensão opcional SRE Incident Specialist (Incident Command, SLOs).
 .PARAMETER WithDbTuningSpecialist
     Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
+.PARAMETER WithProxmoxSpecialist
+    Instala a extensão opcional Proxmox Specialist (Proxmox VE 8.x/9.x, Corosync, Ceph, SDN, ZFS).
 .PARAMETER WithAllSpecialists
-    Instala simultaneamente todos os 8 especialistas de domínio disponíveis.
+    Instala simultaneamente todos os 9 especialistas de domínio disponíveis.
 .PARAMETER Help
     Exibe a mensagem de ajuda com todas as opções.
 #>
@@ -67,6 +69,9 @@ param(
     [Alias("with-db-tuning-specialist", "with-database-tuning-specialist")]
     [switch]$WithDbTuningSpecialist,
 
+    [Alias("with-proxmox-specialist")]
+    [switch]$WithProxmoxSpecialist,
+
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -97,7 +102,8 @@ Especialistas de domínio opcionais:
                                  (alias: -WithSreIncidentSpecialist)
   -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                  (alias: -WithDatabaseTuningSpecialist)
-  -WithAllSpecialists            Instala todos os 8 especialistas de domínio acima
+  -WithProxmoxSpecialist         Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
+  -WithAllSpecialists            Instala todos os 9 especialistas de domínio acima
 "@
 }
 
@@ -134,6 +140,7 @@ $knownSpecialists = @(
     @{ Name = "netops-specialist"; Enabled = ($WithNetopsSpecialist -or $WithAllSpecialists) }
     @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
     @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
+    @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
 )
 
 foreach ($spec in $knownSpecialists) {

@@ -30,6 +30,8 @@ param(
     [switch]$WithSreSpecialist,
     [Alias("with-db-tuning-specialist")]
     [switch]$WithDbTuningSpecialist,
+    [Alias("with-proxmox-specialist")]
+    [switch]$WithProxmoxSpecialist,
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -57,7 +59,8 @@ Especialistas de domínio opcionais:
   -WithNetopsSpecialist      Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
   -WithSreSpecialist         Instala o especialista SRE Incident (Incident Command/SLOs)
   -WithDbTuningSpecialist    Instala o especialista Database Tuning (PostgreSQL/queries/locks)
-  -WithAllSpecialists        Instala todos os 8 especialistas de domínio acima
+  -WithProxmoxSpecialist     Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
+  -WithAllSpecialists        Instala todos os 9 especialistas de domínio acima
 "@
 }
 
@@ -86,6 +89,7 @@ if ($WithPrometheusSpecialist -or $WithAllSpecialists) { $specArgs += " --with-p
 if ($WithNetopsSpecialist -or $WithAllSpecialists) { $specArgs += " --with-netops-specialist" }
 if ($WithSreSpecialist -or $WithAllSpecialists) { $specArgs += " --with-sre-specialist" }
 if ($WithDbTuningSpecialist -or $WithAllSpecialists) { $specArgs += " --with-db-tuning-specialist" }
+if ($WithProxmoxSpecialist -or $WithAllSpecialists) { $specArgs += " --with-proxmox-specialist" }
 $command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$specArgs"
 & wsl.exe -d $Distro -- bash -lc $command
 if ($LASTEXITCODE -ne 0) { throw "WSL installation failed with exit code $LASTEXITCODE." }

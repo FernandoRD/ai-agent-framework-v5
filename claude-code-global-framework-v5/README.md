@@ -73,9 +73,9 @@ Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e 
 
 ### Especialistas opcionais
 
-Os 8 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
-`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`
-e `database-tuning-specialist`) não são instalados por padrão e não alteram os sete
+Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
+`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
 agentes ou o roteamento Haiku/Sonnet/Opus. Para incluir a skill, conhecimento e
 evals de domínio, acrescente a opção explícita:
 

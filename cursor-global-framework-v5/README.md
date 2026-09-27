@@ -46,9 +46,9 @@ O primeiro comando apenas audita. O instalador recusa arquivos existentes difere
 
 ### Especialistas opcionais
 
-Os 8 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
-`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`
-e `database-tuning-specialist`) não são instalados por padrão e não alteram os sete
+Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+`loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
+`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
 agentes ou o roteamento Composer/Sonnet/Opus. Para incluir a skill, conhecimento e
 evals de domínio, use as opções explícitas junto à aplicação:
 

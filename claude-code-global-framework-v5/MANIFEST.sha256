@@ -1,4 +1,4 @@
-07166906b6f770e617aefa201e4bc42996b9b5743475324fa1821c99db14c858  ./README.md
+114b9a6a82cfc73a56e21d81af3c62230089ffc3403a9c372751daea889a3359  ./README.md
 227af4f4e356e4b7aaa85adcad43aeb20e0b9192f6b04357f362e51c1bd86d9a  ./VALIDACAO.md
 4f3ecf1369d923d499c02b8f6a5e3b218d04b6b95a6b30735786da576951d889  ./VARIANTES-V5.md
 af591401b62682740dde2d8ddad7bb7abc8737048702a5184fb2f72b2697d085  ./VERSION
@@ -44,6 +44,13 @@ c293fbfb2521b66bd91b7df1d6784b92237a020740ffed7056d368c33c2078ca  ./optional/pro
 6cdf91969c68a0b7df382dc67ccec8d9ab1e9413e9effd277a1f74f9ae1ed410  ./optional/prometheus-specialist/payload/.claude/skills/prometheus-specialist/troubleshooting.md
 b39c1784c16a123823a48faa3738d8c58c5256743086d73be262e28cc7d7a35e  ./optional/prometheus-specialist/payload/evals/prometheus/001-routing.md
 6892886a77a1cc9aacaa5faf0faae45200a6bf0e9423747d30e7c22aef404d63  ./optional/prometheus-specialist/payload/knowledge/prometheus/README.md
+d6b00afdf50cbdcb25c3a81eddea92faa58b03c7e6bd97a68455f080ea834463  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/SKILL.md
+201ce2660804ff0dc42e49c5c31f0474f8d587fee26ae2544f2ad5724662a568  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/cluster-and-storage.md
+dfe955f795eb6cb1ba1473d9c2407379e0e318de66a3117186f6cd65c3ab5589  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/sdn-backup-ha.md
+34f4d8ecdb943a9a773820029814f3563e9833db6f1263643e2dc64f1c300078  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/troubleshooting.md
+5d1fbe62c9f569d741c73af93655d5de69a78aa10a0004af40776002a7beccd8  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/vm-lxc-automation.md
+e959e3edd05f45a39bd0ce47341aae7d26fa4f44b656cc64046e6bbf442b02d3  ./optional/proxmox-specialist/payload/evals/proxmox/001-routing.md
+c497fe16437083710c3ab94c7f56cc627a36f1e688d78078c104344819c00551  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
 40bf5012f1821b1ee2500393ad9de307676123e1011828b38bc9f01b5b2c1d89  ./optional/sre-incident-specialist/payload/.claude/skills/sre-incident-specialist/SKILL.md
 6f34b1be915a36b0f97948f1590ad970c9ed093d80a8ba3090879800dd81a40e  ./optional/sre-incident-specialist/payload/.claude/skills/sre-incident-specialist/incident-triage-and-runbooks.md
 f90e37d134ccecfefc8f02b8b89c8c47e2f3e3bbf8f221b490e5eabd612523da  ./optional/sre-incident-specialist/payload/.claude/skills/sre-incident-specialist/rca-and-post-mortem.md
@@ -71,6 +78,6 @@ f25a91a78d6f27caed9d291e155fcf1ac10a5f948ce8bdb74b1851c98b112c5f  ./payload/.cla
 41af7df2940fe6ab983d1413951df98ea0b92ea8f145c255360a173f9734a085  ./payload/.claude/agents/sonnet-worker.md
 e653427e1020faa6e22976f7649195bb1c82f2c9e775563418263f9656855ef8  ./payload/CLAUDE.md
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-87d88cfdc7cf6df57a501b581bb30054ef9bfda57c7153b3ad358b89d907138a  ./scripts/install.ps1
-e15a286f09a31feabc460074e1ec35e37893891163a4583b78f8e5cd631afd0b  ./scripts/install.sh
-95bc4ca903221e960f2129c17b7546483d71d50537225c6b45f31b7422477d2b  ./scripts/test_install.py
+172ed360c8d77437852bfba8918df60e99752308f2381961ac565182f5bf4856  ./scripts/install.ps1
+412fcfc21abbe0b0ce8ae390f730f2f8ba88b1250708094c28342b2e5c01cba0  ./scripts/install.sh
+298fd1c6095589e9353dd16c1e80240b714aefcec76be3776f936a5342c951ab  ./scripts/test_install.py

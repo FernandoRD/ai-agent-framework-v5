@@ -25,6 +25,7 @@ ALL_KNOWN_SPECS=(
     "netops-specialist"
     "sre-incident-specialist"
     "database-tuning-specialist"
+    "proxmox-specialist"
 )
 
 add_specialist() {
@@ -62,7 +63,8 @@ Especialistas de domínio opcionais:
                                     (alias: --with-sre-specialist)
   --with-database-tuning-specialist Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                     (alias: --with-db-tuning-specialist)
-  --with-all-specialists            Instala todos os 8 especialistas de domínio acima
+  --with-proxmox-specialist         Instala o especialista Proxmox VE (8.x/9.x, PBS, Ceph, ZFS, SDN)
+  --with-all-specialists            Instala todos os 9 especialistas de domínio acima
 EOF
     exit "${1:-0}"
 }
@@ -137,6 +139,10 @@ while [ $# -gt 0 ]; do
             ;;
         --with-db-tuning-specialist|--with-database-tuning-specialist)
             add_specialist "database-tuning-specialist"
+            shift
+            ;;
+        --with-proxmox-specialist)
+            add_specialist "proxmox-specialist"
             shift
             ;;
         --with-all-specialists)

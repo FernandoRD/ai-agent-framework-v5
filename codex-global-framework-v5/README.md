@@ -36,9 +36,9 @@ personal AGENTS text, unrelated agents, Skills, and hooks are preserved.
 
 ### Optional Specialists
 
-The 8 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+The 9 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-and `database-tuning-specialist`) are not installed by default and do not change the seven
+`database-tuning-specialist`, and `proxmox-specialist`) are not installed by default and do not change the seven
 framework roles or Luna/Terra/Sol routing. Add `--with-<spec>-specialist` or `--with-all-specialists`
 to install domain skills. For a project target it also installs optional knowledge
 and evaluations; global installation adds only the skills under `~/.agents/skills/`.

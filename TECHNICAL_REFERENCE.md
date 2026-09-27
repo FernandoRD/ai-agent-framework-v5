@@ -153,9 +153,9 @@ Todas as quatro distribuições do framework contam com instaladores e ferrament
 
 ---
 
-## Catálogo modular dos 8 especialistas de domínio
+## Catálogo modular dos 9 especialistas de domínio
 
-Os quatro pacotes disponibilizam um catálogo modular de **8 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -190,6 +190,10 @@ Os quatro pacotes disponibilizam um catálogo modular de **8 especialistas técn
 - **Domínio:** Otimização e sustentação de bancos de dados relacionais e de séries temporais sob alto throughput.
 - **Cobertura técnica:** Tuning de bancos de telemetria e produção (PostgreSQL 14+, TimescaleDB com hypertables/chunks e MySQL 8+), análise minuciosa de planos de execução (`EXPLAIN (ANALYZE, BUFFERS)`), estratégias de indexação avançada (B-Tree, BRIN para dados temporais sequenciais, GIN/GiST para JSONB), particionamento de tabelas de histórico/tendências, dimensionamento e pool de conexões (PgBouncer), mitigação de contenção de locks/deadlocks e parametrização de I/O, memória (`work_mem`, `shared_buffers`) e checkpoints.
 
+### 9. `proxmox-specialist`
+- **Domínio:** Virtualização, clustering empresarial e infraestrutura hiperconvergente com Proxmox Virtual Environment (PVE) 8.x e 9.x.
+- **Cobertura técnica:** Arquitetura de cluster Corosync v3, qdevice em topologias de dois nós, procedimentos de upgrade e migração segura PVE 8 para 9 (`pve8to9`), storage hiperconvergente Ceph (versões Reef e Squid com BlueStore) e pools ZFS locais/compartilhados (ashift=12, limites de ARC, compressão zstd), Proxmox SDN (Software-Defined Networking com zones VLAN, VXLAN e EVPN multi-tenancy), automação e provisionamento de VMs e contêineres unprivileged LXC via QEMU/KVM, cloud-init e Terraform (`bpg/proxmox`), ecossistema de backup com Proxmox Backup Server (PBS com deduplicação e dirty-bitmaps em tempo real), Alta Disponibilidade com HA CRM/LRM e fencing via watchdog, e integração de telemetria nativa com Zabbix Agent 2 e Prometheus.
+
 ---
 
 ### Estrutura dos Arquivos de Especialistas
@@ -204,9 +208,9 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 ### Flags de Instalação dos Especialistas
 
 - **Instalação Individual:**
-  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`).
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`.
-- **Instalação Agregadora (Todos os 8 especialistas):**
+  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`.
+- **Instalação Agregadora (Todos os 9 especialistas):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
 

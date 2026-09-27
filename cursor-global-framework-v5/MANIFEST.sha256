@@ -71,6 +71,6 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
 0f6bffb6a96ab6c268facd44ef49a1ad3164480e8a3b9445b97b24e3c9f4071b  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-1459b8f7d98ace1d5ea7d0268385d920adecf6eb762f11344f0f4c316ff23d8f  ./scripts/install.ps1
-9803a2bc43a1965c7288241b05752115fb42863f5c1bc5fbb89f2710fcad8758  ./scripts/install.sh
+87d88cfdc7cf6df57a501b581bb30054ef9bfda57c7153b3ad358b89d907138a  ./scripts/install.ps1
+e15a286f09a31feabc460074e1ec35e37893891163a4583b78f8e5cd631afd0b  ./scripts/install.sh
 4c0d6041cc52236845a8abcb1e92454a7a73ebcef434d7b37bc0a146903020e3  ./scripts/test_install.py

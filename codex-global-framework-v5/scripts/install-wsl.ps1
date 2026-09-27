@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    Script de instalação do Codex Framework no WSL a partir do Windows.
+.DESCRIPTION
+    Encaminha os comandos e flags de instalação para o ambiente Linux sob WSL.
+.PARAMETER Distro
+    Nome da distribuição WSL de destino (obrigatório).
+.PARAMETER Help
+    Exibe a mensagem de ajuda com todas as opções.
+#>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string]$Distro,
@@ -21,9 +31,41 @@ param(
     [Alias("with-db-tuning-specialist")]
     [switch]$WithDbTuningSpecialist,
     [Alias("with-all-specialists")]
-    [switch]$WithAllSpecialists
+    [switch]$WithAllSpecialists,
+
+    [Alias("h", "?")]
+    [switch]$Help
 )
 $ErrorActionPreference = "Stop"
+function Show-Usage {
+    Write-Host @"
+Uso: .\install-wsl.ps1 -Distro <nome-da-distro> [opções]
+
+Opções gerais:
+  -Distro <nome>             Nome da distribuição WSL (obrigatório)
+  -ShareWindowsCodexHome     Compartilha a configuração do Windows com o WSL
+  -NoHook                    Não instala o hook de roteamento obrigatório
+  -AuditOnly                 Modo estrito de auditoria (não altera arquivos)
+  -Help, -h, -?              Exibe esta mensagem de ajuda
+
+Especialistas de domínio opcionais:
+  -WithZabbixSpecialist      Instala o especialista Zabbix
+  -WithGrafanaSpecialist     Instala o especialista Grafana (Grafana 12 / HTML Graphics)
+  -WithAnsibleSpecialist     Instala o especialista Ansible (playbooks/roles/vault)
+  -WithLokiSpecialist        Instala o especialista Loki (LogQL/Promtail/Alloy)
+  -WithPrometheusSpecialist  Instala o especialista Prometheus (PromQL/exporters/alerting)
+  -WithNetopsSpecialist      Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
+  -WithSreSpecialist         Instala o especialista SRE Incident (Incident Command/SLOs)
+  -WithDbTuningSpecialist    Instala o especialista Database Tuning (PostgreSQL/queries/locks)
+  -WithAllSpecialists        Instala todos os 8 especialistas de domínio acima
+"@
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
+
 $packageDir = Split-Path -Parent $PSScriptRoot
 $linuxPackageDir = (& wsl.exe -d $Distro -- wslpath -a $packageDir).Trim()
 if (-not $linuxPackageDir) { throw "Could not translate the package path for WSL." }

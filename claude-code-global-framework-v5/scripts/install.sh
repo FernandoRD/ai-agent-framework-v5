@@ -30,18 +30,39 @@ add_specialist() {
 }
 
 usage() {
-    echo "Uso: $0 --target <caminho> [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
-    echo "     $0 --global [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
-    echo "     $0 <caminho> [--apply] [--with-<especialista>] [--with-all-specialists]" >&2
-    echo "Especialistas disponíveis: ${ALL_KNOWN_SPECS[*]}" >&2
-    exit 1
+    cat <<'EOF'
+Uso: install.sh [opções]
+
+Opções gerais:
+  --target <caminho>  Diretório de destino (instalação por projeto)
+  --global, -g        Instalação no ambiente global do usuário
+  --apply             Aplica as alterações no disco (padrão é auditoria)
+  -h, --help          Exibe esta mensagem de ajuda
+
+Especialistas de domínio opcionais:
+  --with-zabbix-specialist          Instala o especialista Zabbix
+  --with-grafana-specialist         Instala o especialista Grafana (Grafana 12 / HTML Graphics)
+  --with-ansible-specialist         Instala o especialista Ansible (playbooks/roles/vault)
+  --with-loki-specialist            Instala o especialista Loki (LogQL/Promtail/Alloy)
+  --with-prometheus-specialist      Instala o especialista Prometheus (PromQL/exporters/alerting)
+  --with-netops-specialist          Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
+  --with-sre-incident-specialist    Instala o especialista SRE Incident (Incident Command/SLOs)
+                                    (alias: --with-sre-specialist)
+  --with-database-tuning-specialist Instala o especialista Database Tuning (PostgreSQL/queries/locks)
+                                    (alias: --with-db-tuning-specialist)
+  --with-all-specialists            Instala todos os 8 especialistas de domínio acima
+EOF
+    exit "${1:-0}"
 }
 
 # Parse arguments
 while [ $# -gt 0 ]; do
     case "$1" in
+        -h|--help)
+            usage 0
+            ;;
         --target)
-            [ $# -ge 2 ] || usage
+            [ $# -ge 2 ] || usage 1
             TARGET="$2"
             shift 2
             ;;
@@ -97,7 +118,7 @@ while [ $# -gt 0 ]; do
             ;;
         -*)
             echo "Erro: Opção desconhecida: $1" >&2
-            usage
+            usage 1
             ;;
         *)
             if [ -z "$TARGET" ] && [ "$IS_GLOBAL" = false ]; then
@@ -105,14 +126,14 @@ while [ $# -gt 0 ]; do
                 shift
             else
                 echo "Erro: Argumento inesperado: $1" >&2
-                usage
+                usage 1
             fi
             ;;
     esac
 done
 
 if [ -z "$TARGET" ] && [ "$IS_GLOBAL" = false ]; then
-    usage
+    usage 1
 fi
 
 HOME_DIR="$(cd "$HOME" && pwd -P)"

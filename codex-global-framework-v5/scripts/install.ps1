@@ -1,3 +1,40 @@
+<#
+.SYNOPSIS
+    Script de instalação do Codex Global Framework v5.
+.DESCRIPTION
+    Instala políticas, agentes e especialistas de domínio do Framework v5 para Codex.
+    Por padrão audita as alterações. Use -Apply para efetivar a instalação por projeto.
+.PARAMETER Target
+    Caminho do diretório do projeto para instalação local.
+.PARAMETER Global
+    Realiza a instalação no perfil global (~/.codex).
+.PARAMETER Apply
+    Aplica as alterações no disco.
+.PARAMETER AuditOnly
+    Modo estrito de auditoria.
+.PARAMETER NoHook
+    Não instala o hook de roteamento obrigatório.
+.PARAMETER WithZabbixSpecialist
+    Instala a extensão opcional Zabbix Specialist.
+.PARAMETER WithGrafanaSpecialist
+    Instala a extensão opcional Grafana Specialist (Grafana 12 / HTML Graphics).
+.PARAMETER WithAnsibleSpecialist
+    Instala a extensão opcional Ansible Specialist (Playbooks, Roles, Vault).
+.PARAMETER WithLokiSpecialist
+    Instala a extensão opcional Loki Specialist (LogQL, Promtail, Alloy).
+.PARAMETER WithPrometheusSpecialist
+    Instala a extensão opcional Prometheus Specialist (PromQL, Exporters, Alertmanager).
+.PARAMETER WithNetopsSpecialist
+    Instala a extensão opcional NetOps Specialist (SNMP, BGP, OSPF, VLANs).
+.PARAMETER WithSreSpecialist
+    Instala a extensão opcional SRE Incident Specialist (Incident Command, SLOs).
+.PARAMETER WithDbTuningSpecialist
+    Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
+.PARAMETER WithAllSpecialists
+    Instala simultaneamente todos os 8 especialistas de domínio disponíveis.
+.PARAMETER Help
+    Exibe a mensagem de ajuda com todas as opções.
+#>
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
@@ -39,10 +76,47 @@ param(
     [switch]$WithDbTuningSpecialist,
 
     [Alias("with-all-specialists")]
-    [switch]$WithAllSpecialists
+    [switch]$WithAllSpecialists,
+
+    [Alias("h", "?")]
+    [switch]$Help
 )
 
 $ErrorActionPreference = "Stop"
+function Show-Usage {
+    Write-Host @"
+Uso: .\install.ps1 [opções]
+
+Opções gerais:
+  -Target <dir>       Diretório de destino (instalação por projeto)
+  -Global, -g         Instalação no ambiente global do usuário (~/.codex)
+  -Apply              Aplica as alterações no disco (padrão é auditoria)
+  -AuditOnly          Modo estrito de auditoria (não altera arquivos)
+  -NoHook             Não instala o hook de roteamento obrigatório
+  -CodexHome <dir>    Sobrescreve o diretório ~/.codex
+  -SkillsHome <dir>   Sobrescreve o diretório ~/.agents/skills
+  -Help, -h, -?       Exibe esta mensagem de ajuda
+
+Especialistas de domínio opcionais:
+  -WithZabbixSpecialist          Instala o especialista Zabbix
+  -WithGrafanaSpecialist         Instala o especialista Grafana (Grafana 12 / HTML Graphics)
+  -WithAnsibleSpecialist         Instala o especialista Ansible (playbooks/roles/vault)
+  -WithLokiSpecialist            Instala o especialista Loki (LogQL/Promtail/Alloy)
+  -WithPrometheusSpecialist      Instala o especialista Prometheus (PromQL/exporters/alerting)
+  -WithNetopsSpecialist          Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
+  -WithSreSpecialist             Instala o especialista SRE Incident (Incident Command/SLOs)
+                                 (alias: -WithSreIncidentSpecialist)
+  -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
+                                 (alias: -WithDatabaseTuningSpecialist)
+  -WithAllSpecialists            Instala todos os 8 especialistas de domínio acima
+"@
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
+
 $packageDir = Split-Path -Parent $PSScriptRoot
 
 function Assert-OptionalDirectory([string]$Path, [string]$Label) {

@@ -1,3 +1,36 @@
+<#
+.SYNOPSIS
+    Script de instalação do Framework v5.
+.DESCRIPTION
+    Instala as políticas, agentes e especialistas de domínio do Framework v5.
+    Por padrão executa em modo de auditoria (sem modificar arquivos). Use -Apply para efetivar.
+.PARAMETER Target
+    Caminho do diretório do projeto para instalação local.
+.PARAMETER Global
+    Realiza a instalação no perfil global do usuário.
+.PARAMETER Apply
+    Aplica as alterações no disco (padrão é apenas auditoria).
+.PARAMETER WithZabbixSpecialist
+    Instala a extensão opcional Zabbix Specialist.
+.PARAMETER WithGrafanaSpecialist
+    Instala a extensão opcional Grafana Specialist (Grafana 12 / HTML Graphics).
+.PARAMETER WithAnsibleSpecialist
+    Instala a extensão opcional Ansible Specialist (Playbooks, Roles, Vault).
+.PARAMETER WithLokiSpecialist
+    Instala a extensão opcional Loki Specialist (LogQL, Promtail, Alloy).
+.PARAMETER WithPrometheusSpecialist
+    Instala a extensão opcional Prometheus Specialist (PromQL, Exporters, Alertmanager).
+.PARAMETER WithNetopsSpecialist
+    Instala a extensão opcional NetOps Specialist (SNMP, BGP, OSPF, VLANs).
+.PARAMETER WithSreSpecialist
+    Instala a extensão opcional SRE Incident Specialist (Incident Command, SLOs).
+.PARAMETER WithDbTuningSpecialist
+    Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
+.PARAMETER WithAllSpecialists
+    Instala simultaneamente todos os 8 especialistas de domínio disponíveis.
+.PARAMETER Help
+    Exibe a mensagem de ajuda com todas as opções.
+#>
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
@@ -35,16 +68,46 @@ param(
     [switch]$WithDbTuningSpecialist,
 
     [Alias("with-all-specialists")]
-    [switch]$WithAllSpecialists
+    [switch]$WithAllSpecialists,
+
+    [Alias("h", "?")]
+    [switch]$Help
 )
 
 $ErrorActionPreference = "Stop"
 
+function Show-Usage {
+    Write-Host @"
+Uso: .\install.ps1 [opções]
+
+Opções gerais:
+  -Target <caminho>   Diretório de destino (instalação por projeto)
+  -Global, -g         Instalação no ambiente global do usuário
+  -Apply              Aplica as alterações no disco (padrão é apenas auditoria)
+  -Help, -h, -?       Exibe esta mensagem de ajuda
+
+Especialistas de domínio opcionais:
+  -WithZabbixSpecialist          Instala o especialista Zabbix
+  -WithGrafanaSpecialist         Instala o especialista Grafana (Grafana 12 / HTML Graphics)
+  -WithAnsibleSpecialist         Instala o especialista Ansible (playbooks/roles/vault)
+  -WithLokiSpecialist            Instala o especialista Loki (LogQL/Promtail/Alloy)
+  -WithPrometheusSpecialist      Instala o especialista Prometheus (PromQL/exporters/alerting)
+  -WithNetopsSpecialist          Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
+  -WithSreSpecialist             Instala o especialista SRE Incident (Incident Command/SLOs)
+                                 (alias: -WithSreIncidentSpecialist)
+  -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
+                                 (alias: -WithDatabaseTuningSpecialist)
+  -WithAllSpecialists            Instala todos os 8 especialistas de domínio acima
+"@
+}
+
+if ($Help) {
+    Show-Usage
+    exit 0
+}
+
 if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
-    Write-Host "Uso: .\install.ps1 -Target <caminho> [-Apply]"
-    Write-Host "     .\install.ps1 -Global [-Apply]"
-    Write-Host "     .\install.ps1 --target <caminho> [--apply]"
-    Write-Host "     .\install.ps1 --global [--apply]"
+    Show-Usage
     exit 1
 }
 
@@ -75,147 +138,141 @@ $knownSpecialists = @(
 
 foreach ($spec in $knownSpecialists) {
     if ($spec.Enabled) {
-        $opt = Join-Path (Split-Path -Parent $scriptDir) ("optional\" + $spec.Name + "\payload")
-        if (-not (Test-Path -LiteralPath $opt -PathType Container)) {
-            throw "Pacote opcional não encontrado em $opt"
+        $p = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $scriptDir) "optional/$($spec.Name)/payload"))
+        if (-not (Test-Path -LiteralPath $p)) {
+            throw "Pacote opcional não encontrado: $p"
         }
-        $payloadDirs += [IO.Path]::GetFullPath($opt)
+        $payloadDirs += $p
     }
 }
 
-if (-not (Test-Path -LiteralPath $payloadDir)) {
-    Write-Error "Diretório de payload não encontrado em $payloadDir"
-    exit 1
-}
-
-$toolDotDir = $null
-foreach ($d in (Get-ChildItem -LiteralPath $payloadDir -Directory)) {
-    if ($d.Name.StartsWith(".")) {
-        $toolDotDir = $d.Name
+$toolDotDir = ""
+foreach ($item in (Get-ChildItem -LiteralPath $payloadDir -Force)) {
+    if ($item.PSIsContainer -and $item.Name.StartsWith('.')) {
+        $toolDotDir = $item.Name
         break
     }
 }
 
-$pending = [System.Collections.Generic.List[object]]::new()
-$errors = [System.Collections.Generic.List[string]]::new()
-
-function Test-IsSymlink([string]$path) {
-    if (-not (Test-Path -LiteralPath $path)) { return $false }
-    $item = Get-Item -LiteralPath $path -Force
-    return [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
-}
-
-function Check-ChainForSymlinks([string]$path) {
-    $current = $path
-    while (-not [string]::IsNullOrWhiteSpace($current)) {
-        if (Test-IsSymlink $current) { return $true }
+function Test-PathForSymlinks([string]$Path) {
+    $current = [IO.Path]::GetFullPath($Path)
+    while ($true) {
+        if (Test-Path -LiteralPath $current) {
+            $item = Get-Item -LiteralPath $current -Force
+            if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                return $true
+            }
+        }
         $parent = Split-Path -Parent $current
-        if ($parent -eq $current) { break }
+        if ([string]::IsNullOrEmpty($parent) -or $parent -eq $current) { break }
         $current = $parent
     }
     return $false
 }
 
-$files = foreach ($payloadRoot in $payloadDirs) { Get-ChildItem -LiteralPath $payloadRoot -Recurse -Force }
-foreach ($item in ($files | Sort-Object FullName)) {
-    if (Test-IsSymlink $item.FullName) {
-        $errors.Add("Link no pacote: $($item.FullName)")
-        continue
-    }
-    if ($item.PSIsContainer) {
-        continue
-    }
-
-    $payloadRoot = $payloadDirs | Where-Object { $item.FullName.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) } | Sort-Object Length -Descending | Select-Object -First 1
-    $relPath = $item.FullName.Substring($payloadRoot.Length).TrimStart([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
-    if ($isGlobal -and $toolDotDir -and -not $relPath.StartsWith(".")) {
-        $dest = [IO.Path]::Combine($targetPath, $toolDotDir, $relPath)
-    } else {
-        $dest = [IO.Path]::Combine($targetPath, $relPath)
-    }
-
-    if (Check-ChainForSymlinks $dest) {
-        $errors.Add("Link no destino: $dest")
-        continue
-    }
-
-    $destParent = Split-Path -Parent $dest
-    $curParent = $destParent
-    $parentInvalid = $false
-    while (-not [string]::IsNullOrWhiteSpace($curParent)) {
-        if ((Test-Path -LiteralPath $curParent) -and -not (Test-Path -LiteralPath $curParent -PathType Container)) {
-            $errors.Add("Pai não é diretório: $dest")
-            $parentInvalid = $true
-            break
+function Test-ParentInvalid([string]$Path) {
+    $parent = Split-Path -Parent $Path
+    while ($true) {
+        if (Test-Path -LiteralPath $parent) {
+            $item = Get-Item -LiteralPath $parent -Force
+            if (-not $item.PSIsContainer) { return $true }
+            return $false
         }
-        $p = Split-Path -Parent $curParent
-        if ($p -eq $curParent) { break }
-        $curParent = $p
+        $nextParent = Split-Path -Parent $parent
+        if ([string]::IsNullOrEmpty($nextParent) -or $nextParent -eq $parent) { break }
+        $parent = $nextParent
     }
-    if ($parentInvalid) { continue }
+    return $false
+}
 
-    if (Test-Path -LiteralPath $dest) {
-        if (Test-Path -LiteralPath $dest -PathType Container) {
-            $errors.Add("Conflito, preservar e mesclar manualmente: $dest")
+if (Test-PathForSymlinks $targetPath) {
+    throw "Target path or parent is a symlink: $targetPath"
+}
+
+$errors = @()
+$pendingSources = @()
+$pendingDests = @()
+
+foreach ($dir in $payloadDirs) {
+    $files = Get-ChildItem -LiteralPath $dir -Recurse -File -Force | Sort-Object FullName
+    foreach ($file in $files) {
+        if (($file.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            $errors += "Link no pacote: $($file.FullName)"
+            continue
+        }
+        $sourceRel = $file.FullName.Substring($dir.Length).TrimStart('\', '/')
+        $firstPart = $sourceRel.Split('\/')[0]
+
+        if ($isGlobal -and (-not [string]::IsNullOrEmpty($toolDotDir)) -and (-not $firstPart.StartsWith('.'))) {
+            $dest = Join-Path $targetPath (Join-Path $toolDotDir $sourceRel)
         } else {
-            $srcBytes = [IO.File]::ReadAllBytes($item.FullName)
-            $destBytes = [IO.File]::ReadAllBytes($dest)
-            $identical = ($srcBytes.Length -eq $destBytes.Length)
-            if ($identical) {
-                for ($i = 0; $i -lt $srcBytes.Length; $i++) {
-                    if ($srcBytes[$i] -ne $destBytes[$i]) {
-                        $identical = $false
-                        break
-                    }
-                }
+            $dest = Join-Path $targetPath $sourceRel
+        }
+
+        if (Test-PathForSymlinks $dest) {
+            $errors += "Link no destino: $dest"
+            continue
+        }
+
+        if (Test-ParentInvalid $dest) {
+            $errors += "Pai não é diretório: $dest"
+            continue
+        }
+
+        if (Test-Path -LiteralPath $dest) {
+            $destItem = Get-Item -LiteralPath $dest -Force
+            if ($destItem.PSIsContainer) {
+                $errors += "Conflito, preservar e mesclar manualmente: $dest"
+                continue
             }
-            if (-not $identical) {
-                $errors.Add("Conflito, preservar e mesclar manualmente: $dest")
+            $srcHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash
+            $destHash = (Get-FileHash -LiteralPath $dest -Algorithm SHA256).Hash
+            if ($srcHash -ne $destHash) {
+                $errors += "Conflito, preservar e mesclar manualmente: $dest"
             } else {
                 Write-Host "IDÊNTICO $dest"
             }
+        } else {
+            $pendingSources += $file.FullName
+            $pendingDests += $dest
+            Write-Host "CRIAR $dest"
         }
-    } else {
-        $pending.Add(@{ Source = $item.FullName; Dest = $dest })
-        Write-Host "CRIAR $dest"
     }
 }
 
 if ($errors.Count -gt 0) {
-    foreach ($err in $errors) {
-        Write-Host $err
-    }
+    foreach ($err in $errors) { Write-Host $err }
     exit 1
 }
 
 if (-not $Apply) {
-    Write-Host "Auditoria: $($pending.Count) arquivo(s) novo(s); nenhuma alteração."
+    Write-Host "Auditoria: $($pendingSources.Count) arquivo(s) novo(s); nenhuma alteração."
     exit 0
 }
 
-foreach ($entry in $pending) {
-    $src = $entry.Source
-    $dest = $entry.Dest
-    if (Check-ChainForSymlinks $dest) {
-        Write-Host "Destino tornou-se link; instalação interrompida: $dest"
-        exit 1
+for ($i = 0; $i -lt $pendingSources.Count; $i++) {
+    $src = $pendingSources[$i]
+    $dest = $pendingDests[$i]
+
+    if (Test-PathForSymlinks $dest) {
+        throw "Destino tornou-se link; instalação interrompida: $dest"
     }
-    $parentDir = Split-Path -Parent $dest
-    if (-not (Test-Path -LiteralPath $parentDir)) {
-        [IO.Directory]::CreateDirectory($parentDir) | Out-Null
+
+    $destDir = Split-Path -Parent $dest
+    if (-not (Test-Path -LiteralPath $destDir)) {
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
+
+    $fileStream = $null
     try {
-        $srcBytes = [IO.File]::ReadAllBytes($src)
-        $fs = [IO.File]::Open($dest, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
-        try {
-            $fs.Write($srcBytes, 0, $srcBytes.Length)
-        } finally {
-            $fs.Dispose()
-        }
+        $sourceBytes = [IO.File]::ReadAllBytes($src)
+        $fileStream = New-Object IO.FileStream($dest, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
+        $fileStream.Write($sourceBytes, 0, $sourceBytes.Length)
     } catch {
-        Write-Host "Falha ao criar arquivo: $dest ($($_.Exception.Message))"
-        exit 1
+        throw "Falha ao criar arquivo (conflito ou erro de gravação): $dest"
+    } finally {
+        if ($fileStream -ne $null) { $fileStream.Dispose() }
     }
 }
 
-Write-Host "Instalados $($pending.Count) arquivo(s). Configurações existentes preservadas."
+Write-Host "Instalados $($pendingSources.Count) arquivo(s). Configurações existentes preservadas."

@@ -5,7 +5,7 @@
 - Testes offline do instalador aprovados: auditoria sem escrita, instalação, idempotência, recusa de conflito sem instalação parcial por conflito detectado e recusa de link simbólico.
 - Pacote ZIP e checksums SHA-256 conferidos.
 - Sem execução autenticada nos provedores; carregamento e modelos efetivos ainda dependem de teste na plataforma.
-- Sem teste executado no Windows; instalador usa apenas biblioteca padrão Python.
+- Sem teste executado no Windows; instaladores Shell e PowerShell usam ferramentas nativas.
 
 ## Manual publication smoke scenarios
 

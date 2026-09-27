@@ -10,10 +10,10 @@ Em todas as variantes, a publicação é roteada separadamente: commits e pushes
 
 | Pacote | Destino | Instalação | Modelos mapeados |
 | --- | --- | --- | --- |
-| [codex-global-framework-v5](codex-global-framework-v5/) | Codex | Global, via instaladores da plataforma | Luna, Terra e Sol |
-| [claude-code-global-framework-v5](claude-code-global-framework-v5/) | Claude Code | Por projeto | Haiku, Sonnet e Opus |
-| [gemini-cli-global-framework-v5](gemini-cli-global-framework-v5/) | Gemini CLI / Antigravity | Por projeto | Flash e Pro |
-| [cursor-global-framework-v5](cursor-global-framework-v5/) | Cursor | Por projeto | Composer, Sonnet e Opus |
+| [codex-global-framework-v5](codex-global-framework-v5/) | Codex | Global (padrão) ou Por projeto | Luna, Terra e Sol |
+| [claude-code-global-framework-v5](claude-code-global-framework-v5/) | Claude Code | Por projeto (padrão) ou Global | Haiku, Sonnet e Opus |
+| [gemini-cli-global-framework-v5](gemini-cli-global-framework-v5/) | Gemini CLI / Antigravity | Por projeto (padrão) ou Global | Flash e Pro |
+| [cursor-global-framework-v5](cursor-global-framework-v5/) | Cursor | Por projeto (padrão) ou Global | Composer, Sonnet e Opus |
 
 Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transporte. Cada ZIP inclui uma pasta principal com o nome da distribuição; após extrair, entre nessa pasta para executar o instalador. Isso mantém os arquivos do pacote separados das configurações instaladas, mesmo ao extrair no diretório pessoal. Veja as diferenças de cada variante em [VARIANTES-V5.md](VARIANTES-V5.md) e a arquitetura em [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md).
 

@@ -42,29 +42,22 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Ou diretamente via Python:
-
-```sh
-python scripts/install.py --target /caminho/do/projeto --apply
-# ou global:
-python scripts/install.py --global --apply
-```
-
 O primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.
 
-### Especialista Zabbix opcional
+### Especialistas opcionais (Zabbix e Grafana)
 
-O Zabbix Specialist não é instalado por padrão e não altera os sete agentes ou
-o roteamento Composer/Sonnet/Opus. Para incluir a skill, conhecimento e evals
-de domínio, use a opção explícita junto à aplicação:
+Os especialistas (`zabbix-specialist` e `grafana-specialist`) não são instalados
+por padrão e não alteram os sete agentes ou o roteamento Composer/Sonnet/Opus.
+Para incluir a skill, conhecimento e evals de domínio, use as opções explícitas
+junto à aplicação:
 
 ```bash
 ./scripts/install.sh --target /caminho/do/projeto --with-zabbix-specialist --apply
-python scripts/install.py --target /caminho/do/projeto --with-zabbix-specialist --apply
+./scripts/install.sh --target /caminho/do/projeto --with-grafana-specialist --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist -Apply`. Sem a opção, nenhum arquivo
-do especialista é criado; auditoria e recusa de conflitos permanecem iguais.
+No PowerShell, use `-WithZabbixSpecialist -Apply` ou `-WithGrafanaSpecialist -Apply`.
+Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.
 

@@ -69,29 +69,21 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Ou diretamente via Python:
-
-```bash
-python scripts/install.py --target /caminho/projeto --apply
-# ou global:
-python scripts/install.py --global --apply
-```
-
 Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e preserva idênticos sem sobrescrever arquivos com conflito.
 
-### Especialista Zabbix opcional
+### Especialistas opcionais (Zabbix e Grafana)
 
-O Zabbix Specialist não é instalado por padrão e não altera os sete agentes ou
-o roteamento Haiku/Sonnet/Opus. Para incluir a skill, conhecimento e evals de
-domínio, acrescente a opção explícita:
+Os especialistas (`zabbix-specialist` e `grafana-specialist`) não são instalados
+por padrão e não alteram os sete agentes ou o roteamento Haiku/Sonnet/Opus. Para
+incluir a skill, conhecimento e evals de domínio, acrescente a opção explícita:
 
 ```bash
 ./scripts/install.sh --target /caminho/projeto --with-zabbix-specialist --apply
-python scripts/install.py --target /caminho/projeto --with-zabbix-specialist --apply
+./scripts/install.sh --target /caminho/projeto --with-grafana-specialist --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist -Apply`. Sem a opção, nenhum arquivo
-do especialista é criado; auditoria e recusa de conflitos permanecem iguais.
+No PowerShell, use `-WithZabbixSpecialist -Apply` ou `-WithGrafanaSpecialist -Apply`.
+Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 ## Estrutura
 

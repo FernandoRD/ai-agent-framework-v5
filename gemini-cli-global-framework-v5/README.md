@@ -10,26 +10,27 @@ Esta distribuição suporta tanto instalação por projeto (`--target <projeto>`
 
 A política mantém a classificação, a tabela de risco 0-100, os gatilhos
 obrigatórios, os pisos de risco, as regras de delegação, validação e relatório
-da v5 original. A mudança é honesta com a capacidade exposta pelo Gemini CLI:
+da v5 original. Ela suporta o ecossistema completo de modelos:
 
-| Faixa v5 | Gemini CLI | Agentes |
-| --- | --- | --- |
-| 0-34 | Flash | `flash-explorer`, `flash-worker` |
-| 35-100 | Pro | `pro-worker`, `pro-reviewer`, `pro-specialist`, `pro-risk-reviewer`, `pro-critical` |
+| Faixa v5 | Tier Google | Modelos Google | Agentes |
+| --- | --- | --- | --- |
+| 0-25 | Flash-Lite / Light Flash | `flash_lite`, `gemini-2.5-flash-lite`, `flash` | `flash-explorer`, tarefas mecânicas |
+| 26-55 | Flash | `gemini-2.5-flash`, `gemini-3.8-flash` | `flash-worker` |
+| 56-100 | Pro | `gemini-2.5-pro`, `gemini-3.8-pro` | `pro-worker`, `pro-reviewer`, `pro-specialist`, `pro-risk-reviewer`, `pro-critical` |
 
-Não há uma terceira classe de capacidade equivalente a Terra/Sol. Pisos de
-risco e análise crítica usam Pro. Os sete papéis são especializações de escopo,
-permissão e prompt; não prometem níveis de inteligência distintos.
+### Suporte multi-provedor (Google Antigravity e Workspaces Híbridos)
 
-Os agentes usam os IDs estáveis `gemini-2.5-flash` e `gemini-2.5-pro`.
-Se a conta tiver acesso aos modelos Gemini 3, altere os campos `model` dos
-arquivos de agentes para um ID realmente disponível, como
-`gemini-3-flash-preview` ou `gemini-3-pro-preview`. Não altere o
-roteamento para depender de modelos em preview.
+No Google Antigravity e ambientes com suporte multi-provedor:
+- Modelos como **Anthropic Claude (Sonnet / Opus)** e **OpenAI ChatGPT (GPT-4o / o-series)** podem ser selecionados diretamente no seletor da interface como modelo principal da sessão.
+- Subagentes chamados com `inherit` herdam o modelo ativo da sessão (incluindo Claude ou ChatGPT).
+- Delegações programáticas explícitas podem direcionar subagentes para `pro` (Gemini Pro), `flash` (Gemini Flash), `flash_lite` ou `inherit`.
+- **Regra obrigatória para o agente Flash**: Quando a sessão principal estiver operando em Flash, o agente **não pode reter diretamente** tarefas não triviais com piso de risco Pro (implementações multi-componentes, refatorações amplas, segurança). Ele deve obrigatoriamente despachar subagentes com modelo **Pro** (ou modelo de alto raciocínio ativo).
 
-### Relatório de utilização de modelos no Gemini CLI e Antigravity
+### Relatório de utilização de modelos
 
-Em ambientes Google (Gemini CLI e Google Antigravity), o relatório final e a tabela de utilização de modelos devem reportar estritamente os modelos do Google (**Flash** e **Pro**), nunca modelos da OpenAI (**Luna**, **Terra**, **Sol**). Caso o projeto contenha um `AGENTS.md` legado ou voltado ao Codex com menção a Luna/Terra/Sol, a política do Gemini CLI / Antigravity sobrepõe essas definições para garantir a apresentação correta dos modelos Google na tabela final.
+No Gemini CLI e Antigravity, o relatório final registra as execuções de forma transparente:
+- Execuções Google dividem-se em **Flash** (incluindo Flash-Lite) e **Pro**;
+- Em ambientes com Claude ou ChatGPT ativos/utilizados, essas execuções são reportadas em suas respectivas linhas para fidelidade da telemetria real.
 
 ## Conteúdo e destino
 
@@ -158,25 +159,19 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
 ```
 
-Ou diretamente via Python:
+### Especialistas opcionais (Zabbix e Grafana)
 
-```sh
-python scripts/install.py --target "/caminho/do/projeto" --apply
-```
-
-### Especialista Zabbix opcional
-
-O Zabbix Specialist não é instalado por padrão e não altera os sete agentes ou
-o roteamento Flash/Pro. Para incluir a skill, conhecimento e evals de domínio,
-use a opção explícita junto à aplicação:
+Os especialistas (`zabbix-specialist` e `grafana-specialist`) não são instalados
+por padrão e não alteram os sete agentes ou o roteamento Flash/Pro. Para incluir
+a skill, conhecimento e evals de domínio, use as opções explícitas junto à aplicação:
 
 ```bash
 ./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
-python scripts/install.py --target "/caminho/do/projeto" --with-zabbix-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist -Apply`. Sem a opção, nenhum arquivo
-do especialista é criado; auditoria e recusa de conflitos permanecem iguais.
+No PowerShell, use `-WithZabbixSpecialist -Apply` ou `-WithGrafanaSpecialist -Apply`.
+Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.
 

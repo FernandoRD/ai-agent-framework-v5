@@ -84,7 +84,7 @@ cd codex-global-framework-v5
 python3 scripts/validate.py
 ```
 
-Claude Code, Gemini CLI e Cursor oferecem suporte tanto a instalação por projeto (`--target "/caminho/do/projeto"`) quanto global (`--global` ou `--target ~`). Cada um possui instaladores em Shell Script (`scripts/install.sh`, `scripts/install.fish`), PowerShell (`scripts/install.ps1`) e Python (`scripts/install.py`): sem `--apply` / `-Apply`, apenas listam arquivos pendentes; com `--apply` / `-Apply`, criam arquivos novos com criação exclusiva, preservam arquivos idênticos e recusam conflitos, links simbólicos e pais inválidos:
+Claude Code, Gemini CLI e Cursor oferecem suporte tanto a instalação por projeto (`--target "/caminho/do/projeto"`) quanto global (`--global` ou `--target ~`). Cada um possui instaladores 100% nativos em Shell Script (`scripts/install.sh`, `scripts/install.fish`) e PowerShell (`scripts/install.ps1`) com zero dependência de Python em tempo de instalação: sem `--apply` / `-Apply`, apenas listam arquivos pendentes; com `--apply` / `-Apply`, criam arquivos novos com criação exclusiva, preservam arquivos idênticos e recusam conflitos, links simbólicos e pais inválidos:
 - No projeto, o arquivo de instruções (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) é gerado na raiz do repositório.
 - No global (`$HOME`), o arquivo de instruções é gerado **dentro** da respectiva pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), evitando poluir o `$HOME`.
 
@@ -119,7 +119,22 @@ skills depende da versão e da configuração autenticada de cada plataforma. A
 skill é aplicada pelo agente de capacidade que o roteamento já escolheu; o
 pacote não instala um subagente Zabbix de modelo fixo.
 
-### Alimentação RAG opcional
+### Extensão opcional: Grafana Specialist
+
+Os quatro pacotes também incluem o payload `grafana-specialist` como extensão
+opt-in. Focado no Grafana 12 (com compatibilidade para 11.x e 10.x), fornece
+procedimentos especializados para criação de dashboards de alto impacto visual,
+desenvolvimento robusto no plugin HTML Graphics (`gapit-htmlgraphics-panel`),
+regras de UI/UX para telas de monitoração/NOC, automação segura via API HTTP e
+provisionamento declarativo. Cada payload contém `SKILL.md`, `html-graphics.md`,
+`dashboard-design.md`, `api-and-provisioning.md`, `troubleshooting.md`,
+`knowledge/grafana/` e `evals/grafana/`.
+
+Ative a extensão com `--with-grafana-specialist` (ou `-WithGrafanaSpecialist` no
+PowerShell). Assim como no Zabbix Specialist, a skill é executada pelo agente
+de capacidade escolhido pelo roteador v5 e não instala agentes de modelo fixo.
+
+### Alimentação RAG opcional (Zabbix)
 
 O Zabbix Specialist inclui uma CLI local de ingestão (`rag_ingest.py`) para
 fontes Git e Jira. A configuração JSON e o diretório de dados são externos ao
@@ -145,7 +160,7 @@ da promoção.
 | Gemini CLI / Antigravity | Sete arquivos em `.gemini/agents` e exemplo de settings | Flash e Pro; o principal mantém a orquestração |
 | Cursor | Sete arquivos em `.cursor/agents` e regra `.cursor/rules` | Composer, Sonnet e Opus; instalação por projeto |
 
-Gemini CLI / Google Antigravity não expõe uma terceira classe equivalente a Terra/Sol: os papéis acima de Flash usam Pro. Relatórios de utilização de IA nessa plataforma devem listar estritamente os modelos Google (Flash e Pro), nunca modelos OpenAI (Luna/Terra/Sol). Em todas as adaptações, os modelos são mapeamentos operacionais, não equivalências mensuradas entre fornecedores.
+No Gemini CLI, os papéis mapeiam-se em Flash-Lite, Flash e Pro. No Google Antigravity, o runtime suporta nativamente a seleção e herança de modelos multi-provedor (incluindo Anthropic Claude e OpenAI ChatGPT como modelos principais). Em todas as adaptações, os modelos são mapeamentos operacionais de capacidade e custo, não equivalências idênticas entre fornecedores.
 
 ## Validação e limitações
 
@@ -159,12 +174,12 @@ As pastas `Claude code/` e `Codex/` ficam somente como referência histórica. N
 
 | Módulo | Responsabilidade |
 | --- | --- |
-| Codex `scripts/install_core.py` | Descoberta de configuração e aplicação do framework com backups |
-| Codex `scripts/diagnose_core.py` | Diagnóstico da instalação |
-| Codex `scripts/uninstall_core.py` | Remoção dos componentes gerenciados |
+| Codex `scripts/install.{sh,fish,ps1}` | Descoberta de configuração e aplicação do framework com backups (100% nativo em shell/PowerShell) |
+| Codex `scripts/diagnose.{sh,fish,ps1}` | Diagnóstico nativo da instalação |
+| Codex `scripts/uninstall.{sh,fish,ps1}` | Remoção nativa dos componentes gerenciados |
 | Codex `scripts/validate.py` | Validação estática da distribuição e manifesto |
-| Variantes `scripts/install.{sh,fish,ps1,py}` | Scripts de instalação conservadora com `--target` e `--apply` |
-| Variantes `scripts/test_install.py` | Testes offline em diretórios temporários |
+| Variantes `scripts/install.{sh,fish,ps1}` | Scripts de instalação conservadora com `--target` e `--apply` (100% nativos em shell/PowerShell) |
+| Variantes `scripts/test_install.py` | Testes offline em diretórios temporários para desenvolvimento/CI |
 | `MANIFEST.sha256` | Digest SHA-256 e caminho relativo por arquivo distribuído |
 
 Não há API HTTP, banco de dados nem serviço residente. As interfaces distribuídas são CLIs, Markdown com frontmatter, TOML e JSON de configuração. O hook Codex emite um lembrete JSON no evento `UserPromptSubmit`; não calcula score nem executa roteamento. Os ZIPs das variantes incluem a pasta do pacote; o ZIP Codex contém os arquivos diretamente na raiz e deve ser extraído em uma pasta própria.

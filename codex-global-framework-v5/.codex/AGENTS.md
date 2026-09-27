@@ -193,13 +193,21 @@ trivial turns to avoid these checkpoints.
   or high-risk changes, obtain an independent read-only review from a reviewer
   at the required tier. A discovery or implementation agent does not count as
   an independent reviewer of its own work. Address findings and run relevant
-  checks before reporting completion. Schedule this review while useful parent
-  validation or integration work remains. If higher-priority instructions
-  require parallel useful work and none remains, report the exception below
-  instead of spawning solely to wait.
+  checks before reporting completion. Schedule this review as a concurrent unit
+  while parent validation or complementary integration work proceeds. If no other
+  active work remains, dispatching an independent reviewer to verify before completion
+  is still required to guarantee objective review.
 - Re-evaluate these checkpoints when scope grows, a new component is involved,
   a regression appears, or the investigation changes direction. Reuse existing
   agents for related work instead of repeatedly spawning new ones.
+
+### Active parallelization & batch dispatch (Fan-Out/Fan-In)
+
+- **Prioritize parallel dispatching**: Whenever a non-trivial request can be decomposed into independent subtasks with disjoint read or write boundaries, **actively dispatch 2–4 concurrent subagents in a single batch call** instead of executing them sequentially.
+- **Concurrent exploration & audit**: For large or multi-component discovery, launch parallel explorers targeting distinct domains (e.g. core architecture, test infrastructure, documentation/contracts) concurrently.
+- **Partitioned write scopes**: When changes affect distinct modules, services, or platform packages with non-overlapping directory trees, assign each partition to a dedicated concurrent worker.
+- **Pipelined review & test execution**: As soon as a deliverable is ready, launch an independent read-only reviewer in parallel with ongoing work (such as test execution, parent integration, or next-phase implementation). Do not serialize review after all work is done if it can proceed alongside parent verification.
+- **Shared resource protection**: Keep shared interactive sessions, single-file mutations, or exclusive live resources under a single owner's control to prevent race conditions.
 
 ### Boundaries and exceptions
 
@@ -214,9 +222,7 @@ trivial turns to avoid these checkpoints.
 - If the active model is below the required tier, delegate that unit to an
   agent at or above the required tier. Never escalate the entire request when
   only one bounded unit requires a stronger model.
-- Parallelize only independent tasks with non-overlapping write scopes; use
-  2-4 agents only when that many useful independent units exist. A reviewer can
-  inspect a stable artifact while the parent performs separate validation.
+- Actively apply the parallelization guidelines above whenever independent work exists. Avoid sequential execution bottlenecks when tasks can be safely parallelized.
 - Keep a shared browser session, live mutation, or other exclusive resource
   under one owner's control. Delegate local artifact analysis or review of
   captured evidence instead of letting agents interfere with the live session.

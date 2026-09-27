@@ -6,26 +6,43 @@ import sys
 import tempfile
 import unittest
 
-SCRIPT = Path(__file__).with_name('install.py').resolve()
+SCRIPT = Path(__file__).with_name('install.sh').resolve()
 PAYLOAD = SCRIPT.parents[1] / 'payload'
 OPTIONAL_PAYLOAD = SCRIPT.parents[1] / 'optional' / 'zabbix-specialist' / 'payload'
+GRAFANA_PAYLOAD = SCRIPT.parents[1] / 'optional' / 'grafana-specialist' / 'payload'
 
 
 class InstallerTests(unittest.TestCase):
     def test_zabbix_specialist_is_opt_in(self):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / 'project'
-            base = subprocess.run([sys.executable, str(SCRIPT), '--target', str(target), '--apply'], capture_output=True, text=True)
+            base = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--apply'], capture_output=True, text=True)
             self.assertEqual(base.returncode, 0)
             specialist = target / '.claude' / 'skills' / 'zabbix-specialist' / 'SKILL.md'
             native_agent = target / '.claude' / 'agents' / 'zabbix-specialist.md'
             self.assertFalse(specialist.exists())
-            audit = subprocess.run([sys.executable, str(SCRIPT), '--target', str(target), '--with-zabbix-specialist'], capture_output=True, text=True)
+            audit = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-zabbix-specialist'], capture_output=True, text=True)
             self.assertEqual(audit.returncode, 0)
             self.assertFalse(specialist.exists(), 'optional audit must not write')
-            install = subprocess.run([sys.executable, str(SCRIPT), '--target', str(target), '--with-zabbix-specialist', '--apply'], capture_output=True, text=True)
+            install = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-zabbix-specialist', '--apply'], capture_output=True, text=True)
             self.assertEqual(install.returncode, 0)
             self.assertEqual(specialist.read_bytes(), (OPTIONAL_PAYLOAD / '.claude' / 'skills' / 'zabbix-specialist' / 'SKILL.md').read_bytes())
+            self.assertFalse(native_agent.exists(), 'specialist must not install a model-pinned native agent')
+
+    def test_grafana_specialist_is_opt_in(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project'
+            base = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--apply'], capture_output=True, text=True)
+            self.assertEqual(base.returncode, 0)
+            specialist = target / '.claude' / 'skills' / 'grafana-specialist' / 'SKILL.md'
+            native_agent = target / '.claude' / 'agents' / 'grafana-specialist.md'
+            self.assertFalse(specialist.exists())
+            audit = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-grafana-specialist'], capture_output=True, text=True)
+            self.assertEqual(audit.returncode, 0)
+            self.assertFalse(specialist.exists(), 'optional audit must not write')
+            install = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-grafana-specialist', '--apply'], capture_output=True, text=True)
+            self.assertEqual(install.returncode, 0)
+            self.assertEqual(specialist.read_bytes(), (GRAFANA_PAYLOAD / '.claude' / 'skills' / 'grafana-specialist' / 'SKILL.md').read_bytes())
             self.assertFalse(native_agent.exists(), 'specialist must not install a model-pinned native agent')
 
     def test_install_preserves_existing_data(self):
@@ -34,7 +51,7 @@ class InstallerTests(unittest.TestCase):
 
             def run(*extra):
                 return subprocess.run(
-                    [sys.executable, str(SCRIPT), '--target', str(target), *extra],
+                    ['bash', str(SCRIPT), '--target', str(target), *extra],
                     capture_output=True, text=True)
 
             self.assertEqual(run().returncode, 0)
@@ -57,7 +74,7 @@ class InstallerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / 'fake_home'
             res = subprocess.run(
-                [sys.executable, str(SCRIPT), '--target', str(target), '--global', '--apply'],
+                ['bash', str(SCRIPT), '--target', str(target), '--global', '--apply'],
                 capture_output=True, text=True)
             self.assertEqual(res.returncode, 0)
             for p in PAYLOAD.glob('*.md'):
@@ -82,7 +99,7 @@ class InstallerTests(unittest.TestCase):
             except OSError:
                 self.skipTest('Symlink creation unavailable on this host')
             result = subprocess.run(
-                [sys.executable, str(SCRIPT), '--target', str(link), '--apply'],
+                ['bash', str(SCRIPT), '--target', str(link), '--apply'],
                 capture_output=True, text=True)
             self.assertEqual(result.returncode, 1)
             self.assertEqual(list(outside.iterdir()), [])

@@ -15,7 +15,10 @@ param(
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]
-    [switch]$WithZabbixSpecialist
+    [switch]$WithZabbixSpecialist,
+
+    [Alias("with-grafana-specialist")]
+    [switch]$WithGrafanaSpecialist
 )
 
 $ErrorActionPreference = "Stop"
@@ -97,7 +100,10 @@ if ($isProject) {
     }
     $optionalPlan = @()
     if ($WithZabbixSpecialist) {
-        $optionalPlan = Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist") $targetPath
+        $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist") $targetPath
+    }
+    if ($WithGrafanaSpecialist) {
+        $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\grafana-specialist") $targetPath
     }
     if ($AuditOnly) {
         Write-Host "Audit-only mode: no files changed."
@@ -109,9 +115,9 @@ if ($isProject) {
     $block = [IO.File]::ReadAllText($packageAgents).Trim()
     $finalContent = if ($personal) { "$personal`n`n$block`n" } else { "$block`n" }
     [IO.File]::WriteAllText($agentsFile, $finalContent, [System.Text.Encoding]::UTF8)
-    if ($WithZabbixSpecialist) {
+    if ($WithZabbixSpecialist -or $WithGrafanaSpecialist) {
         Install-OptionalPlan $optionalPlan
-        Write-Host "Optional Zabbix Specialist installed: $($optionalPlan.Count) file(s)."
+        Write-Host "Optional Specialist installed: $($optionalPlan.Count) file(s)."
     }
     Write-Host "`nCodex Framework v5 installed for project: $targetPath"
     exit 0
@@ -130,7 +136,10 @@ if ($fullCodexHome -eq [IO.Path]::GetPathRoot($fullCodexHome) -or $fullSkillsHom
 }
 $optionalPlan = @()
 if ($WithZabbixSpecialist) {
-    $optionalPlan = Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist\.agents\skills\zabbix-specialist") (Join-Path $fullSkillsHome "zabbix-specialist")
+    $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist\.agents\skills\zabbix-specialist") (Join-Path $fullSkillsHome "zabbix-specialist")
+}
+if ($WithGrafanaSpecialist) {
+    $optionalPlan += Get-OptionalInstallPlan (Join-Path $packageDir "optional\grafana-specialist\.agents\skills\grafana-specialist") (Join-Path $fullSkillsHome "grafana-specialist")
 }
 
 $roles = [ordered]@{
@@ -274,9 +283,9 @@ foreach ($rootEntry in @(
 }
 New-Item -ItemType Directory -Force -Path $fullSkillsHome | Out-Null
 foreach ($name in $currentSkills) { Copy-Item -LiteralPath (Join-Path $packageDir ".agents\skills\$name") -Destination (Join-Path $fullSkillsHome $name) -Recurse -Force }
-if ($WithZabbixSpecialist) {
+if ($WithZabbixSpecialist -or $WithGrafanaSpecialist) {
     Install-OptionalPlan $optionalPlan
-    Write-Host "Optional Zabbix Specialist installed: $($optionalPlan.Count) file(s)."
+    Write-Host "Optional Specialist installed: $($optionalPlan.Count) file(s)."
 }
 
 # Replace only marked framework AGENTS content and preserve personal text.

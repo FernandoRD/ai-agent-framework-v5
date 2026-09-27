@@ -49,6 +49,10 @@ optional_skill = ROOT / "optional" / "zabbix-specialist" / ".agents" / "skills" 
 check((optional_skill / "SKILL.md").is_file(), "optional Zabbix Specialist skill missing")
 check(not any((ROOT / "optional" / "zabbix-specialist" / ".codex" / "agents").glob("*.toml")), "optional package must not ship a native Codex agent")
 
+optional_grafana = ROOT / "optional" / "grafana-specialist" / ".agents" / "skills" / "grafana-specialist"
+check((optional_grafana / "SKILL.md").is_file(), "optional Grafana Specialist skill missing")
+check(not any((ROOT / "optional" / "grafana-specialist" / ".codex" / "agents").glob("*.toml")), "optional package must not ship a native Codex agent")
+
 hook_result = subprocess.run(["sh", str(ROOT / ".codex" / "hooks" / "mandatory-router.sh")], capture_output=True, text=True)
 try: context = json.loads(hook_result.stdout)["hookSpecificOutput"]["additionalContext"]; check(len(context) <= 120, "hook context too long")
 except Exception as exc: ERRORS.append(f"invalid hook output: {exc}")

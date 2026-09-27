@@ -34,21 +34,22 @@ personal AGENTS text, unrelated agents, Skills, and hooks are preserved.
 
 ## Install
 
-### Optional Zabbix Specialist
+### Optional Specialists (Zabbix and Grafana)
 
-The Zabbix Specialist is not installed by default and does not change the seven
-framework roles or Luna/Terra/Sol routing. Add `--with-zabbix-specialist` to
-install its domain skill. For a project target it also installs optional
-knowledge and evaluations; global installation adds only the skill under
-`~/.agents/skills/`.
+The optional specialists (`zabbix-specialist` and `grafana-specialist`) are not
+installed by default and do not change the seven framework roles or Luna/Terra/Sol
+routing. Add `--with-zabbix-specialist` and/or `--with-grafana-specialist` to
+install domain skills. For a project target it also installs optional knowledge
+and evaluations; global installation adds only the skill under `~/.agents/skills/`.
 
 ```bash
 ./scripts/install.sh --with-zabbix-specialist
-./scripts/install.sh --target /path/to/project --with-zabbix-specialist
+./scripts/install.sh --with-grafana-specialist
+./scripts/install.sh --target /path/to/project --with-grafana-specialist
 ```
 
-PowerShell accepts `-WithZabbixSpecialist`. The option remains subject to the
-installer's normal audit, backup, and conflict behavior.
+PowerShell accepts `-WithZabbixSpecialist` and `-WithGrafanaSpecialist`. The options
+remain subject to the installer's normal audit, backup, and conflict behavior.
 
 Windows PowerShell:
 

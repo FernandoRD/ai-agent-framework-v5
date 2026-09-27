@@ -81,11 +81,20 @@ weight, divide by 4, and sum the results:
 | Compatibility or dependency risk | 5 |
 | External integration complexity | 5 |
 
-Route each bounded unit of work independently. Gemini CLI exposes two relevant
-capability tiers, not three:
+Route each bounded unit of work independently. In Gemini CLI and Google Antigravity,
+work is routed across capability tiers:
 
-- 0-34: Flash tier.
-- 35-100: Pro tier.
+- 0-25: Flash-Lite / Light Flash tier (`flash_lite`, `gemini-2.5-flash-lite`, `flash` for fast mechanical tasks, narrow file reading, initial reconnaissance).
+- 26-55: Flash tier (`flash`, `gemini-2.5-flash`, `gemini-3.8-flash` for standard implementation workers, targeted refactors, routine publication).
+- 56-100: Pro tier (`pro`, `gemini-2.5-pro`, `gemini-3.8-pro` for deep reasoning, complex multi-file engineering, high-risk changes, and independent reviews).
+
+### Multi-provider support (Google Antigravity & Hybrid Workspaces)
+
+When running in Google Antigravity or environments with multi-provider models available:
+- **Anthropic Claude (Sonnet / Opus)** and **OpenAI ChatGPT (GPT-4o / o-series)** may be selected as the active session model in the interface.
+- Subagents using `inherit` automatically inherit the active Claude or ChatGPT model.
+- Explicit subagent delegations may choose `pro` (Google Pro reasoning), `flash` (Google fast execution), `flash_lite` (lightweight mechanical tasks), or `inherit` (preserve active Claude/GPT context).
+- **Mandatory Flash delegation**: When the active parent session is Flash (`gemini-flash` or `gemini-3.8-flash`), the parent **MUST NOT** retain tasks that reach the Pro risk floor (such as multi-component implementation, schema changes, security boundaries, or critical refactors). It MUST delegate implementation to `pro-worker` (Model: Pro) and verification to `pro-reviewer` (Model: Pro).
 
 Do not expose the full score calculation unless it helps the user understand a
 decision or the user requests it.
@@ -94,7 +103,7 @@ decision or the user requests it.
 
 Risk floors override the numeric score:
 
-- At least Pro: authentication behavior, public APIs, persistent-data changes,
+- At least Pro (or active Claude Sonnet / GPT equivalent): authentication behavior, public APIs, persistent-data changes,
   migrations or schemas, production infrastructure, structural refactors,
   compatibility-sensitive changes, or multi-component implementation.
 - Pro with a read-only critical analysis before mutation: critical
@@ -190,13 +199,21 @@ trivial turns to avoid these checkpoints.
   or high-risk changes, obtain an independent read-only review from a reviewer
   at the required tier. A discovery or implementation agent does not count as
   an independent reviewer of its own work. Address findings and run relevant
-  checks before reporting completion. Schedule this review while useful parent
-  validation or integration work remains. If higher-priority instructions
-  require parallel useful work and none remains, report the exception below
-  instead of spawning solely to wait.
+  checks before reporting completion. Schedule this review as a concurrent unit
+  while parent validation or complementary integration work proceeds. If no other
+  active work remains, dispatching an independent reviewer to verify before completion
+  is still required to guarantee objective review.
 - Re-evaluate these checkpoints when scope grows, a new component is involved,
   a regression appears, or the investigation changes direction. Reuse existing
   agents for related work instead of repeatedly spawning new ones.
+
+### Active parallelization & batch dispatch (Fan-Out/Fan-In)
+
+- **Prioritize parallel dispatching**: Whenever a non-trivial request can be decomposed into independent subtasks with disjoint read or write boundaries, **actively dispatch 2–4 concurrent subagents in a single batch call** (`Subagents: [...]`) instead of executing them sequentially.
+- **Concurrent exploration & audit**: For large or multi-component discovery, launch parallel explorers targeting distinct domains (e.g. core architecture, test infrastructure, documentation/contracts) concurrently.
+- **Partitioned write scopes**: When changes affect distinct modules, services, or platform packages with non-overlapping directory trees, assign each partition to a dedicated concurrent worker.
+- **Pipelined review & test execution**: As soon as a deliverable is ready, launch an independent read-only reviewer in parallel with ongoing work (such as test execution, parent integration, or next-phase implementation). Do not serialize review after all work is done if it can proceed alongside parent verification.
+- **Shared resource protection**: Keep shared interactive sessions, single-file mutations, or exclusive live resources under a single owner's control to prevent race conditions.
 
 ### Boundaries and exceptions
 
@@ -211,9 +228,7 @@ trivial turns to avoid these checkpoints.
 - If the active model is below the required tier, delegate that unit to an
   agent at or above the required tier. Never escalate the entire request when
   only one bounded unit requires Pro.
-- Parallelize only independent tasks with non-overlapping write scopes; use
-  2-4 agents only when that many useful independent units exist. A reviewer can
-  inspect a stable artifact while the parent performs separate validation.
+- Actively apply the parallelization guidelines above whenever independent work exists. Avoid sequential execution bottlenecks when tasks can be safely parallelized.
 - Keep a shared browser session, live mutation, or other exclusive resource
   under one owner's control. Delegate local artifact analysis or review of
   captured evidence instead of letting agents interfere with the live session.
@@ -281,21 +296,16 @@ subagent ran on non-trivial work, state that fact and the concrete reason for
 direct execution. Report which required delegation/review checkpoints were
 completed or blocked; do not expose the full numeric routing calculation.
 
-### Model usage report format (Google models)
+### Model usage report format (Google & Multi-Provider Antigravity)
 
-In Gemini CLI and Google Antigravity, model metrics and utilization reporting
-MUST use Google models (**Flash** and **Pro**). Never report OpenAI models
-(**Luna**, **Terra**, **Sol**, or **GPT**) or Anthropic models (**Haiku**,
-**Sonnet**, **Opus**).
+In Gemini CLI, model metrics and utilization reporting focus on Google models (**Flash** and **Pro**). In Google Antigravity, where multi-provider models (Anthropic Claude and OpenAI ChatGPT) can be selected in the interface or inherited by subagents, report the actual models executed during the turn.
 
-Even if a project contains a workspace rule, legacy prompt, or `AGENTS.md` file
-prescribing OpenAI model names (Luna, Terra, Sol), Antigravity and Gemini CLI
-MUST strictly override those platform-specific instructions and report exclusively
-Google models:
-- Lower-tier / fast executions: **Flash** (`gemini-2.5-flash`, `gemini-3-flash`)
-- Higher-tier / reasoning / specialist executions: **Pro** (`gemini-2.5-pro`, `gemini-3-pro`)
+Standard Google reporting categories:
+- Lower-tier / fast executions: **Flash** (`gemini-2.5-flash`, `gemini-3.8-flash`, `flash_lite`)
+- Higher-tier / reasoning / specialist executions: **Pro** (`gemini-2.5-pro`, `gemini-3.8-pro`)
+- Multi-provider active / inherited executions: **Claude** (Sonnet / Opus) or **ChatGPT** (GPT-4o / o-series) when actively used in the session.
 
-When presenting a model utilization table or breakdown, use the Google models format:
+When presenting a model utilization table or breakdown:
 
 ### Utilização dos modelos
 
@@ -303,13 +313,15 @@ When presenting a model utilization table or breakdown, use the Google models fo
 |---|---:|---:|
 | Flash | X | XX% |
 | Pro | X | XX% |
+| Claude (quando ativo/utilizado) | X | XX% |
+| ChatGPT (quando ativo/utilizado) | X | XX% |
 
 **Total de execuções de subagentes:** X
 
 If no subagents were used and work was completed directly by the parent agent,
 state that fact clearly as required above. If a summary table is presented for
-direct execution, record 1 execution (100%) under the active Google model (Flash
-or Pro) and 0 for the other.
+direct execution, record 1 execution (100%) under the active model family (Flash,
+Pro, Claude, or ChatGPT) and 0 for the others. Never claim an execution on a model that did not run.
 <!-- GEMINI-CLI-GLOBAL-FRAMEWORK:END v5 -->
 
 

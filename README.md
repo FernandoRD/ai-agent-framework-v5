@@ -19,29 +19,35 @@ Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transp
 
 ## Extensões opcionais
 
-O **Zabbix Specialist** é distribuído em todos os quatro pacotes como uma
-skill opcional, mas não faz parte da instalação padrão nem altera os sete
-papéis do framework. Ele adiciona instruções de domínio, módulos para
-troubleshooting/API/templates/banco, uma base de conhecimento local e cenários
-de avaliação. O roteamento de capacidade continua sendo decidido pela política
-v5; o especialista não escolhe nem reduz o nível do modelo.
+Os especialistas de domínio (**Zabbix Specialist** e **Grafana Specialist**) são
+distribuídos em todos os quatro pacotes como skills opcionais, mas não fazem parte
+da instalação padrão nem alteram os sete papéis do framework. Eles adicionam
+instruções de domínio, módulos técnicos especializados, bases de conhecimento locais
+e cenários de avaliação. O roteamento de capacidade continua sendo decidido pela
+política v5; o especialista não escolhe nem reduz o nível do modelo.
 
-Instale-o somente quando o projeto precisar de Zabbix:
+O **Grafana Specialist** prioriza o Grafana 12, desenvolvimento avançado no plugin
+HTML Graphics (ciclo `onInit`/`onRender`, SVG e manipulação de DataFrames sem memory
+leaks), boas práticas de design UI/UX de dashboards e automação segura via API.
+
+Instale-os somente quando o projeto precisar:
 
 ```bash
 # Codex (global ou por projeto)
 ./scripts/install.sh --with-zabbix-specialist
-./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist
+./scripts/install.sh --with-grafana-specialist
+./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist
 
 # Claude Code, Gemini CLI ou Cursor (inclua --apply para escrever)
 ./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
+./scripts/install.sh --target "/caminho/do/projeto" --with-grafana-specialist --apply
 ```
 
-Os instaladores Python aceitam a mesma opção. No PowerShell, use
-`-WithZabbixSpecialist`; nas variantes por projeto, combine-a com `-Apply`.
-Sem essa opção, o conteúdo do especialista não é instalado.
+Os instaladores Python aceitam as mesmas opções. No PowerShell, use
+`-WithZabbixSpecialist` e/ou `-WithGrafanaSpecialist`; nas variantes por projeto,
+combine com `-Apply`. Sem essas opções, o conteúdo dos especialistas não é instalado.
 
-O especialista inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
+O Zabbix Specialist inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
 dentro da skill, recebe configuração JSON criada pelo usuário e grava dados
 somente no diretório de dados informado pelo usuário. Veja `rag-ingestion.md`
 na skill instalada antes de configurar uma fonte ou um agendador externo.
@@ -101,7 +107,7 @@ cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Ou diretamente via Python (`python3` no Linux ou `py -3` no Windows): `python3 scripts/install.py --target "/caminho/do/projeto" --apply` ou `python3 scripts/install.py --global --apply`. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
+Os scripts de instalação são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem dependência de interpretadores externos como Python no momento da instalação. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
 
 ## Limites
 

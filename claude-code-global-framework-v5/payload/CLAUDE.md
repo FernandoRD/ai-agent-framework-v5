@@ -170,11 +170,20 @@ aparentemente triviais para evitar estes checkpoints.
   contrato público ou alto risco, obtenha revisão independente e somente
   leitura no nível exigido. Agente de descoberta ou implementação não pode
   revisar seu próprio trabalho. Trate achados e execute verificações relevantes
-  antes de reportar conclusão; agende a revisão enquanto houver integração ou
-  validação útil em paralelo.
+  antes de reportar conclusão; agende a revisão como unidade concorrente
+  enquanto houver integração ou validação complementar do principal. Se não
+  restar outro trabalho, a revisão independente prévia continua obrigatória.
 - Reavalie estes checkpoints se o escopo crescer, surgir componente novo,
   regressão ou mudança de direção. Reutilize agentes existentes quando o escopo
   ainda couber.
+
+### Paralelização ativa e despacho em lote (Fan-Out / Fan-In)
+
+- **Priorize o despacho paralelo**: Sempre que uma solicitação não trivial puder ser decomposta em subtarefas independentes com limites de leitura ou escrita disjuntos, **despache ativamente de 2 a 4 subagentes concorrentes em uma única chamada em lote** (`Subagents: [...]`) em vez de executá-los em sequência.
+- **Exploração e auditoria concorrente**: Para investigações amplas ou multi-componentes, lance exploradores paralelos focados em domínios distintos (ex: arquitetura central, infraestrutura de testes, documentação/contratos) simultaneamente.
+- **Escopos de escrita particionados**: Quando alterações afetarem módulos, serviços ou pacotes de plataforma distintos com árvores de diretórios sem sobreposição, atribua cada partição a um worker concorrente dedicado.
+- **Pipelining de revisão e testes**: Assim que uma entrega estiver pronta, dispare o revisor independente em paralelo com o trabalho em andamento (como execução de testes ou integração pelo principal). Não serialize a revisão para o final se ela puder rodar concorrentemente com validações do principal.
+- **Proteção de recursos exclusivos**: Mantenha sessões interativas compartilhadas, mutações no mesmo arquivo ou recursos vivos exclusivos sob controle de um único responsável para evitar condições de corrida.
 
 ### Limites e exceções
 
@@ -189,8 +198,7 @@ aparentemente triviais para evitar estes checkpoints.
 - Se o modelo ativo estiver abaixo do nível exigido, delegue a unidade a agente
   daquele nível ou superior. Nunca eleve toda a solicitação quando só uma
   unidade requer modelo mais forte.
-- Paralelize somente unidades independentes, com escrita sem sobreposição; use
-  de 2 a 4 agentes somente quando existirem unidades independentes úteis.
+- Aplique ativamente as diretrizes de paralelização acima sempre que houver trabalho independente. Evite gargalos de execução sequencial quando tarefas puderem ser paralelizadas com segurança.
 - Mantenha uma sessão compartilhada de navegador, mutação ao vivo ou outro
   recurso exclusivo sob um único proprietário; delegue análise local ou revisão
   de evidência capturada.

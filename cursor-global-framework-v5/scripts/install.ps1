@@ -11,7 +11,10 @@ param(
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]
-    [switch]$WithZabbixSpecialist
+    [switch]$WithZabbixSpecialist,
+
+    [Alias("with-grafana-specialist")]
+    [switch]$WithGrafanaSpecialist
 )
 
 $ErrorActionPreference = "Stop"
@@ -40,6 +43,13 @@ $payloadDir = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $scriptDir) 
 $payloadDirs = @($payloadDir)
 if ($WithZabbixSpecialist) {
     $optionalPayload = Join-Path (Split-Path -Parent $scriptDir) "optional\zabbix-specialist\payload"
+    if (-not (Test-Path -LiteralPath $optionalPayload -PathType Container)) {
+        throw "Pacote opcional não encontrado em $optionalPayload"
+    }
+    $payloadDirs += [IO.Path]::GetFullPath($optionalPayload)
+}
+if ($WithGrafanaSpecialist) {
+    $optionalPayload = Join-Path (Split-Path -Parent $scriptDir) "optional\grafana-specialist\payload"
     if (-not (Test-Path -LiteralPath $optionalPayload -PathType Container)) {
         throw "Pacote opcional não encontrado em $optionalPayload"
     }

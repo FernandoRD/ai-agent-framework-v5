@@ -40,15 +40,7 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Ou diretamente via Python:
-
-```sh
-python scripts/install.py --target "/caminho/do/projeto" --apply
-# ou global:
-python scripts/install.py --global --apply
-```
-
-O comando de auditoria (sem `--apply`) somente mostra o que seria criado. Com `--apply`, cria arquivos novos, preserva idênticos e recusa conflitos; não modifica configurações pessoais. Requer Python 3.10+ no Linux/macOS ou PowerShell no Windows. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
+O comando de auditoria (sem `--apply`) somente mostra o que seria criado. Com `--apply`, cria arquivos novos, preserva idênticos e recusam conflitos; não modifica configurações pessoais. Os scripts são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem necessidade de interpretador Python para instalação. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
 
 Para conferir o instalador sem acessar nenhum provedor:
 

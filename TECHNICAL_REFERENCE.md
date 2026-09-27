@@ -99,6 +99,43 @@ python3 scripts/test_install.py
 
 O instalador não é uma transação de múltiplos arquivos: uma falha de I/O pode deixar parte dos novos arquivos criada. Como não sobrescreve arquivos existentes, uma nova execução após resolver a falha completa apenas os faltantes. Atualizações com conflito devem ser comparadas e mescladas manualmente.
 
+### Extensão opcional: Zabbix Specialist
+
+Todos os quatro pacotes incluem o payload `zabbix-specialist` como extensão
+opt-in. Ele não é um oitavo papel de roteamento e não muda o conjunto-base de
+agentes: fornece contexto de domínio para Server, Proxy, Agent/Agent 2,
+templates, LLD, API e banco de dados. Cada payload contém instruções centrais,
+módulos focados, `knowledge/zabbix/` e `evals/zabbix/`.
+
+Ative a extensão com `--with-zabbix-specialist` nos instaladores Shell/Fish e
+Python, ou `-WithZabbixSpecialist` nos instaladores PowerShell. Nas variantes
+Claude, Gemini e Cursor, a criação continua exigindo `--apply`/`-Apply`; sem
+a opção, a instalação padrão permanece inalterada. No Codex, a instalação por
+projeto inclui skill, conhecimento e evals; a instalação global instala somente
+a skill em `~/.agents/skills/`, preservando o caráter opcional.
+
+Os artefatos foram adaptados a cada formato nativo, mas a descoberta efetiva de
+skills depende da versão e da configuração autenticada de cada plataforma. A
+skill é aplicada pelo agente de capacidade que o roteamento já escolheu; o
+pacote não instala um subagente Zabbix de modelo fixo.
+
+### Alimentação RAG opcional
+
+O Zabbix Specialist inclui uma CLI local de ingestão (`rag_ingest.py`) para
+fontes Git e Jira. A configuração JSON e o diretório de dados são externos ao
+pacote e definidos explicitamente pelo operador. A sincronização cria material
+sanitizado em quarentena; a promoção para a base aprovada exige candidato
+nomeado e `--approve`. Não há agendador, credencial ou promoção automática.
+
+O coletor aceita somente URLs Git HTTPS/SSH permitidas e Jira HTTPS permitido;
+tokens Jira são lidos exclusivamente de variável de ambiente. Conteúdo remoto
+é texto não executável, passa por limites de tamanho/tempo e sanitização antes
+de persistir. Para manter um limite de recurso verificável, uma fonte Git V1
+produz exatamente um documento textual e exige ambiente POSIX com limite de
+arquivo; em outra plataforma, a sincronização Git é recusada. Jira permanece
+portável. O guia distribuído documenta os limites e a revisão necessária antes
+da promoção.
+
 ## Mapeamento por plataforma
 
 | Plataforma | Agentes/configuração | Observações |

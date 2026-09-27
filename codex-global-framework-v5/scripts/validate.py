@@ -45,6 +45,10 @@ for name in skill_names:
     meta_text = meta.read_text(encoding="utf-8")
     check(f"${name}" in meta_text and "allow_implicit_invocation: true" in meta_text, f"invalid metadata {name}")
 
+optional_skill = ROOT / "optional" / "zabbix-specialist" / ".agents" / "skills" / "zabbix-specialist"
+check((optional_skill / "SKILL.md").is_file(), "optional Zabbix Specialist skill missing")
+check(not any((ROOT / "optional" / "zabbix-specialist" / ".codex" / "agents").glob("*.toml")), "optional package must not ship a native Codex agent")
+
 hook_result = subprocess.run(["sh", str(ROOT / ".codex" / "hooks" / "mandatory-router.sh")], capture_output=True, text=True)
 try: context = json.loads(hook_result.stdout)["hookSpecificOutput"]["additionalContext"]; check(len(context) <= 120, "hook context too long")
 except Exception as exc: ERRORS.append(f"invalid hook output: {exc}")

@@ -8,7 +8,10 @@ param(
     [switch]$Global,
 
     [Alias("apply")]
-    [switch]$Apply
+    [switch]$Apply,
+
+    [Alias("with-zabbix-specialist")]
+    [switch]$WithZabbixSpecialist
 )
 
 $ErrorActionPreference = "Stop"
@@ -34,6 +37,14 @@ if ($Global) {
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $payloadDir = [IO.Path]::GetFullPath((Join-Path (Split-Path -Parent $scriptDir) "payload"))
+$payloadDirs = @($payloadDir)
+if ($WithZabbixSpecialist) {
+    $optionalPayload = Join-Path (Split-Path -Parent $scriptDir) "optional\zabbix-specialist\payload"
+    if (-not (Test-Path -LiteralPath $optionalPayload -PathType Container)) {
+        throw "Pacote opcional não encontrado em $optionalPayload"
+    }
+    $payloadDirs += [IO.Path]::GetFullPath($optionalPayload)
+}
 
 if (-not (Test-Path -LiteralPath $payloadDir)) {
     Write-Error "Diretório de payload não encontrado em $payloadDir"
@@ -68,7 +79,7 @@ function Check-ChainForSymlinks([string]$path) {
     return $false
 }
 
-$files = Get-ChildItem -LiteralPath $payloadDir -Recurse -Force
+$files = foreach ($payloadRoot in $payloadDirs) { Get-ChildItem -LiteralPath $payloadRoot -Recurse -Force }
 foreach ($item in ($files | Sort-Object FullName)) {
     if (Test-IsSymlink $item.FullName) {
         $errors.Add("Link no pacote: $($item.FullName)")
@@ -78,7 +89,8 @@ foreach ($item in ($files | Sort-Object FullName)) {
         continue
     }
 
-    $relPath = $item.FullName.Substring($payloadDir.Length).TrimStart([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+    $payloadRoot = $payloadDirs | Where-Object { $item.FullName.StartsWith($_, [StringComparison]::OrdinalIgnoreCase) } | Sort-Object Length -Descending | Select-Object -First 1
+    $relPath = $item.FullName.Substring($payloadRoot.Length).TrimStart([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
     if ($isGlobal -and $toolDotDir -and -not $relPath.StartsWith(".")) {
         $dest = [IO.Path]::Combine($targetPath, $toolDotDir, $relPath)
     } else {

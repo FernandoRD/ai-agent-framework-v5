@@ -12,11 +12,59 @@ param(
     [switch]$NoHook,
     [switch]$AuditOnly,
     [Alias("apply")]
-    [switch]$Apply
+    [switch]$Apply,
+
+    [Alias("with-zabbix-specialist")]
+    [switch]$WithZabbixSpecialist
 )
 
 $ErrorActionPreference = "Stop"
 $packageDir = Split-Path -Parent $PSScriptRoot
+
+function Assert-OptionalDirectory([string]$Path, [string]$Label) {
+    $current = [IO.Path]::GetFullPath($Path)
+    while ($true) {
+        if (Test-Path -LiteralPath $current) {
+            $item = Get-Item -LiteralPath $current -Force
+            if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "$Label contains a link or symlink: $current" }
+            if (-not $item.PSIsContainer) { throw "$Label is not a directory: $current" }
+        }
+        $parent = Split-Path -Parent $current
+        if ([string]::IsNullOrEmpty($parent) -or $parent -eq $current) { break }
+        $current = $parent
+    }
+}
+
+function Get-OptionalInstallPlan([string]$Source, [string]$Destination) {
+    Assert-OptionalDirectory $Source "Optional package source"
+    Assert-OptionalDirectory $Destination "Optional package destination"
+    $plan = @()
+    foreach ($item in @(Get-ChildItem -LiteralPath $Source -Recurse -Force)) {
+        if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "Optional package source contains a link or symlink: $($item.FullName)" }
+        if ($item.PSIsContainer) { continue }
+        $relative = $item.FullName.Substring($Source.Length).TrimStart('\\', '/')
+        $target = Join-Path $Destination $relative
+        Assert-OptionalDirectory (Split-Path -Parent $target) "Optional package destination"
+        if (Test-Path -LiteralPath $target) {
+            $existing = Get-Item -LiteralPath $target -Force
+            if (($existing.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "Optional package destination contains a link or symlink: $target" }
+            if ($existing.PSIsContainer) { throw "Optional package conflict (expected file): $target" }
+            if ($existing.Length -ne $item.Length -or (Get-FileHash -LiteralPath $existing.FullName -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash) { throw "Optional package conflict: $target" }
+            continue
+        }
+        $plan += [pscustomobject]@{ Source = $item.FullName; Destination = $target }
+    }
+    return $plan
+}
+
+function Install-OptionalPlan([object[]]$Plan) {
+    foreach ($entry in $Plan) {
+        $parent = Split-Path -Parent $entry.Destination
+        Assert-OptionalDirectory $parent "Optional package destination"
+        if (-not (Test-Path -LiteralPath $parent)) { New-Item -ItemType Directory -Path $parent -ErrorAction Stop | Out-Null }
+        [IO.File]::Copy($entry.Source, $entry.Destination, $false)
+    }
+}
 
 $homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
 $homeFullPath = [IO.Path]::GetFullPath($homeDir)
@@ -47,6 +95,10 @@ if ($isProject) {
     } else {
         Write-Host "- new AGENTS: create AGENTS.md with framework block"
     }
+    $optionalPlan = @()
+    if ($WithZabbixSpecialist) {
+        $optionalPlan = Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist") $targetPath
+    }
     if ($AuditOnly) {
         Write-Host "Audit-only mode: no files changed."
         exit 0
@@ -57,6 +109,10 @@ if ($isProject) {
     $block = [IO.File]::ReadAllText($packageAgents).Trim()
     $finalContent = if ($personal) { "$personal`n`n$block`n" } else { "$block`n" }
     [IO.File]::WriteAllText($agentsFile, $finalContent, [System.Text.Encoding]::UTF8)
+    if ($WithZabbixSpecialist) {
+        Install-OptionalPlan $optionalPlan
+        Write-Host "Optional Zabbix Specialist installed: $($optionalPlan.Count) file(s)."
+    }
     Write-Host "`nCodex Framework v5 installed for project: $targetPath"
     exit 0
 }
@@ -71,6 +127,10 @@ $fullCodexHome = [IO.Path]::GetFullPath($CodexHome)
 $fullSkillsHome = [IO.Path]::GetFullPath($SkillsHome)
 if ($fullCodexHome -eq [IO.Path]::GetPathRoot($fullCodexHome) -or $fullSkillsHome -eq [IO.Path]::GetPathRoot($fullSkillsHome)) {
     throw "Refusing unsafe target path."
+}
+$optionalPlan = @()
+if ($WithZabbixSpecialist) {
+    $optionalPlan = Get-OptionalInstallPlan (Join-Path $packageDir "optional\zabbix-specialist\.agents\skills\zabbix-specialist") (Join-Path $fullSkillsHome "zabbix-specialist")
 }
 
 $roles = [ordered]@{
@@ -214,6 +274,10 @@ foreach ($rootEntry in @(
 }
 New-Item -ItemType Directory -Force -Path $fullSkillsHome | Out-Null
 foreach ($name in $currentSkills) { Copy-Item -LiteralPath (Join-Path $packageDir ".agents\skills\$name") -Destination (Join-Path $fullSkillsHome $name) -Recurse -Force }
+if ($WithZabbixSpecialist) {
+    Install-OptionalPlan $optionalPlan
+    Write-Host "Optional Zabbix Specialist installed: $($optionalPlan.Count) file(s)."
+}
 
 # Replace only marked framework AGENTS content and preserve personal text.
 $block = [IO.File]::ReadAllText((Join-Path $packageDir ".codex\AGENTS.md")).Trim()

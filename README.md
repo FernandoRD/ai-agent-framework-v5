@@ -17,6 +17,35 @@ Em todas as variantes, a publicação é roteada separadamente: commits e pushes
 
 Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transporte. Cada ZIP inclui uma pasta principal com o nome da distribuição; após extrair, entre nessa pasta para executar o instalador. Isso mantém os arquivos do pacote separados das configurações instaladas, mesmo ao extrair no diretório pessoal. Veja as diferenças de cada variante em [VARIANTES-V5.md](VARIANTES-V5.md) e a arquitetura em [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md).
 
+## Extensões opcionais
+
+O **Zabbix Specialist** é distribuído em todos os quatro pacotes como uma
+skill opcional, mas não faz parte da instalação padrão nem altera os sete
+papéis do framework. Ele adiciona instruções de domínio, módulos para
+troubleshooting/API/templates/banco, uma base de conhecimento local e cenários
+de avaliação. O roteamento de capacidade continua sendo decidido pela política
+v5; o especialista não escolhe nem reduz o nível do modelo.
+
+Instale-o somente quando o projeto precisar de Zabbix:
+
+```bash
+# Codex (global ou por projeto)
+./scripts/install.sh --with-zabbix-specialist
+./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist
+
+# Claude Code, Gemini CLI ou Cursor (inclua --apply para escrever)
+./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
+```
+
+Os instaladores Python aceitam a mesma opção. No PowerShell, use
+`-WithZabbixSpecialist`; nas variantes por projeto, combine-a com `-Apply`.
+Sem essa opção, o conteúdo do especialista não é instalado.
+
+O especialista inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
+dentro da skill, recebe configuração JSON criada pelo usuário e grava dados
+somente no diretório de dados informado pelo usuário. Veja `rag-ingestion.md`
+na skill instalada antes de configurar uma fonte ou um agendador externo.
+
 ## Como usar
 
 ### Codex

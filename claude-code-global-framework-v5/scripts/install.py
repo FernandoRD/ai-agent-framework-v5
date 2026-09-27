@@ -9,6 +9,7 @@ def main():
     parser.add_argument('--target', type=Path, default=None, help='Target directory for project installation')
     parser.add_argument('--global', '-g', dest='is_global', action='store_true', help='Install globally to user home directory')
     parser.add_argument('--apply', action='store_true', help='Apply changes (audit-only by default)')
+    parser.add_argument('--with-zabbix-specialist', action='store_true', help='Include the optional Zabbix Specialist package')
     args = parser.parse_args()
 
     home = Path.home().resolve()
@@ -21,41 +22,47 @@ def main():
     else:
         parser.error('one of --target <path> or --global is required')
 
-    payload = Path(__file__).resolve().parents[1] / 'payload'
+    package = Path(__file__).resolve().parents[1]
+    payloads = [package / 'payload']
+    if args.with_zabbix_specialist:
+        payloads.append(package / 'optional' / 'zabbix-specialist' / 'payload')
 
     # Discover tool dot-directory in payload (e.g. .gemini, .claude, .cursor)
     tool_dot_dir = None
-    for item in payload.iterdir():
+    for item in payloads[0].iterdir():
         if item.is_dir() and item.name.startswith('.'):
             tool_dot_dir = item.name
             break
 
     pending, errors = [], []
-    for source in sorted(payload.rglob('*')):
-        if source.is_symlink():
-            errors.append(f'Link no pacote: {source}')
-            continue
-        if not source.is_file():
-            continue
-        source_rel = source.relative_to(payload)
-        if is_global and tool_dot_dir and not source_rel.parts[0].startswith('.'):
-            dest = target / tool_dot_dir / source_rel
-        else:
-            dest = target / source_rel
-
-        chain = [dest, *dest.parents]
-        if any(p.is_symlink() for p in chain):
-            errors.append(f'Link no destino: {dest}')
-        elif any(p.exists() and not p.is_dir() for p in dest.parents):
-            errors.append(f'Pai não é diretório: {dest}')
-        elif dest.exists():
-            if not dest.is_file() or dest.read_bytes() != source.read_bytes():
-                errors.append(f'Conflito, preservar e mesclar manualmente: {dest}')
+    for payload in payloads:
+        if not payload.is_dir():
+            raise SystemExit(f'Pacote opcional não encontrado: {payload}')
+        for source in sorted(payload.rglob('*')):
+            if source.is_symlink():
+                errors.append(f'Link no pacote: {source}')
+                continue
+            if not source.is_file():
+                continue
+            source_rel = source.relative_to(payload)
+            if is_global and tool_dot_dir and not source_rel.parts[0].startswith('.'):
+                dest = target / tool_dot_dir / source_rel
             else:
-                print(f'IDÊNTICO {dest}')
-        else:
-            pending.append((source, dest))
-            print(f'CRIAR {dest}')
+                dest = target / source_rel
+
+            chain = [dest, *dest.parents]
+            if any(p.is_symlink() for p in chain):
+                errors.append(f'Link no destino: {dest}')
+            elif any(p.exists() and not p.is_dir() for p in dest.parents):
+                errors.append(f'Pai não é diretório: {dest}')
+            elif dest.exists():
+                if not dest.is_file() or dest.read_bytes() != source.read_bytes():
+                    errors.append(f'Conflito, preservar e mesclar manualmente: {dest}')
+                else:
+                    print(f'IDÊNTICO {dest}')
+            else:
+                pending.append((source, dest))
+                print(f'CRIAR {dest}')
     if errors:
         for error in errors:
             print(error)

@@ -19,6 +19,16 @@ Evite sobrescrever configurações pessoais ou de projeto nos instaladores. Nas 
 
 Não adicione caminhos pessoais, hostnames internos, tokens ou credenciais à documentação, scripts ou exemplos. Não invente licença, resultados de testes ou suporte a modelos.
 
+## Especialistas opcionais
+
+Todo especialista de domínio novo ou alterado deve ser incluído neste repositório
+como extensão opcional compatível com as quatro distribuições (Codex, Claude
+Code, Gemini CLI e Cursor). A instalação padrão não pode ativá-lo. O
+especialista deve complementar o agente de capacidade que o roteamento já
+selecionou; não crie um perfil nativo de modelo fixo que contorne as faixas de
+risco. Atualize instaladores e testes de cada plataforma, manifestos e ZIPs
+afetados antes de publicar.
+
 ## Verificação antes de publicar
 
 Use Python 3.11+ para a validação Codex e Python 3.10+ para os testes dos instaladores das variantes. Execute apenas os comandos pertinentes aos arquivos alterados:

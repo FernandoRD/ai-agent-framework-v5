@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory = $true)][string]$Distro,
     [switch]$ShareWindowsCodexHome,
     [switch]$NoHook,
-    [switch]$AuditOnly
+    [switch]$AuditOnly,
+    [Alias("with-zabbix-specialist")]
+    [switch]$WithZabbixSpecialist
 )
 $ErrorActionPreference = "Stop"
 $packageDir = Split-Path -Parent $PSScriptRoot
@@ -17,6 +19,7 @@ if ($ShareWindowsCodexHome) {
 }
 $hookArg = if ($NoHook) { " --no-hook" } else { "" }
 $auditArg = if ($AuditOnly) { " --audit-only" } else { "" }
-$command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg"
+$zabbixArg = if ($WithZabbixSpecialist) { " --with-zabbix-specialist" } else { "" }
+$command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$zabbixArg"
 & wsl.exe -d $Distro -- bash -lc $command
 if ($LASTEXITCODE -ne 0) { throw "WSL installation failed with exit code $LASTEXITCODE." }

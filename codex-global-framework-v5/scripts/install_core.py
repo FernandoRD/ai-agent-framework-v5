@@ -28,6 +28,30 @@ LEGACY_SKILLS = (
 CURRENT_SKILLS = ("security-review", "code-review", "dependency-review", "documentation")
 
 
+def install_optional(source: Path, destination: Path) -> int:
+    """Exclusively install an optional package after a complete conflict preflight."""
+    pending: list[tuple[Path, Path]] = []
+    errors: list[str] = []
+    for item in sorted(source.rglob("*")):
+        if item.is_symlink():
+            errors.append(f"Optional package link: {item}")
+        elif item.is_file():
+            target = destination / item.relative_to(source)
+            if any(path.is_symlink() for path in (target, *target.parents)):
+                errors.append(f"Optional destination link: {target}")
+            elif target.exists() and (not target.is_file() or target.read_bytes() != item.read_bytes()):
+                errors.append(f"Optional package conflict: {target}")
+            elif not target.exists():
+                pending.append((item, target))
+    if errors:
+        raise SystemExit("\n".join(errors))
+    for item, target in pending:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("xb") as output:
+            output.write(item.read_bytes())
+    return len(pending)
+
+
 def role_of(path: Path) -> str:
     match = re.search(r'^\s*name\s*=\s*"([^"]+)"', path.read_text(encoding="utf-8-sig"), re.M)
     return match.group(1) if match else path.stem
@@ -84,6 +108,7 @@ def main() -> int:
     parser.add_argument("--no-hook", action="store_true")
     parser.add_argument("--audit-only", action="store_true")
     parser.add_argument("--apply", action="store_true", help="Apply installation (default when not --audit-only)")
+    parser.add_argument("--with-zabbix-specialist", action="store_true", help="Install the optional Zabbix Specialist package")
     args = parser.parse_args()
 
     is_project = False
@@ -115,6 +140,9 @@ def main() -> int:
         personal = re.sub(r"<!-- CODEX-GLOBAL-FRAMEWORK:BEGIN.*?<!-- CODEX-GLOBAL-FRAMEWORK:END.*?-->\s*", "", existing, flags=re.S).strip()
         block = (PACKAGE / ".codex" / "AGENTS.md").read_text(encoding="utf-8").strip()
         agents_file.write_text((personal + "\n\n" if personal else "") + block + "\n", encoding="utf-8")
+        if args.with_zabbix_specialist:
+            count = install_optional(PACKAGE / "optional" / "zabbix-specialist", target_path)
+            print(f"Optional Zabbix Specialist installed: {count} file(s).")
         print(f"\nCodex Framework v5 installed for project: {target_path}")
         return 0
 
@@ -183,6 +211,9 @@ def main() -> int:
     skills.mkdir(parents=True, exist_ok=True)
     for name in CURRENT_SKILLS:
         shutil.copytree(PACKAGE / ".agents" / "skills" / name, skills / name)
+    if args.with_zabbix_specialist:
+        count = install_optional(PACKAGE / "optional" / "zabbix-specialist" / ".agents" / "skills" / "zabbix-specialist", skills / "zabbix-specialist")
+        print(f"Optional Zabbix Specialist installed: {count} file(s).")
 
     agents_file = codex / "AGENTS.md"
     existing = agents_file.read_text(encoding="utf-8-sig") if agents_file.exists() else ""

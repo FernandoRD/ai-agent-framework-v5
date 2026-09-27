@@ -164,6 +164,20 @@ Ou diretamente via Python:
 python scripts/install.py --target "/caminho/do/projeto" --apply
 ```
 
+### Especialista Zabbix opcional
+
+O Zabbix Specialist não é instalado por padrão e não altera os sete agentes ou
+o roteamento Flash/Pro. Para incluir a skill, conhecimento e evals de domínio,
+use a opção explícita junto à aplicação:
+
+```bash
+./scripts/install.sh --target "/caminho/do/projeto" --with-zabbix-specialist --apply
+python scripts/install.py --target "/caminho/do/projeto" --with-zabbix-specialist --apply
+```
+
+No PowerShell, use `-WithZabbixSpecialist -Apply`. Sem a opção, nenhum arquivo
+do especialista é criado; auditoria e recusa de conflitos permanecem iguais.
+
 A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.
 
 Reviewers recebem do principal o diff real ou um arquivo legível com o diff, caminhos modificados e resultados dos testes. Sem esses dados devem reportar revisão incompleta. Eles não executam git nem testes; o principal executa verificações adicionais solicitadas.

@@ -40,17 +40,15 @@
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
-    [Alias("target")]
     [string]$Target,
 
-    [Alias("global", "g")]
+    [Alias("g")]
     [switch]$Global,
 
     [string]$CodexHome,
     [string]$SkillsHome,
     [switch]$NoHook,
     [switch]$AuditOnly,
-    [Alias("apply")]
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]

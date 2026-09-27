@@ -78,7 +78,7 @@ b9008388a2d611f3ea0bcf0fa86a38cb9cff0011eb65df6f0dcf8d6d9323ddef  ./payload/.gem
 5d8b80f56e1210609ab5f85f50308cdc5f036073dcd8aebc07717b9b853c1170  ./payload/.gemini/agents/pro-worker.md
 6b3d358a78564549c4d1f00ef21d248fd84d0a721cd7be29cbc558f4971884f3  ./payload/GEMINI.md
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-172ed360c8d77437852bfba8918df60e99752308f2381961ac565182f5bf4856  ./scripts/install.ps1
+3e6cd0d94cac0598e51420cdabf12f81b8006fd099e9b99e512e0c3c42b65d93  ./scripts/install.ps1
 412fcfc21abbe0b0ce8ae390f730f2f8ba88b1250708094c28342b2e5c01cba0  ./scripts/install.sh
 a8e1754fb069dcae74fedbb5df8b2cc7bc81c980702617b9423ae360bfc9aa96  ./scripts/test_install.py
 e09578a8b97468a426b00c450793994d4237d1e534f55367bef7cea5e798d6b0  ./settings.example.json

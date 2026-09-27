@@ -97,7 +97,7 @@ a6fd555bb094f0a7bf834bef3a013d47ac3e2fb8491d58acec438998aaf8538f  ./optional/zab
 29376c7ff34be81f3d86c8b7f2120fe0987649a3abb6eaf5989e4b9116ae3c01  ./scripts/diagnose.sh
 a0802477764a3ee181630114bea76476aa55f7aa251f374b16dd2b21adeba3a2  ./scripts/install-wsl.ps1
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-23362e3fc4ddfed07d049bd1f7cde14aed379233e44898861c43a19a3b1ca2a7  ./scripts/install.ps1
+a3d39b4530161212c787a05b1caea8a5af8d111c662525680e7bb1b5c3ba5dd1  ./scripts/install.ps1
 169f5eea79f21287bba66a239612386ffd41d8285c0de61b6dd064e1a650c595  ./scripts/install.sh
 13e7ec062aeb52ca5412842c1c19b08d7d3860b4110fa61fe11c50f6abb85bca  ./scripts/uninstall.fish
 c29f8a9886f46216c842767f54f930978c07aef4ec278daf15b90ff1dbbe0f71  ./scripts/uninstall.ps1

@@ -36,13 +36,11 @@
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
-    [Alias("target")]
     [string]$Target,
 
-    [Alias("global", "g")]
+    [Alias("g")]
     [switch]$Global,
 
-    [Alias("apply")]
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]

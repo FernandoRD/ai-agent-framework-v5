@@ -1,6 +1,6 @@
-79d27994321a49e0297cc80fffb1d3f346719d9a9efd2e00f8707141b4bb6607  ./README.md
-1185f3800da7dc7b31b52f997ecb2f9d93062e1a7036e903f234f6a533c2cd5d  ./VALIDACAO.md
-4f3ecf1369d923d499c02b8f6a5e3b218d04b6b95a6b30735786da576951d889  ./VARIANTES-V5.md
+797627471efece09dc05dcbe32bef7db251e216db55b8a74d9dee270ad377188  ./README.md
+bd4228059c3fee4f1c63b30a1ed42b74d40f5b941e1f32723b5b11fe9caf1d6c  ./VALIDACAO.md
+2240d2d278b2f3acc655234932f9b04f72af435a0c4ba54290e288c506efc450  ./VARIANTES-V5.md
 a23a00019419c07c4e92f33e8afd0f85ac5a0d2b9138059c2cdd1d10dce3ec3f  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/inventory-and-vault.md
@@ -76,8 +76,8 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 9f03fa743b7ee5672a8a163eb4437159e0ca8aecc480645aea766e40b2ad597b  ./payload/.cursor/agents/sol-specialist.md
 0ae797a60983f296e556d80f56c9f7aab6ae26567742bc7f5cf0d2e8173df07b  ./payload/.cursor/agents/terra-reviewer.md
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
-0f6bffb6a96ab6c268facd44ef49a1ad3164480e8a3b9445b97b24e3c9f4071b  ./payload/.cursor/rules/framework-v5.mdc
+638dd83e3a8ad40ca85511c14b352328dedec2a389c350a502b26cba61e5a233  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-3e6cd0d94cac0598e51420cdabf12f81b8006fd099e9b99e512e0c3c42b65d93  ./scripts/install.ps1
-412fcfc21abbe0b0ce8ae390f730f2f8ba88b1250708094c28342b2e5c01cba0  ./scripts/install.sh
-eafc031f68c05ea9fc932e8be519c45a6a3a9a1739b7875b26cd62ad42c0aefb  ./scripts/test_install.py
+808b2dae96760532b0136f176764d04f075f230c9ddbb54b16295a9cf7d4a366  ./scripts/install.ps1
+323675a641c59b8973237940585f724198e567fc87ccf416fec5d89c15fe4059  ./scripts/install.sh
+c07448e69f59523db2eb90c593916482e496e874a9ca5bef12e60d13820d812e  ./scripts/test_install.py

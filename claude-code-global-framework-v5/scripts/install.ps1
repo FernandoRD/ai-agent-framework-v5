@@ -97,9 +97,9 @@ Especialistas de domínio opcionais:
   -WithPrometheusSpecialist      Instala o especialista Prometheus (PromQL/exporters/alerting)
   -WithNetopsSpecialist          Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
   -WithSreSpecialist             Instala o especialista SRE Incident (Incident Command/SLOs)
-                                 (alias: -WithSreIncidentSpecialist)
+                                 (alias: -with-sre-specialist, -with-sre-incident-specialist)
   -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
-                                 (alias: -WithDatabaseTuningSpecialist)
+                                 (alias: -with-db-tuning-specialist, -with-database-tuning-specialist)
   -WithProxmoxSpecialist         Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
   -WithAllSpecialists            Instala todos os 9 especialistas de domínio acima
 "@
@@ -110,6 +110,12 @@ if ($Help) {
     exit 0
 }
 
+if ($PSBoundParameters.ContainsKey('Target') -and [string]::IsNullOrWhiteSpace($Target)) {
+    [Console]::Error.WriteLine("Erro: -Target exige um caminho.")
+    Show-Usage
+    exit 1
+}
+
 if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
     Show-Usage
     exit 1
@@ -118,12 +124,29 @@ if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
 $homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
 $homeFullPath = [IO.Path]::GetFullPath($homeDir)
 
+function Resolve-TargetPath([string]$Path) {
+    # Uses the PowerShell location (not the .NET process directory) and expands ~.
+    if ($Path -eq '~' -or $Path.StartsWith('~/') -or $Path.StartsWith('~\')) {
+        $Path = Join-Path $homeFullPath $Path.Substring(1).TrimStart('\', '/')
+    }
+    $full = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
+    $root = [IO.Path]::GetPathRoot($full)
+    if ($full.Length -gt $root.Length) { $full = $full.TrimEnd('\', '/') }
+    return $full
+}
+
 if ($Global) {
-    $targetPath = if ([string]::IsNullOrWhiteSpace($Target)) { $homeFullPath } else { [IO.Path]::GetFullPath($Target) }
+    $targetPath = if ([string]::IsNullOrWhiteSpace($Target)) { $homeFullPath } else { Resolve-TargetPath $Target }
     $isGlobal = $true
 } else {
-    $targetPath = [IO.Path]::GetFullPath($Target)
+    $targetPath = Resolve-TargetPath $Target
     $isGlobal = ($targetPath.TrimEnd('\', '/') -eq $homeFullPath.TrimEnd('\', '/'))
+}
+
+# Safety check: refuse a filesystem/drive root (parity with install.sh refusing '/')
+if ($targetPath -eq [IO.Path]::GetPathRoot($targetPath)) {
+    [Console]::Error.WriteLine("Erro: Recusando instalar no caminho raiz '$targetPath'.")
+    exit 1
 }
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path

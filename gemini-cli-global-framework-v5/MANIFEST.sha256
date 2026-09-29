@@ -1,6 +1,6 @@
-d7012e13ca7ad95640e5b6e4db4633c567af45c6f91af989080afcc7f4eac415  ./README.md
-1e561510cd5e8ef3915bac79d2324a817c72c02f2bb03f52e6d1b2e8d92cad85  ./VALIDACAO.md
-4f3ecf1369d923d499c02b8f6a5e3b218d04b6b95a6b30735786da576951d889  ./VARIANTES-V5.md
+1ce5b9e6eab7fb1f03f817cbae18f9a7e354d59ea17973ce003ca811cf5b1010  ./README.md
+aa26dd987fab25da8f96808d03d479bb98ca5478309d7ef0cc204e27922ce7f5  ./VALIDACAO.md
+2240d2d278b2f3acc655234932f9b04f72af435a0c4ba54290e288c506efc450  ./VARIANTES-V5.md
 025ed4580d9b7b451d96cf4fcf3ca366be6caf6cfc34b8b19efdee083360c7fb  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.gemini/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.gemini/skills/ansible-specialist/inventory-and-vault.md
@@ -76,9 +76,9 @@ b9008388a2d611f3ea0bcf0fa86a38cb9cff0011eb65df6f0dcf8d6d9323ddef  ./payload/.gem
 9a09b3d101bed421b1f45cfdb8daa0b90a1f82faec6d32f758fbddfd08c70319  ./payload/.gemini/agents/pro-risk-reviewer.md
 78c4eb06e9ec04f115f2b6c0b190968ce5a22f5fbcd36796fb89f7285ba3cdf3  ./payload/.gemini/agents/pro-specialist.md
 5d8b80f56e1210609ab5f85f50308cdc5f036073dcd8aebc07717b9b853c1170  ./payload/.gemini/agents/pro-worker.md
-6b3d358a78564549c4d1f00ef21d248fd84d0a721cd7be29cbc558f4971884f3  ./payload/GEMINI.md
+2d2d0e9a9cd560e1f16aebbf977789a9df090e16703badc5a49394fe86a22045  ./payload/GEMINI.md
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-3e6cd0d94cac0598e51420cdabf12f81b8006fd099e9b99e512e0c3c42b65d93  ./scripts/install.ps1
-412fcfc21abbe0b0ce8ae390f730f2f8ba88b1250708094c28342b2e5c01cba0  ./scripts/install.sh
-a8e1754fb069dcae74fedbb5df8b2cc7bc81c980702617b9423ae360bfc9aa96  ./scripts/test_install.py
+808b2dae96760532b0136f176764d04f075f230c9ddbb54b16295a9cf7d4a366  ./scripts/install.ps1
+323675a641c59b8973237940585f724198e567fc87ccf416fec5d89c15fe4059  ./scripts/install.sh
+c07448e69f59523db2eb90c593916482e496e874a9ca5bef12e60d13820d812e  ./scripts/test_install.py
 e09578a8b97468a426b00c450793994d4237d1e534f55367bef7cea5e798d6b0  ./settings.example.json

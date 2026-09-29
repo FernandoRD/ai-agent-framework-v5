@@ -2,7 +2,7 @@
 
 Variante da política v5 para projetos usados com o Gemini CLI. O pacote é um
 payload de instalação: contém apenas os arquivos que devem chegar ao projeto.
-Inclui instalador Python por projeto e testes offline. O exemplo de settings fica separado para mesclagem manual.
+Inclui instaladores Shell/PowerShell e testes offline. O exemplo de settings fica separado para mesclagem manual.
 
 Esta distribuição suporta tanto instalação por projeto (`--target <projeto>`) quanto instalação global no `$HOME` do usuário (`--global` ou `--target ~`). Ela não altera configurações pessoais alheias, hooks ou Skills existentes de outros assistentes.
 
@@ -14,23 +14,24 @@ da v5 original. Ela suporta o ecossistema completo de modelos:
 
 | Faixa v5 | Tier Google | Modelos Google | Agentes |
 | --- | --- | --- | --- |
-| 0-25 | Flash-Lite / Light Flash | `flash_lite`, `gemini-2.5-flash-lite`, `flash` | `flash-explorer`, tarefas mecânicas |
-| 26-55 | Flash | `gemini-2.5-flash`, `gemini-3.8-flash` | `flash-worker` |
-| 56-100 | Pro | `gemini-2.5-pro`, `gemini-3.8-pro` | `pro-worker`, `pro-reviewer`, `pro-specialist`, `pro-risk-reviewer`, `pro-critical` |
+| 0-34 | Flash | `gemini-2.5-flash` | `flash-explorer`, `flash-worker` |
+| 35-69 | Pro | `gemini-2.5-pro` | `pro-worker`, `pro-reviewer` |
+| 70-100 | Pro (alto risco) | `gemini-2.5-pro` | `pro-specialist`, `pro-risk-reviewer`, `pro-critical` |
 
-### Suporte multi-provedor (Google Antigravity e Workspaces Híbridos)
+O pacote fixa o mesmo modelo Pro nas duas faixas superiores; a faixa escolhe o papel do agente, não outro modelo.
 
-No Google Antigravity e ambientes com suporte multi-provedor:
-- Modelos como **Anthropic Claude (Sonnet / Opus)** e **OpenAI ChatGPT (GPT-4o / o-series)** podem ser selecionados diretamente no seletor da interface como modelo principal da sessão.
-- Subagentes chamados com `inherit` herdam o modelo ativo da sessão (incluindo Claude ou ChatGPT).
-- Delegações programáticas explícitas podem direcionar subagentes para `pro` (Gemini Pro), `flash` (Gemini Flash), `flash_lite` ou `inherit`.
+### Modelos de outros provedores (não verificado)
+
+Este pacote fixa apenas modelos Gemini (`gemini-2.5-pro` e `gemini-2.5-flash`) nos
+agentes. O uso de outros provedores no Google Antigravity, a herança de modelo
+(`inherit`) por subagentes e a delegação programática entre modelos não foram
+verificados nem são sustentados pela documentação do Gemini CLI consultada;
+não dependa deles.
 - **Regra obrigatória para o agente Flash**: Quando a sessão principal estiver operando em Flash, o agente **não pode reter diretamente** tarefas não triviais com piso de risco Pro (implementações multi-componentes, refatorações amplas, segurança). Ele deve obrigatoriamente despachar subagentes com modelo **Pro** (ou modelo de alto raciocínio ativo).
 
 ### Relatório de utilização de modelos
 
-No Gemini CLI e Antigravity, o relatório final registra as execuções de forma transparente:
-- Execuções Google dividem-se em **Flash** (incluindo Flash-Lite) e **Pro**;
-- Em ambientes com Claude ou ChatGPT ativos/utilizados, essas execuções são reportadas em suas respectivas linhas para fidelidade da telemetria real.
+O relatório final registra as execuções dos agentes do pacote: **Flash** (`gemini-2.5-flash`) e **Pro** (`gemini-2.5-pro`). Outros provedores (Claude, ChatGPT) não são verificados por este pacote; só inclua linha para eles se o usuário os configurar e eles realmente executarem.
 
 ## Conteúdo e destino
 
@@ -128,7 +129,6 @@ automatizado de worktrees continua experimental e desabilitado por padrão.
 - [Subagents do Gemini CLI](https://geminicli.com/docs/core/subagents/)
 - [Configuração e schema de settings](https://geminicli.com/docs/reference/configuration/)
 - [Seleção de modelos](https://geminicli.com/docs/cli/model/)
-- [Gemini 3 no Gemini CLI](https://geminicli.com/docs/get-started/gemini-3/)
 
 ## Validação
 
@@ -140,7 +140,7 @@ porque este pacote não instala nem inicia o runtime.
 
 ## Instalação por projeto
 
-Dentro do pacote extraído, execute usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+):
+Dentro do pacote extraído, execute usando o instalador de sua preferência (Bash, Fish ou PowerShell):
 
 No Linux/macOS (Bash ou Fish):
 
@@ -149,7 +149,7 @@ No Linux/macOS (Bash ou Fish):
 ./scripts/install.sh --target "/caminho/do/projeto" --apply
 # ou no Fish:
 ./scripts/install.fish "/caminho/do/projeto" --apply
-python scripts/test_install.py
+python3 scripts/test_install.py  # testes do instalador (requer Python 3.10+; não é um instalador)
 ```
 
 No Windows (PowerShell):
@@ -172,9 +172,11 @@ use as opções explícitas junto à aplicação:
 ./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 ```
 
-No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
+No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.
+
+Uma vez que o destino seja normalizado lexicalmente (`.`, `..`, `//`; só `~` e `~/...` expandem para o HOME), um alvo que resolva para o próprio HOME é tratado como global. Por desenho, o instalador recusa qualquer alvo cujo caminho informado atravesse um link simbólico, inclusive um `$HOME` sob um link (por exemplo `/home -> /var/home`); informe o caminho físico. Divergências conhecidas entre `install.sh` e `install.ps1`: link de diretório dentro do payload é detectado de forma diferente no Windows PowerShell 5.1 e no PowerShell 7, e um link pendente no destino só é tratado de forma garantida pelo `install.sh`.
 
 Reviewers recebem do principal o diff real ou um arquivo legível com o diff, caminhos modificados e resultados dos testes. Sem esses dados devem reportar revisão incompleta. Eles não executam git nem testes; o principal executa verificações adicionais solicitadas.

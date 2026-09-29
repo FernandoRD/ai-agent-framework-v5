@@ -2,13 +2,15 @@
 
 Geradas em 12/09/2026; política de execução e publicação sincronizada em 17/09/2026 com `codex-global-framework-v5/.codex/AGENTS.md`.
 
-| Pacote | Plataforma | Faixas de execução |
-| --- | --- | --- |
-| `claude-code-global-framework-v5.zip` | Claude Code | Haiku / Sonnet / Opus |
-| `gemini-cli-global-framework-v5.zip` | Gemini CLI / Antigravity | Flash / Pro; consultar limites na adaptação |
-| `cursor-global-framework-v5.zip` | Cursor | Composer / Sonnet / Opus |
+| Pacote | Versão | Plataforma | Faixas de execução |
+| --- | --- | --- | --- |
+| `claude-code-global-framework-v5.zip` | 5.2.0-claude-code | Claude Code | Haiku / Sonnet / Opus |
+| `gemini-cli-global-framework-v5.zip` | 5.0.0-gemini-cli | Gemini CLI / Antigravity | 0-34 Flash; 35-69 e 70-100 Pro (mesmo modelo Pro nas duas faixas superiores; a faixa escolhe o papel do agente) |
+| `cursor-global-framework-v5.zip` | 5.0.0-cursor | Cursor | Composer / Sonnet / Opus |
 
-Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalador unificado com suporte a instalação por projeto (`--target <pasta>`) ou global no `$HOME` (`--global` ou `--target ~`). Na instalação no projeto, o arquivo de instruções fica na raiz do projeto; na instalação global, ele fica guardado dentro da respectiva pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), mantendo o `$HOME` limpo.
+As versões vêm do arquivo `VERSION` de cada pacote e divergem porque as variantes evoluem separadamente. Em particular, a política do Claude Code (`CLAUDE.md`) é a mais recente: torna a delegação mandatória e traz agentes nativos de especialistas e `--uninstall`. As políticas do Gemini CLI e do Cursor não foram sincronizadas com essa versão e podem diferir na delegação e nas exceções de execução direta. Não há paridade funcional entre as variantes; compare o `CLAUDE.md`, o `GEMINI.md` e a regra do Cursor antes de assumir o mesmo comportamento.
+
+Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalador unificado com suporte a instalação por projeto (`--target <pasta>`) ou global no `$HOME` (`--global` ou `--target ~`). Na instalação no projeto, o arquivo de instruções fica na raiz do projeto; na instalação global, ele fica guardado dentro da respectiva pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, a regra em `~/.cursor/rules/`), mantendo o `$HOME` limpo.
 
 ## Usar
 
@@ -46,12 +48,16 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Global -Apply
 ```
 
-O comando de auditoria (sem `--apply`) somente mostra o que seria criado. Com `--apply`, cria arquivos novos, preserva idênticos e recusam conflitos; não modifica configurações pessoais. Os scripts são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem necessidade de interpretador Python para instalação. Para consultar as opções e o catálogo completo dos 9 especialistas, execute `./scripts/install.sh --help` ou `.\scripts\install.ps1 -Help`. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
+A auditoria (sem `--apply`) nunca escreve em disco, inclusive com `--global`, e só mostra o que seria criado. Com `--apply`, o instalador cria arquivos novos (no Bash, criação exclusiva via `cat > destino` sob `noclobber`), preserva idênticos, recusa conflitos e links simbólicos (inclusive alvo global que seja link simbólico) e não modifica configurações pessoais. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação. Os scripts são nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`); Python não é necessário para instalar. Só o Claude Code (`install.sh` e `install.fish`) tem `--uninstall` (auditoria por padrão, remoção com `--apply`, preservando arquivos modificados); `install.ps1`, Gemini CLI e Cursor não têm. Os especialistas aceitam aliases (`--with-sre-specialist`, `--with-db-tuning-specialist`; no PowerShell, `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`). Para consultar as opções e o catálogo completo dos 9 especialistas, execute `./scripts/install.sh --help` ou `.\scripts\install.ps1 -Help`. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
 
-Para conferir o instalador sem acessar nenhum provedor:
+Nos instaladores `install.sh` das variantes por projeto, o alvo é normalizado lexicalmente (`.`, `..`, `//`) e é recusado se o caminho atravessar um link simbólico, inclusive no modo global.
+
+Divergência intencional: a política de delegação mandatória (5.2.0) existe apenas no `payload/CLAUDE.md` da variante Claude Code; não se afirma sincronização com as demais distribuições, incluindo a Codex.
+
+Para conferir o instalador sem acessar nenhum provedor (Python 3.10+; 17 testes no Claude Code, 15 no Gemini CLI e no Cursor):
 
 ```sh
-python scripts/test_install.py
+python3 scripts/test_install.py
 ```
 
 O pacote preserva classificação trivial/não trivial, pesos e faixas do score, pisos de risco, delegação delimitada, revisão independente e relatório de execuções. Os nomes dos modelos não representam equivalência de capacidade entre fornecedores. A prioridade é analisar e decompor o trabalho, atribuir cada unidade ao menor agente suficiente dentro do mapeamento da plataforma e reservar ao principal a coordenação e integração. Isso não significa tentar sempre o modelo menor: os pisos de risco continuam obrigatórios. Delegação útil e revisão independente têm gatilhos explícitos; exceções devem ser justificadas. A política orienta o agente; não existe despachante externo que imponha cada decisão.

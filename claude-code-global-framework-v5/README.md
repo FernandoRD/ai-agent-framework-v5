@@ -4,7 +4,7 @@ Pacote v5 com roteamento obrigatório, econômico e orientado a risco para uso p
 
 ## Modelo principal sugerido
 
-Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica cada pedido e pode executá-lo diretamente quando já tiver capacidade suficiente; subagentes são usados apenas quando adicionam capacidade, isolamento, paralelismo, revisão independente ou economia de contexto.
+Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica, decompõe, delega, coordena e integra. **O uso de subagentes é mandatório**: toda unidade delegável, inclusive trivial, vai para o subagente do nível exigido, e a execução direta só é aceita diante de um dos bloqueios concretos listados em `CLAUDE.md` (subagentes indisponíveis, pedido explícito do usuário, recurso exclusivo do principal ou pergunta sem ação).
 
 ## Mapeamento v5
 
@@ -39,7 +39,7 @@ histórico; a delegação indisponível deve ser reportada com o bloqueio concre
 
 ## Instalação por projeto e global
 
-O pacote é um payload para instalação tanto em um repositório de projeto quanto globalmente no `$HOME` do usuário. Os instaladores estão incluídos em `scripts/` (Bash, Fish, PowerShell e Python 3.10+):
+O pacote é um payload para instalação tanto em um repositório de projeto quanto globalmente no `$HOME` do usuário. Os instaladores estão incluídos em `scripts/` (Bash, Fish e PowerShell; Python 3.10+ é usado apenas por `scripts/test_install.py`):
 - **No projeto (`--target /caminho/projeto`)**: `CLAUDE.md` é copiado para a raiz do repositório e os subagentes para `.claude/agents/`.
 - **Global no `$HOME` (`--global` ou `--target ~`)**: `CLAUDE.md` e os subagentes ficam **dentro** de `~/.claude/` (`~/.claude/CLAUDE.md` e `~/.claude/agents/`), mantendo o `$HOME` limpo.
 
@@ -71,6 +71,12 @@ No Windows (PowerShell):
 
 Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e preserva idênticos sem sobrescrever arquivos com conflito.
 
+Resolução do alvo: `~` e `~/...` são expandidos (`~foo` é um nome relativo literal); `.`, `..` e `//` são normalizados lexicalmente, sem seguir links, antes da comparação com o `$HOME`; um alvo que resolve ao `$HOME` é tratado como global (instala em `~/.claude/`). A raiz (`/`, ou a raiz de unidade no PowerShell) é recusada.
+
+**Alvo cujo caminho passa por link simbólico é recusado por desenho**, inclusive o `$HOME` global quando algum componente é link (por exemplo `/home` apontando para `/var/home` em sistemas atômicos). Para contornar, passe o caminho físico já resolvido (`--target "$(cd "$HOME" && pwd -P)"`, ou `-Target` com o caminho real no PowerShell). Não foi observado em macOS (por exemplo `/var` -> `/private/var`); nesse sistema, use o caminho físico do mesmo modo.
+
+Divergências conhecidas entre `install.sh` e `install.ps1`: `install.sh` oferece `--uninstall` e aceita `--target=valor`; `install.ps1` só instala/audita. O `install.ps1` só foi exercitado em `pwsh` no Linux. Os arquivos instalados recebem o modo padrão do sistema (o pacote não contém executáveis).
+
 ### Especialistas opcionais
 
 Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
@@ -94,7 +100,7 @@ Os sete agentes de roteamento não mudam. Revisão independente continua com
 ./scripts/install.sh --target /caminho/projeto --with-all-specialists --apply
 ```
 
-No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
+No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply` (SRE e Database Tuning: `-WithSreSpecialist` e `-WithDbTuningSpecialist`, ou os aliases kebab-case `-with-sre-incident-specialist` e `-with-database-tuning-specialist`).
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 ### Desinstalação e atualização
@@ -102,7 +108,7 @@ Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de
 `--uninstall` remove somente arquivos intactos: os idênticos ao pacote atual e os que
 batem com o hash de uma versão anterior registrada em `scripts/legacy-hashes.sha256`.
 Arquivos modificados e arquivos que não pertencem ao pacote são preservados e listados.
-Diretórios que ficarem vazios são removidos. Sem `--apply`, apenas audita.
+Diretórios que ficarem vazios são removidos. Sem `--apply`, apenas audita e nada é escrito em disco.
 
 ```bash
 # Auditar e depois remover uma instalação global com todos os especialistas:
@@ -147,14 +153,15 @@ claude-code-global-framework-v5/
 
 - Isto é configuração declarativa: o Claude Code decide a delegação a partir de `description`, portanto a política orienta o comportamento e não é um roteador externo que garanta a pontuação ou a chamada de cada modelo.
 - `effort` depende de versão, plano e disponibilidade do modelo no ambiente. Se um valor não for suportado, ajuste-o à lista aceita pela instalação local.
-- O pacote inclui testes offline do instalador (`python scripts/test_install.py`), mas não foi executado em sessão autenticada no Claude Code. Confirme a descoberta invocando um agente de leitura e confira o modelo efetivo em `/tasks`.
+- O pacote inclui testes offline do instalador (`python3 scripts/test_install.py`), mas não foi executado em sessão autenticada no Claude Code. Confirme a descoberta invocando um agente de leitura e confira o modelo efetivo em `/tasks`.
 - A instalação pode ser por projeto ou global. O pacote não migra configuração existente, não instala hooks e não transporta Skills do Codex; as skills incluídas são as dos especialistas opcionais.
 - O campo `skills` dos agentes especialistas depende de uma versão do Claude Code que suporte pré-carregamento de skills em subagentes. Se a skill não carregar, o agente ainda pode invocá-la pela ferramenta `Skill`.
 - O escopo do projeto tem prioridade sobre agentes pessoais quando os nomes colidem; evite duplicar os nomes deste pacote dentro da mesma árvore `.claude/agents/`.
+- Divergência intencional: a política de delegação mandatória (5.2.0) existe apenas no `payload/CLAUDE.md` desta variante Claude Code; não se afirma sincronização com as demais distribuições, incluindo a Codex.
 
 ## Fontes
 
 - [Claude Code: Create custom subagents](https://code.claude.com/docs/en/sub-agents) — local de agentes por projeto, frontmatter, modelos, ferramentas, permissões e limites de `effort` quando configurado.
-- [Política fonte Codex v5](../codex-global-framework-v5/.codex/AGENTS.md) — classificação, fatores de risco, pisos, estratégia de delegação e validação preservados nesta adaptação.
+- Política fonte Codex v5 (`codex-global-framework-v5/.codex/AGENTS.md` no repositório de distribuição) — classificação, fatores de risco, pisos, estratégia de delegação e validação preservados nesta adaptação.
 
 Haiku não recebe effort explícito nesta distribuição; Sonnet worker usa medium, reviewer high e os agentes Opus usam high. Não há equivalência automática com os esforços do Codex. Os aliases seguem os modelos disponíveis na instalação. Revisores sem Bash recebem diff e evidências do principal; verificações executáveis ficam a cargo do principal. O instalador recusa conflitos e links simbólicos; não faz mesclagem automática.

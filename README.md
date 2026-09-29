@@ -8,11 +8,13 @@ Em todas as variantes, a publicação é roteada separadamente: commits e pushes
 
 ## Pacotes
 
+Versões atuais (arquivo `VERSION`): Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor. As variantes não têm paridade funcional; veja [VARIANTES-V5.md](VARIANTES-V5.md).
+
 | Pacote | Destino | Instalação | Modelos mapeados |
 | --- | --- | --- | --- |
 | [codex-global-framework-v5](codex-global-framework-v5/) | Codex | Global (padrão) ou Por projeto | Luna, Terra e Sol |
 | [claude-code-global-framework-v5](claude-code-global-framework-v5/) | Claude Code | Por projeto (padrão) ou Global | Haiku, Sonnet e Opus |
-| [gemini-cli-global-framework-v5](gemini-cli-global-framework-v5/) | Gemini CLI / Antigravity | Por projeto (padrão) ou Global | Flash e Pro |
+| [gemini-cli-global-framework-v5](gemini-cli-global-framework-v5/) | Gemini CLI / Antigravity | Por projeto (padrão) ou Global | Flash (0-34) e Pro (35-100) |
 | [cursor-global-framework-v5](cursor-global-framework-v5/) | Cursor | Por projeto (padrão) ou Global | Composer, Sonnet e Opus |
 
 Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transporte. Cada ZIP inclui uma pasta principal com o nome da distribuição; após extrair, entre nessa pasta para executar o instalador. Isso mantém os arquivos do pacote separados das configurações instaladas, mesmo ao extrair no diretório pessoal. Veja as diferenças de cada variante em [VARIANTES-V5.md](VARIANTES-V5.md) e a arquitetura em [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md).
@@ -45,7 +47,7 @@ Instale-os somente quando o projeto precisar:
 
 No PowerShell, use os parâmetros correspondentes (`-WithAnsibleSpecialist`, `-WithGrafanaSpecialist`, etc.) ou `-WithAllSpecialists`. Nas variantes por projeto, combine com `-Apply`. Sem essas opções, o conteúdo dos especialistas não é instalado.
 
-No Claude Code (v5.1.0), cada opção instala também o **agente nativo** `.claude/agents/<nome>-specialist.md`, que pré-carrega a skill homônima, usa `model: sonnet` por padrão e segue o roteamento v5 (para unidade de nível Haiku ou Opus, o principal o invoca com o modelo correspondente). O instalador Bash/Fish dessa variante ganhou `--uninstall`, que remove apenas arquivos intactos (inclusive de versões anteriores listadas em `scripts/legacy-hashes.sha256`). Detalhes em [claude-code-global-framework-v5/README.md](claude-code-global-framework-v5/README.md).
+No Claude Code (v5.2.0-claude-code), cada opção instala também o **agente nativo** `.claude/agents/<nome>-specialist.md`, que pré-carrega a skill homônima, usa `model: sonnet` por padrão e segue o roteamento v5 (para unidade de nível Haiku ou Opus, o principal o invoca com o modelo correspondente). O instalador Bash/Fish dessa variante (e só ele; Gemini CLI e Cursor não têm) ganhou `--uninstall`, que remove apenas arquivos intactos (inclusive de versões anteriores listadas em `scripts/legacy-hashes.sha256`). Detalhes em [claude-code-global-framework-v5/README.md](claude-code-global-framework-v5/README.md).
 
 O Zabbix Specialist inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
 dentro da skill, recebe configuração JSON criada pelo usuário e grava dados
@@ -56,7 +58,7 @@ na skill instalada antes de configurar uma fonte ou um agendador externo.
 
 ### Codex
 
-O pacote Codex instala a política global em `~/.codex/` e as skills em `~/.agents/skills/`. Requer Python 3.11 ou superior: o validador usa `tomllib` da biblioteca padrão.
+O pacote Codex instala a política global em `~/.codex/` e as skills em `~/.agents/skills/`. Requer Python 3.11 ou superior apenas para o validador (`tomllib`). Por padrão o instalador aplica; `--audit-only` só audita e `--apply` é um no-op documentado. O plano é calculado antes de mutar, Skills divergentes abortam e o hook usa caminho absoluto; `validate.py` instala em diretório temporário.
 
 No Linux:
 
@@ -72,9 +74,9 @@ Há instaladores equivalentes para PowerShell, Fish e WSL dentro de `scripts/`. 
 
 ### Claude Code, Gemini CLI (Antigravity) e Cursor
 
-As três variantes usam instalador conservador com suporte a escopo por projeto ou global (`$HOME`), com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish), PowerShell (`.ps1` para Windows) e Python (`.py`). A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico:
-- **No projeto (`--target "/caminho/do/projeto"`)**: o arquivo de instruções (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) é gerado na raiz do repositório, e os subagentes na pasta oculta (`.claude/agents/`, `.gemini/agents/`, `.cursor/`).
-- **No Home / Global (`--global` ou `--target ~`)**: o arquivo de instruções fica **dentro** da pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), evitando poluir a raiz do diretório pessoal.
+As três variantes usam instalador conservador com suporte a escopo por projeto ou global (`$HOME`), com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish) e PowerShell (`.ps1` para Windows). A auditoria nunca escreve, inclusive com `--global`; não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes (no Bash, criação exclusiva sob `noclobber`) e interrompe se encontrar conflito ou link simbólico, inclusive em alvo global:
+- **No projeto (`--target "/caminho/do/projeto"`)**: o arquivo de instruções (`CLAUDE.md` ou `GEMINI.md`) é gerado na raiz do repositório e os subagentes na pasta oculta (`.claude/agents/`, `.gemini/agents/`). No Cursor não há `AGENTS.md`: regra e agentes ficam em `.cursor/rules/` e `.cursor/agents/`.
+- **No Home / Global (`--global` ou `--target ~`)**: o arquivo de instruções fica **dentro** da pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, `~/.cursor/rules/`), evitando poluir a raiz do diretório pessoal.
 
 No Linux/macOS (Bash ou Fish):
 
@@ -90,7 +92,7 @@ cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-
 ./scripts/install.sh --global --apply
 
 # ou no Fish: ./scripts/install.fish --global --apply
-python3 scripts/test_install.py
+python3 scripts/test_install.py  # Python 3.10+, só para testar; não é usado para instalar
 ```
 
 No Windows (PowerShell):
@@ -107,7 +109,7 @@ cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Os scripts de instalação são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem dependência de interpretadores externos como Python no momento da instalação. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
+Os scripts de instalação são nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem Python na instalação. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
 
 ## Limites
 

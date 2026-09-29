@@ -25,7 +25,7 @@ Exemplos típicos são correção de ortografia ou formatação, atualização d
 
 Se qualquer condição for falsa, desconhecida ou incerta, trate como não trivial. Incerteza aumenta a classificação; nunca justifica tratá-la como trivial.
 
-Resolva trabalho trivial diretamente. Não delegue, calcule pontuação numérica ou produza relatório de roteamento, salvo pedido do usuário.
+Delegue trabalho trivial ao `haiku-worker` (ou ao `haiku-explorer`, se for somente leitura), conforme a regra de delegação mandatória abaixo. Não calcule pontuação numérica nem produza relatório de roteamento para trabalho trivial, salvo pedido do usuário.
 
 ### Gatilhos obrigatórios de trabalho não trivial
 
@@ -87,6 +87,20 @@ Falta de acesso, credenciais, aprovação, ferramentas, dependências ou ambient
 
 ## Estratégia de execução
 
+### Regra mandatória: delegar sempre que possível
+
+O uso de subagentes **não é opcional**. Sempre que existir uma unidade de trabalho que um subagente possa executar — descoberta, leitura, implementação, depuração, teste, validação, revisão ou publicação —, ela **deve** ser delegada ao subagente adequado, inclusive quando for trivial e mesmo que o principal tenha capacidade de fazê-la sozinho.
+
+- O papel do principal é classificar, decompor, delegar, coordenar, integrar e aceitar resultados. Ele não executa unidades delegáveis.
+- Capacidade do principal, familiaridade com o assunto, tamanho pequeno da tarefa, custo de repasse ou desejo de poupar tempo **não** são motivos para executar diretamente.
+- Quando existir especialista de domínio instalado, a unidade daquele domínio vai para ele; caso contrário, para o papel genérico do nível exigido.
+- Unidades independentes são despachadas em paralelo.
+- **Unidade delegável** é qualquer trabalho que exija ler arquivos, buscar, executar comandos, testar, editar, integrar mudanças ou publicar. Só não é delegável o que se enquadra em um dos bloqueios (a)–(d) de "Limites e exceções"; não existe outra categoria.
+- Obter aprovação do usuário é do principal, mas executar o trabalho aprovado continua delegável.
+- Integração que exija editar arquivos vai para um worker; o principal integra somente os resultados e relatórios recebidos.
+- Os checkpoints obrigatórios abaixo são pisos adicionais de qualidade (tipo de agente e revisão), não o limite da obrigação de delegar.
+- As únicas exceções estão em "Limites e exceções" e exigem bloqueio concreto declarado.
+
 ### Princípio primário: o menor agente capaz para cada unidade
 
 Primeiro analise o que precisa ser feito e atribua cada unidade delimitada ao
@@ -96,16 +110,17 @@ Use o score e os pisos de risco para escolher Haiku, Sonnet ou Opus em cada
 unidade, incluindo descoberta, implementação e revisão.
 
 - Antes de execução substancial, identifique entregas, dependências, critérios
-  de aceitação e nível mínimo seguro de cada unidade. Faça somente o
-  reconhecimento inicial necessário para roteá-la; não conclua a investigação
-  no principal antes de delegar.
+  de aceitação e nível mínimo seguro de cada unidade a partir do pedido e do
+  contexto já disponível. Se o roteamento exigir ler arquivos ou explorar o
+  repositório, delegue essa descoberta ao `haiku-explorer`; o principal não
+  investiga antes de delegar.
 - Delegue explicitamente unidades de nível inferior ao papel nomeado
   correspondente quando o principal for um modelo maior, sujeito aos limites
   abaixo. A capacidade do principal não é motivo para retê-las. Reduzir uso
   desnecessário de capacidade maior é benefício concreto da delegação.
 - Mantenha o principal em decomposição, coordenação, integração e aceitação de
-  resultados. Execute diretamente apenas quando sua capacidade ou acesso
-  exclusivo for necessário, ou quando se aplicar uma exceção concreta abaixo.
+  resultados. Ele só executa diretamente sob uma exceção concreta listada em
+  "Limites e exceções".
   Não repita a investigação ou implementação completa do subagente como
   validação rotineira.
 - Escolha imediatamente o menor nível suficiente. Não tente Haiku se score ou
@@ -135,10 +150,10 @@ conversa ou por meio de uma Skill de publicação.
   destinos, autorização, verificações concluídas e limitações conhecidas.
   Reutilize evidência válida; repita verificações apenas para novas mudanças,
   falhas ou dúvidas não resolvidas.
-- Um principal maior coordena e aceita o resultado; não deve reter o fluxo
-  rotineiro inteiro sob a exceção de operação pequena. Se não houver delegação,
-  declare o bloqueio concreto e faça somente o fallback autorizado necessário,
-  sem alegar execução pelo agente econômico.
+- O principal obtém a autorização do usuário, coordena e aceita o resultado;
+  commit, push e verificação vão para o worker. Se a delegação for impossível
+  por um dos bloqueios (a)–(d), declare qual e execute somente os passos
+  já autorizados pelo usuário, sem alegar execução pelo agente econômico.
 - Eleve apenas a unidade afetada quando conflitos, escopo incerto,
   compatibilidade, semântica de release, deploy ou outro risco material exigem
   Sonnet ou Opus. Commit/push Git rotineiro não é por si só migração ou
@@ -153,8 +168,9 @@ conversa ou por meio de uma Skill de publicação.
 
 ### Checkpoints obrigatórios de delegação
 
-Esta política exige trabalho de subagente nos casos abaixo, sujeito a
-instruções superiores e ferramentas disponíveis. Avalie toda a tarefa ativa,
+Além da regra mandatória, os casos abaixo exigem tipos específicos de
+subagente ou revisão. Instruções de sistema e do usuário prevalecem; ausência
+de ferramenta de subagentes é o bloqueio (a). Avalie toda a tarefa ativa,
 inclusive turnos anteriores; não fragmente uma tarefa substancial em turnos
 aparentemente triviais para evitar estes checkpoints.
 
@@ -163,15 +179,14 @@ aparentemente triviais para evitar estes checkpoints.
   conter arquivos e símbolos relevantes, caminho de execução, restrições,
   testes prováveis e dúvidas em aberto. Reutilize-a.
 - Para causa incerta, múltiplos componentes, mudanças coordenadas em vários
-  arquivos ou compatibilidade, delegue ao menos uma unidade concreta de
-  análise, implementação ou validação. Mantenha trabalho complementar útil no
-  principal.
+  arquivos ou compatibilidade, decomponha em unidades de análise,
+  implementação e validação e delegue todas; as independentes vão em paralelo.
 - Antes de concluir mudança com múltiplos componentes, compatibilidade,
   contrato público ou alto risco, obtenha revisão independente e somente
   leitura no nível exigido. Agente de descoberta ou implementação não pode
-  revisar seu próprio trabalho. Trate achados e execute verificações relevantes
-  antes de reportar conclusão; agende a revisão como unidade concorrente
-  enquanto houver integração ou validação complementar do principal. Se não
+  revisar seu próprio trabalho. Delegue a correção dos achados e as
+  verificações relevantes a workers antes de reportar conclusão; agende a
+  revisão em paralelo com testes e validações executados por workers. Se não
   restar outro trabalho, a revisão independente prévia continua obrigatória.
 - Reavalie estes checkpoints se o escopo crescer, surgir componente novo,
   regressão ou mudança de direção. Reutilize agentes existentes quando o escopo
@@ -179,22 +194,29 @@ aparentemente triviais para evitar estes checkpoints.
 
 ### Paralelização ativa e despacho em lote (Fan-Out / Fan-In)
 
-- **Priorize o despacho paralelo**: Sempre que uma solicitação não trivial puder ser decomposta em subtarefas independentes com limites de leitura ou escrita disjuntos, **despache ativamente de 2 a 4 subagentes concorrentes em uma única chamada em lote** (`Subagents: [...]`) em vez de executá-los em sequência.
+- **Priorize o despacho paralelo**: Sempre que uma solicitação puder ser decomposta em subtarefas independentes com limites de leitura ou escrita disjuntos, **despache todos os subagentes concorrentes na mesma resposta**, usando várias chamadas da ferramenta de subagentes, em vez de executá-los em sequência. Com muitas unidades, despache em ondas de até 4 e continue até esgotá-las.
 - **Exploração e auditoria concorrente**: Para investigações amplas ou multi-componentes, lance exploradores paralelos focados em domínios distintos (ex: arquitetura central, infraestrutura de testes, documentação/contratos) simultaneamente.
 - **Escopos de escrita particionados**: Quando alterações afetarem módulos, serviços ou pacotes de plataforma distintos com árvores de diretórios sem sobreposição, atribua cada partição a um worker concorrente dedicado.
-- **Pipelining de revisão e testes**: Assim que uma entrega estiver pronta, dispare o revisor independente em paralelo com o trabalho em andamento (como execução de testes ou integração pelo principal). Não serialize a revisão para o final se ela puder rodar concorrentemente com validações do principal.
+- **Pipelining de revisão e testes**: Assim que uma entrega estiver pronta, dispare o revisor independente em paralelo com o trabalho em andamento (como execução de testes por um worker). Não serialize a revisão para o final se ela puder rodar concorrentemente com outras validações.
 - **Proteção de recursos exclusivos**: Mantenha sessões interativas compartilhadas, mutações no mesmo arquivo ou recursos vivos exclusivos sob controle de um único responsável para evitar condições de corrida.
 
 ### Limites e exceções
 
-- Execute trabalho trivial diretamente; não crie agentes para cumprir quota.
-- Para trabalho não trivial delimitado sem checkpoint obrigatório, execução
-  direta é permitida se o principal já estiver no menor nível suficiente e a
-  delegação não trouxer benefício independente. Um principal maior deve rotear
-  unidade inferior ao papel correspondente, salvo exceção concreta.
-- Para operação pequena e totalmente especificada, execução direta é permitida
-  quando repasse e verificação excederem claramente a operação. Não generalize
-  essa exceção para investigação ou mudança em vários arquivos.
+- Delegação é mandatória para toda unidade delegável, trivial ou não, com ou
+  sem checkpoint obrigatório. Não existe exceção por tamanho, simplicidade ou
+  custo de repasse.
+- Execução direta pelo principal só é permitida quando houver bloqueio
+  concreto: (a) a ferramenta de subagentes está indisponível, ou falhou de
+  novo depois de uma nova tentativa (falha do trabalho de um subagente não é
+  bloqueio: repita com instrução melhor ou eleve o nível da unidade);
+  (b) o usuário pediu explicitamente que o principal fizesse o trabalho
+  sozinho; (c) a ação depende de recurso exclusivo que só o principal detém
+  (a conversa com o usuário ou uma sessão interativa aberta pelo principal).
+  Arquivos, repositório, shell e testes nunca são recurso exclusivo; ou
+  (d) o pedido é apenas conversa ou pergunta respondível sem executar nenhuma
+  ação, leitura ou ferramenta.
+- Não crie agentes vazios nem duplique trabalho para cumprir quota: cada
+  subagente recebe uma unidade real e delimitada.
 - Se o modelo ativo estiver abaixo do nível exigido, delegue a unidade a agente
   daquele nível ou superior. Nunca eleve toda a solicitação quando só uma
   unidade requer modelo mais forte.
@@ -202,12 +224,11 @@ aparentemente triviais para evitar estes checkpoints.
 - Mantenha uma sessão compartilhada de navegador, mutação ao vivo ou outro
   recurso exclusivo sob um único proprietário; delegue análise local ou revisão
   de evidência capturada.
-- Exceções a delegação obrigatória devem indicar bloqueio concreto: restrição
-  superior, ferramentas indisponíveis, pedido explícito de trabalho individual
-  ou ausência de unidade independente que possa avançar junto de trabalho útil
-  do principal. Capacidade do principal, familiaridade ou desejo genérico de
-  poupar tempo não bastam. Declare a exceção brevemente e não afirme revisão
-  independente que não ocorreu.
+- Toda exceção por (a), (b) ou (c) deve citar o bloqueio na resposta ao
+  usuário, qualquer que seja o tamanho do trabalho. A exceção (d) não precisa
+  ser declarada. Capacidade do principal,
+  familiaridade, tamanho da tarefa ou desejo de poupar tempo nunca bastam. Não
+  afirme revisão independente que não ocorreu.
 
 ## Seleção de subagentes
 
@@ -229,7 +250,7 @@ Ao delegar, forneça entrega delimitada, escopo autorizado, contexto conciso, cr
 
 - Preserve mudanças do usuário e arquivos não relacionados.
 - Prefira a menor mudança coerente que satisfaz completamente a solicitação.
-- Inspecione o contexto relevante antes de editar; não faça varredura ampla redundante.
+- O agente que edita inspeciona o contexto relevante antes de editar; não faça varredura ampla redundante.
 - Ajuste a validação ao risco: uma verificação focada para trabalho pequeno; testes, lint, build ou integração relevantes para trabalho comum; revisão independente e testes de falhas para trabalho de alto risco.
 - Um revisor deve ser independente e não pode editar a implementação que revisa.
 - Nunca afirme uma verificação, teste ou resultado que não foi observado.
@@ -242,11 +263,10 @@ Skills são recursos especializados opcionais, não o plano de controle do rotea
 
 ## Relatório final
 
-Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se não houve subagente em trabalho não trivial, declare esse fato e a razão concreta da execução direta. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
+Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se alguma unidade foi executada sem subagente, declare esse fato e qual bloqueio (a)–(d) justificou a execução direta. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
+
+## Evidência para revisores sem shell
+
+O principal entrega ao revisor o diff real ou um artefato legível com o diff, caminhos alterados e resultados observados de testes, obtidos por um worker (`haiku-worker` para diff e testes rotineiros). Os revisores não executam git nem testes; verificações adicionais que eles pedirem também vão para um worker. Confirme modelo efetivo antes de trabalho crítico; não trate nomes configurados como telemetria verificada.
 
 <!-- CLAUDE-CODE-GLOBAL-FRAMEWORK:END v5 -->
- 
- 
- ## Evidência para revisores sem shell
-
-O principal deve fornecer o diff real ou um artefato legível com o diff, caminhos alterados e resultados observados de testes. Os revisores não executam git nem testes; o principal executa verificações adicionais solicitadas. Confirme modelo efetivo antes de trabalho crítico; não trate nomes configurados como telemetria verificada.

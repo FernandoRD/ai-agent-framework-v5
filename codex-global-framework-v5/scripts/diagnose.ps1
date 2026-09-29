@@ -1,17 +1,47 @@
 [CmdletBinding()]
 param(
-    [string]$CodexHome = $(if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $env:USERPROFILE ".codex" }),
-    [string]$SkillsHome = $(Join-Path $env:USERPROFILE ".agents\skills")
+    [string]$CodexHome,
+    [string]$SkillsHome
 )
 $errors = 0; $warnings = 0
 function Ok([string]$Message) { Write-Host "OK    $Message" }
 function Warn([string]$Message) { Write-Host "WARN  $Message"; $script:warnings++ }
 function Fail([string]$Message) { Write-Host "FAIL  $Message"; $script:errors++ }
 
+$homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
+if ([string]::IsNullOrWhiteSpace($homeDir)) { $homeDir = $HOME }
+$homeFullPath = [IO.Path]::GetFullPath($homeDir)
+# Same resolution as install.ps1: expands ~, resolves relative paths (even if missing), drops trailing separators.
+function Resolve-UserPath([string]$Path) {
+    if ($Path -eq '~') { $Path = $homeFullPath }
+    elseif ($Path -match '^~[\\/]') { $Path = Join-Path $homeFullPath $Path.Substring(2) }
+    $full = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+    $root = [IO.Path]::GetPathRoot($full)
+    if ($full.Length -gt $root.Length) { $full = $full.TrimEnd('\', '/') }
+    return $full
+}
+# Real path (symlinks resolved per component), as in install.ps1.
+function Get-RealPath([string]$Path) {
+    $full = Resolve-UserPath $Path
+    $root = [IO.Path]::GetPathRoot($full)
+    $real = $root
+    foreach ($part in @($full.Substring($root.Length).Split([char[]]@('\', '/')) | Where-Object { $_ })) {
+        $real = Join-Path $real $part
+        $item = Get-Item -LiteralPath $real -Force -ErrorAction SilentlyContinue
+        if ($item -and $item.PSObject.Methods['ResolveLinkTarget'] -and $item.LinkTarget) {
+            $target = $item.ResolveLinkTarget($true)
+            if ($target) { $real = $target.FullName }
+        }
+    }
+    return $real
+}
+if ([string]::IsNullOrWhiteSpace($CodexHome)) { $CodexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $homeFullPath ".codex" } }
+if ([string]::IsNullOrWhiteSpace($SkillsHome)) { $SkillsHome = Join-Path $homeFullPath ".agents\skills" }
+
 $roles = @("luna_explorer", "luna_worker", "terra_worker", "terra_reviewer", "sol_specialist", "sol_reviewer", "sol_critical")
 $legacyOnlySkills = @("task-router", "complexity-score", "deep-analysis", "implementation", "testing", "refactor", "final-review", "model-usage-report")
 $currentSkills = @("security-review", "code-review", "dependency-review", "documentation")
-$CodexHome = [IO.Path]::GetFullPath($CodexHome); $SkillsHome = [IO.Path]::GetFullPath($SkillsHome)
+$CodexHome = Resolve-UserPath $CodexHome; $SkillsHome = Resolve-UserPath $SkillsHome
 Write-Host "Codex home: $CodexHome"; Write-Host "Skills home: $SkillsHome`n"
 
 $agentsFile = Join-Path $CodexHome "AGENTS.md"
@@ -46,11 +76,41 @@ foreach ($name in $currentSkills) {
     if ((Test-Path $skill) -and (Select-String $skill -Pattern "name: $name" -Quiet)) { Ok "skill $name" } else { Fail "missing or invalid skill $name" }
 }
 foreach ($name in $legacyOnlySkills) {
-    if (Test-Path (Join-Path $SkillsHome $name)) { Fail "legacy user Skill remains: $name" }
-    if (Test-Path (Join-Path $CodexHome "skills\$name")) { Fail "legacy .codex/skills copy remains: $name" }
+    if (Test-Path (Join-Path $SkillsHome $name)) { Warn "legacy-named user Skill present (left intact by the installer unless proven framework-owned): $name" }
+    if (Test-Path (Join-Path $CodexHome "skills\$name")) { Warn "legacy-named .codex/skills copy present (left intact unless proven framework-owned): $name" }
 }
+# Same comparison as Test-SameTree in install.ps1 (files and directories; any link makes the trees differ).
+function Test-Link([string]$Path) {
+    $item = Get-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    return ($null -ne $item -and ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+}
+function Get-TreeMap([string]$Root) {
+    $map = @{}
+    $base = $Root.TrimEnd('\', '/').Length + 1
+    foreach ($item in @(Get-ChildItem -LiteralPath $Root -Recurse -Force)) {
+        if (Test-Link $item.FullName) { return $null }
+        $rel = $item.FullName.Substring($base).Replace('\', '/')
+        $map[$rel] = if ($item.PSIsContainer) { "<dir>" } else { (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash }
+    }
+    return $map
+}
+function Test-SameTree([string]$A, [string]$B) {
+    $ma = Get-TreeMap $A; $mb = Get-TreeMap $B
+    if ($null -eq $ma -or $null -eq $mb -or $ma.Count -ne $mb.Count) { return $false }
+    foreach ($key in $ma.Keys) { if (-not $mb.ContainsKey($key) -or $mb[$key] -ne $ma[$key]) { return $false } }
+    return $true
+}
+$packageDir = Split-Path -Parent $PSScriptRoot
+$frameworkSkillRe = '(luna|terra|sol)_(explorer|worker|reviewer|specialist|critical)|CODEX-GLOBAL-FRAMEWORK|Codex Global Framework|task-router'
 foreach ($name in $currentSkills) {
-    if (Test-Path (Join-Path $CodexHome "skills\$name")) { Fail "duplicate legacy .codex/skills copy remains: $name" }
+    $legacyCopy = Join-Path $CodexHome "skills\$name"
+    if ((Test-Path -LiteralPath $legacyCopy) -and ((Get-RealPath $legacyCopy) -ne (Get-RealPath (Join-Path $SkillsHome $name)))) {
+        # Same rule as the installer: identical or framework-owned copies are moved; a divergent one is kept.
+        $skillMd = Join-Path $legacyCopy "SKILL.md"
+        $identical = (Test-Path -LiteralPath $legacyCopy -PathType Container) -and (Test-SameTree (Join-Path $packageDir ".agents\skills\$name") $legacyCopy)
+        if ($identical -or ((Test-Path -LiteralPath $skillMd) -and ([IO.File]::ReadAllText($skillMd) -cmatch $frameworkSkillRe))) { Fail "duplicate legacy .codex/skills copy remains: $name" }
+        else { Warn "divergent .codex/skills/$name kept by the installer (merge or remove manually)" }
+    }
 }
 
 $hooksFile = Join-Path $CodexHome "hooks.json"

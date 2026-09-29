@@ -64,12 +64,19 @@ while [ $# -gt 0 ]; do
             usage 0
             ;;
         --target)
-            [ $# -ge 2 ] || usage 1
+            if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             TARGET="$2"
             shift 2
             ;;
         --target=*)
             TARGET="${1#--target=}"
+            if [ -z "$TARGET" ]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             shift
             ;;
         --global|-g)
@@ -144,24 +151,43 @@ fi
 
 HOME_DIR="$(cd "$HOME" && pwd -P)"
 
-# Resolve TARGET path
-if [ "$IS_GLOBAL" = true ]; then
-    if [ -n "$TARGET" ]; then
-        TARGET="${TARGET/#\~/$HOME_DIR}"
-        mkdir -p "$TARGET" 2>/dev/null || true
-        TARGET="$(cd "$TARGET" 2>/dev/null && pwd -P || echo "$TARGET")"
-    else
-        TARGET="$HOME_DIR"
+# Lexical normalization (collapses //, . and ..) without following links.
+normalize_path() {
+    local IFS=/ seg out=""
+    local -a stack=()
+    set -f
+    for seg in $1; do
+        case "$seg" in
+            ''|.) ;;
+            ..)
+                if [ "${#stack[@]}" -gt 0 ]; then
+                    stack=("${stack[@]:0:${#stack[@]}-1}")
+                fi
+                ;;
+            *) stack+=("$seg") ;;
+        esac
+    done
+    if [ "${#stack[@]}" -gt 0 ]; then
+        for seg in "${stack[@]}"; do out="$out/$seg"; done
     fi
-else
-    TARGET="${TARGET/#\~/$HOME_DIR}"
+    printf '%s\n' "${out:-/}"
+}
+
+RAW_TARGET=""
+if [ -n "$TARGET" ]; then
+    # Only "~" and "~/..." expand to HOME; "~foo" stays a literal relative name.
+    case "$TARGET" in
+        "~") TARGET="$HOME_DIR" ;;
+        "~/"*) TARGET="$HOME_DIR/${TARGET#\~/}" ;;
+    esac
     case "$TARGET" in
         /*) ;;
-        *) TARGET="$(pwd)/$TARGET" ;;
+        *) TARGET="$PWD/$TARGET" ;;
     esac
-    if [ "$TARGET" = "$HOME_DIR" ]; then
-        IS_GLOBAL=true
-    fi
+    RAW_TARGET="$TARGET"
+    TARGET="$(normalize_path "$TARGET")"
+else
+    TARGET="$HOME_DIR"
 fi
 
 # Safety check: refuse root
@@ -225,6 +251,18 @@ check_parent_invalid() {
     return 1
 }
 
+# Refuse a link anywhere in the informed target chain (before any resolution).
+# Both the normalized path and the raw absolute path (so "link/.." is caught).
+if check_chain_for_symlinks "$TARGET" || { [ -n "$RAW_TARGET" ] && check_chain_for_symlinks "$RAW_TARGET"; }; then
+    echo "Erro: Destino ou pai é link simbólico: $TARGET" >&2
+    exit 1
+fi
+
+# Same directory as HOME (not a link at this point) counts as global.
+if [ "$TARGET" = "$HOME_DIR" ] || { [ -d "$TARGET" ] && [ "$TARGET" -ef "$HOME_DIR" ]; }; then
+    IS_GLOBAL=true
+fi
+
 ERRORS=()
 PENDING_SOURCES=()
 PENDING_DESTS=()
@@ -272,7 +310,7 @@ for payload in "${PAYLOAD_DIRS[@]}"; do
             PENDING_DESTS+=("$dest")
             echo "CRIAR $dest"
         fi
-    done < <(find "$payload" -type f -print0 | sort -z)
+    done < <(find "$payload" \( -type f -o -type l \) -print0 | sort -z)
 done
 
 if [ "${#ERRORS[@]}" -gt 0 ]; then
@@ -300,8 +338,8 @@ for i in "${!PENDING_SOURCES[@]}"; do
     dest_dir="$(dirname "$dest")"
     mkdir -p "$dest_dir"
 
-    # Non-destructive copy (fails if destination already exists)
-    if ( set -C; cp "$src" "$dest" ) 2>/dev/null; then
+    # Exclusive create: with noclobber, ">" fails if dest exists (O_EXCL).
+    if ( set -C; cat -- "$src" > "$dest" ); then
         :
     else
         echo "Falha ao criar arquivo: $dest" >&2

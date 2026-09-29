@@ -1,5 +1,6 @@
 """Offline installer regression checks. Run with Python 3.10+."""
 from pathlib import Path
+import os
 import shutil
 import subprocess
 import sys
@@ -139,6 +140,109 @@ class InstallerTests(unittest.TestCase):
             self.assertFalse((home / '.claude' / 'knowledge').exists(), 'empty dirs must be pruned')
             self.assertEqual(modified.read_text(encoding='utf-8'), 'user content')
             self.assertEqual(foreign.read_text(encoding='utf-8'), 'user agent')
+
+    def test_global_audit_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'new_home'
+            for extra in ([], ['--uninstall']):
+                res = subprocess.run(['bash', str(SCRIPT), '--global', '--target', str(target), *extra],
+                                     capture_output=True, text=True)
+                self.assertEqual(res.returncode, 0, res.stderr)
+                self.assertFalse(target.exists(), 'global audit must not create the target')
+
+    def test_global_rejects_link_target(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            outside = base / 'outside'
+            outside.mkdir()
+            link = base / 'link'
+            try:
+                link.symlink_to(outside, target_is_directory=True)
+            except OSError:
+                self.skipTest('Symlink creation unavailable on this host')
+            for extra in ([], ['--apply'], ['--uninstall', '--apply']):
+                res = subprocess.run(['bash', str(SCRIPT), '--global', '--target', str(link), *extra],
+                                     capture_output=True, text=True)
+                self.assertEqual(res.returncode, 1, extra)
+                self.assertEqual(list(outside.iterdir()), [])
+
+    def test_trailing_slash_and_home_target_are_global(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary) / 'home'
+            home.mkdir()
+            env = {**os.environ, 'HOME': str(home)}
+            for target in ('~/', str(home) + '/', '~'):
+                res = subprocess.run(['bash', str(SCRIPT), '--target', target, '--apply'],
+                                     capture_output=True, text=True, env=env)
+                self.assertEqual(res.returncode, 0, res.stderr)
+                self.assertTrue((home / '.claude' / 'CLAUDE.md').is_file(), target)
+                self.assertFalse((home / 'CLAUDE.md').exists(), target)
+                un = subprocess.run(['bash', str(SCRIPT), '--target', target, '--uninstall', '--apply'],
+                                    capture_output=True, text=True, env=env)
+                self.assertEqual(un.returncode, 0, un.stderr)
+                self.assertTrue(home.is_dir())
+                self.assertFalse((home / '.claude').exists(), 'empty dirs must be pruned')
+
+    def test_target_requires_value(self):
+        for args in (['--target'], ['--target', '--apply'], ['--target=']):
+            res = subprocess.run(['bash', str(SCRIPT), *args], capture_output=True, text=True)
+            self.assertEqual(res.returncode, 1, args)
+            self.assertIn('--target exige um caminho', res.stderr, args)
+
+    def test_target_is_normalized_lexically(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary) / 'home'
+            (home / 'sub').mkdir(parents=True)
+            env = {**os.environ, 'HOME': str(home)}
+
+            def apply(cwd, target):
+                return subprocess.run(['bash', str(SCRIPT), '--target', target, '--apply'],
+                                      capture_output=True, text=True, env=env, cwd=cwd)
+
+            # '.' inside HOME and '..' from a subdirectory are the global target.
+            for cwd, target in ((home, '.'), (home / 'sub', '..'), (home, 'sub/..'), (home, './/')):
+                res = apply(cwd, target)
+                self.assertEqual(res.returncode, 0, res.stderr)
+                self.assertTrue((home / '.claude' / 'CLAUDE.md').is_file(), target)
+                self.assertFalse((home / 'CLAUDE.md').exists(), target)
+                shutil.rmtree(home / '.claude')
+            # '.' in a subdirectory of HOME stays a project install.
+            self.assertEqual(apply(home / 'sub', '.').returncode, 0)
+            self.assertTrue((home / 'sub' / 'CLAUDE.md').is_file())
+            # Only '~' and '~/...' are expanded; '~foo' is a literal relative name.
+            self.assertEqual(apply(home / 'sub', '~foo').returncode, 0)
+            self.assertTrue((home / 'sub' / '~foo' / 'CLAUDE.md').is_file())
+
+    def test_root_is_refused(self):
+        for target in ('/', '//', '/x/..'):
+            res = subprocess.run(['bash', str(SCRIPT), '--target', target, '--apply'],
+                                 capture_output=True, text=True)
+            self.assertEqual(res.returncode, 1, target)
+            self.assertIn('raiz', res.stderr)
+
+    def test_apply_never_overwrites_file_created_after_preflight(self):
+        # The shim runs as the first `cat` (after its destination was created)
+        # and then creates every OTHER destination as a "user" file, so the
+        # result does not depend on the order in which files are installed.
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project'
+            bin_dir = Path(temporary) / 'bin'
+            bin_dir.mkdir()
+            marker = Path(temporary) / 'done'
+            dests = [target / p.relative_to(PAYLOAD) for p in PAYLOAD.rglob('*') if p.is_file()]
+            lines = ''.join(f'[ -e "{d}" ] || {{ mkdir -p "{d.parent}"; echo user > "{d}"; }}\n' for d in dests)
+            real_cat = shutil.which('cat')
+            (bin_dir / 'cat').write_text(
+                f'#!/bin/sh\nif [ ! -e "{marker}" ]; then : > "{marker}"\n{lines}fi\nexec "{real_cat}" "$@"\n',
+                encoding='utf-8')
+            (bin_dir / 'cat').chmod(0o755)
+            env = {**os.environ, 'PATH': f'{bin_dir}:{os.environ["PATH"]}'}
+            res = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--apply'],
+                                 capture_output=True, text=True, env=env)
+            self.assertEqual(res.returncode, 1, res.stdout + res.stderr)
+            self.assertIn('nada foi sobrescrito', res.stderr)
+            contents = [d.read_text(encoding='utf-8') for d in dests]
+            self.assertEqual(contents.count('user\n'), len(dests) - 1, 'only the first destination may be written')
 
     def test_legacy_hashes_cover_payload_paths(self):
         legacy = SCRIPT.with_name('legacy-hashes.sha256')

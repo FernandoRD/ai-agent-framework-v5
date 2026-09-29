@@ -41,3 +41,15 @@ python3 cursor-global-framework-v5/scripts/test_install.py
 ```
 
 Após alterar conteúdo distribuído, atualize manifestos e arquivos ZIP somente depois de verificar seu conteúdo. Confira links relativos do README e da referência técnica antes de publicar. Registre limitações de ambiente no relatório da mudança. A validação Codex também deve cobrir uma instalação temporária com caminhos personalizados e o comportamento de conflito de Skills.
+
+Antes de publicar, confira também a integridade e a consistência das distribuições alteradas:
+
+```bash
+(cd claude-code-global-framework-v5 && sha256sum -c MANIFEST.sha256)   # repita por pacote
+d=$(mktemp -d) && unzip -q claude-code-global-framework-v5.zip -d "$d" \
+  && diff -r "$d/claude-code-global-framework-v5" claude-code-global-framework-v5   # repita por ZIP
+```
+
+- Mantenha `sha256sum -c MANIFEST.sha256` limpo em cada pacote alterado e o ZIP sem diferenças em relação à pasta (`diff -r` do ZIP extraído), regenerando manifesto e ZIP somente depois de verificar o conteúdo.
+- Mantenha as quatro cópias de `VARIANTES-V5.md` (raiz e três variantes) idênticas e sincronizadas com o `TECHNICAL_REFERENCE.md` e o `README.md`; confira as versões contra o `VERSION` de cada pacote.
+- Mantenha paridade de comportamento entre `install.sh`, `install.fish` e `install.ps1` de cada pacote; qualquer diferença deve estar documentada.

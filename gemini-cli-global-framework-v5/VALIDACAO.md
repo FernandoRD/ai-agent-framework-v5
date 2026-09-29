@@ -1,11 +1,24 @@
-# Validação da distribuição
+# Validação da distribuição (Gemini CLI)
 
-- Sete agentes e frontmatter YAML verificados.
-- Ferramentas/permissões de descoberta e revisão conferidas.
-- Testes offline do instalador aprovados: auditoria sem escrita, instalação, idempotência, recusa de conflito sem instalação parcial por conflito detectado e recusa de link simbólico.
-- Pacote ZIP e checksums SHA-256 conferidos.
-- Sem execução autenticada nos provedores; carregamento e modelos efetivos ainda dependem de teste na plataforma.
-- Sem teste executado no Windows; instaladores Shell e PowerShell usam ferramentas nativas.
+Resultados observados nesta máquina (Linux, bash, pwsh disponíveis; fish só é exercitado se instalado):
+
+| Comando | Resultado |
+| --- | --- |
+| `python3 gemini-cli-global-framework-v5/scripts/test_install.py` | `Ran 20 tests ... OK` |
+| `pwsh` (`Parser::ParseFile` em `install.ps1`) | 0 erros de parse |
+| `pwsh install.ps1 -Help` | exibe a ajuda ("Uso: .\install.ps1 [opções]") |
+| `pwsh install.ps1 -Target '~/' -Global` (HOME temporário, sem `-Apply`) | `CRIAR .../<pasta da ferramenta>/...`, `Auditoria: 8 arquivo(s) novo(s); nenhuma alteração.`, nada criado no HOME |
+| `pwsh install.ps1 -Global -Target ''` | `Erro: -Target exige um caminho.` + ajuda, código 1 (como o `install.sh`) |
+
+Os testes offline cobrem: auditoria sem escrita, instalação, idempotência, conflito sem instalação parcial, conflito de especialista, recusa de link simbólico (projeto, `--global` e `link/..`), barra final, `--target` sem valor (mensagem e sem diretório `--apply`), `.`/`..`/`~`/`~/` a partir do HOME tratados como global, `~foo` literal, criação exclusiva quando o destino surge após o preflight (shim de `mkdir` no PATH), ramificação "Link no pacote" (link em cópia temporária do payload) e instalação padrão sem nenhum dos 9 especialistas (nem pastas `sre-incident`/`database-tuning`).
+
+Modo de arquivo: `find gemini-cli-global-framework-v5 -type f -perm -u+x` lista apenas arquivos do payload/documentação e scripts do próprio pacote (nenhum script dos especialistas opcionais, como `rag_ingest.py`, é executável). O instalador cria arquivos com o modo padrão do umask e não preserva o bit de execução; não há executável instalável a preservar.
+
+Falha parcial de escrita (disco cheio, permissão) pode deixar um arquivo truncado no destino; na próxima execução ele aparece como Conflito e deve ser removido ou mesclado manualmente.
+
+Divergências conhecidas sh/ps1: link de diretório no payload (PowerShell 5.1 vs 7) e link pendente no destino; `install.ps1` não foi exercitado em Windows nativo.
+
+Não verificado: execução autenticada em provedores ou no Gemini CLI (carregamento e modelos efetivos dependem de teste na plataforma), Windows nativo e criação exclusiva sob corrida concorrente real (só simulada por shim). ZIP e MANIFEST.sha256 não foram regenerados nesta etapa.
 
 ## Manual publication smoke scenarios
 
@@ -26,5 +39,3 @@
 - With two authorized remotes, verify each hash and report partial publication
   if one push fails. Confirm no implicit force push, rewrite, destination,
   privacy, release, or deployment authority.
-
-Os pacotes Claude e Gemini foram produzidos por dois subagentes Terra; um terceiro subagente Terra realizou revisão independente do Cursor e da correção Gemini. A integração e os ajustes finais foram feitos pelo principal.

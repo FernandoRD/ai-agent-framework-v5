@@ -4,7 +4,7 @@
 
 A versão 5 (v5) padroniza o comportamento, a governança e a tomada de decisão do agente principal em tarefas de engenharia de software e infraestrutura. Ela não substitui o julgamento técnico do desenvolvedor ou operador: transforma esse julgamento em critérios sistemáticos e explícitos para **classificação de complexidade**, **roteamento orçamentário por faixas de modelo**, **despacho paralelo de subagentes (fan-out / fan-in)**, **revisão independente** e **extensões modulares de domínio**.
 
-A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity e Cursor adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, mantendo paridade funcional e de segurança.
+A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity e Cursor adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, preservando a semântica de decisão (classificação, score, pisos de risco, delegação e revisão). Não há paridade funcional garantida: nome e disponibilidade de modelos, mecanismos de agente e recursos dos instaladores diferem por plataforma (ver [`VARIANTES-V5.md`](VARIANTES-V5.md)). Versões dos pacotes: Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor (arquivo `VERSION` de cada pacote).
 
 ---
 
@@ -69,20 +69,18 @@ Para trabalhos não triviais, o agente principal estima a complexidade de 0 a 10
 
 #### Mapeamento de Faixas por Plataforma
 
-- **Plataformas de 3 faixas (Codex, Claude Code, Cursor):**
-  - **Score 0–34 (Tier Baixo / Rápido):** Luna (`gpt-5.6-luna`), Haiku (`claude-3-5-haiku`), Composer. Focado em descoberta direcionada, tarefas mecânicas ou alterações locais de baixo risco.
-  - **Score 35–69 (Tier Médio / Padrão):** Terra (`gpt-5.6-terra`), Sonnet (`claude-3-7-sonnet`). Focado em implementação usual, depuração, testes e alterações multi-arquivo.
-  - **Score 70–100 (Tier Alto / Raciocínio):** Sol (`gpt-5.6-sol`), Opus (`claude-3-opus`). Focado em raciocínio complexo, problemas ambíguos, refatores de alto impacto ou análises críticas.
+- **Codex (3 faixas):** 0–34 Luna (`gpt-5.6-luna`), 35–69 Terra (`gpt-5.6-terra`), 70–100 Sol (`gpt-5.6-sol`), conforme os TOMLs dos agentes do pacote.
+- **Claude Code (3 faixas):** 0–34 Haiku, 35–69 Sonnet, 70–100 Opus (agentes com `model: haiku`, `sonnet` e `opus`).
+- **Cursor (3 faixas):** 0–34 Composer (`composer-2.5[fast=false]`), 35–69 Sonnet (`claude-sonnet-5`), 70–100 Opus (`claude-opus-5[effort=high]`), conforme os agentes do pacote.
+- **Gemini CLI / Google Antigravity (faixas 0–34 / 35–69 / 70–100):** 0–34 Flash (`gemini-2.5-flash`); 35–69 e 70–100 usam Pro (`gemini-2.5-pro`). O pacote fixa o mesmo modelo Pro nas duas faixas superiores: a faixa escolhe o papel do agente (`pro-worker`/`pro-reviewer` vs. `pro-specialist`/`pro-risk-reviewer`/`pro-critical`), não um modelo diferente.
 
-- **Plataformas de 2 faixas (Gemini CLI / Google Antigravity):**
-  - **Score 0–34:** **Flash** (`gemini-2.5-flash`, `gemini-3-flash`, suportando `flash_lite` para descoberta somente leitura).
-  - **Score 35–100:** **Pro** (`gemini-2.5-pro`, `gemini-3-pro`). Raciocínio avançado, arquitetura e implementação pesada.
+Os IDs acima são os configurados nos pacotes; não comprovam disponibilidade nem o modelo efetivo em uma sessão autenticada.
 
 ### 4. Pisos de Risco (Risk Floors)
 
 Os pisos de risco sobrepõem a pontuação numérica:
-- **Piso Intermediário (ao menos Terra / Pro):** autenticação, APIs públicas, alterações em persistência, migrações de esquemas, infraestrutura de produção, refatorações estruturais, matriz de compatibilidade e mudanças multi-componente.
-- **Piso Crítico (ao menos Sol / Pro com análise prévia somente leitura):** vulnerabilidades críticas, criptografia, fronteiras de autorização, risco de perda/corrupção de dados, condições de corrida difíceis e falhas de produção de grande impacto.
+- **Piso Intermediário (ao menos Terra / Sonnet / Pro):** autenticação, APIs públicas, alterações em persistência, migrações de esquemas, infraestrutura de produção, refatorações estruturais, matriz de compatibilidade e mudanças multi-componente.
+- **Piso Crítico (Sol / Opus / Pro com análise prévia somente leitura):** vulnerabilidades críticas, criptografia, fronteiras de autorização, risco de perda/corrupção de dados, condições de corrida difíceis e falhas de produção de grande impacto.
 
 O piso de risco aplica-se à fração afetada, não a toda a solicitação. Tarefas posteriores de apoio mecânico ou publicação retornam ao menor tier seguro.
 
@@ -132,23 +130,23 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
 
 ---
 
-## Pacotes e instaladores nativos (Zero Python em Runtime)
+## Pacotes e instaladores nativos (sem Python para instalar)
 
-Todas as quatro distribuições do framework contam com instaladores e ferramentas de manutenção **100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**, sem qualquer necessidade de interpretadores Python para instalação ou diagnóstico:
+Todas as quatro distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Python é usado apenas para validação e testes (`validate.py` no Codex, com Python 3.11+; `test_install.py` nas variantes, com 3.10+), nunca para instalar:
 
 | Plataforma | Instaladores e Utilitários | Suporte de Instalação |
 |---|---|---|
 | **Codex** | `scripts/install.sh`, `install.fish`, `install.ps1`, `install-wsl.ps1`, `diagnose.*`, `uninstall.*`, `validate.py` | Global padrão (`~/.codex`) ou Por Projeto (`--target`) |
-| **Claude Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` | Por Projeto padrão (`--target`) ou Global (`--global`) |
-| **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` | Por Projeto padrão (`--target`) ou Global (`--global`) |
-| **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Claude Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (17 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (15 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (15 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 
 ### Mecanismos de Proteção dos Instaladores
 
-- **Auditoria Prévia Conservadora:** Por padrão, a execução sem `--apply` / `-Apply` apenas audita e reporta as ações planejadas sem gravar nenhum byte em disco (no Codex global, use `--audit-only`).
-- **Prevenção de Sobrescrita e Conflitos:** Com `--apply`, o instalador cria apenas arquivos novos (`set -C` no Bash / `CreateNew` no PowerShell). Arquivos idênticos são preservados (`IDÊNTICO`); arquivos existentes com conteúdo divergente geram erro de conflito explícito, exigindo comparação manual.
-- **Inspeção de Links Simbólicos:** Varre toda a cadeia de diretórios do destino e do payload recusando instalação em caminhos que contenham links simbólicos (*symlinks* ou *reparse points*).
-- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), garantindo que o diretório `$HOME` permaneça limpo.
+- **Auditoria Prévia Conservadora:** Por padrão, a execução sem `--apply` / `-Apply` apenas audita e reporta as ações planejadas sem gravar nenhum byte em disco, inclusive com `--global`. O Codex é diferente: aplica por padrão, `--audit-only` audita e `--apply` é um no-op documentado; o plano é calculado antes de qualquer mutação, Skills divergentes abortam a instalação e o hook usa caminho absoluto.
+- **Prevenção de Sobrescrita e Conflitos:** Com `--apply`, o instalador cria apenas arquivos novos (criação exclusiva real via `cat > destino` sob `noclobber` no Bash / `CreateNew` no PowerShell). Arquivos idênticos são preservados (`IDÊNTICO`); arquivos existentes com conteúdo divergente geram erro de conflito explícito, exigindo comparação manual.
+- **Inspeção de Links Simbólicos:** Varre toda a cadeia de diretórios do destino e do payload recusando instalação em caminhos que contenham links simbólicos (*symlinks* ou *reparse points*); alvo que é link simbólico é recusado também no modo global no Bash. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação.
+- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, `~/.cursor/rules/`), garantindo que o diretório `$HOME` permaneça limpo.
 - **Help Completo Integrado:** Todos os scripts aceitam `-h` e `--help` (Bash/Fish) e `-Help`, `-h`, `-?` (PowerShell), exibindo ajuda contextual com todas as opções gerais e catálogo de especialistas.
 
 ---
@@ -205,16 +203,16 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 4. `knowledge/<dominio>/README.md`: Repositório local de decisões de arquitetura e snippets;
 5. `evals/<dominio>/001-routing.md`: Casos de teste automatizáveis para aferir respeito a gates de aprovação e pisos de risco.
 
-### Agentes nativos e desinstalação (Claude Code 5.1.0)
+### Agentes nativos e desinstalação (Claude Code, desde 5.1.0)
 
 - Na variante Claude Code, cada especialista inclui também `.claude/agents/<nome>-specialist.md` (8º arquivo da estrutura), com o campo `skills` pré-carregando a skill homônima, `model: sonnet` e `effort: high` como padrão. O padrão Sonnet não contorna o roteamento: para unidade de nível Haiku ou Opus o principal invoca o especialista com o modelo correspondente, e a revisão independente continua com `sonnet-reviewer` ou `opus-reviewer`.
-- `install.sh`/`install.fish` dessa variante aceitam `--uninstall` (auditoria por padrão; remoção com `--apply`). Só removem arquivos idênticos ao pacote atual ou cujo hash conste em `scripts/legacy-hashes.sha256` (versão anterior); arquivos modificados ou de terceiros são preservados e listados, e diretórios vazios são removidos. `install.ps1` não possui `--uninstall`.
+- `install.sh`/`install.fish` dessa variante aceitam `--uninstall` (auditoria por padrão; remoção com `--apply`). Só removem arquivos idênticos ao pacote atual ou cujo hash conste em `scripts/legacy-hashes.sha256` (versão anterior); arquivos modificados ou de terceiros são preservados e listados, e diretórios vazios são removidos. `install.ps1` e as variantes Gemini CLI e Cursor não possuem `--uninstall`.
 
 ### Flags de Instalação dos Especialistas
 
 - **Instalação Individual:**
   - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`.
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`. Aliases reais no Claude, Gemini e Cursor: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
 - **Instalação Agregadora (Todos os 9 especialistas):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
@@ -223,7 +221,7 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 
 ## Formato obrigatório do relatório de modelos
 
-Em conformidade estrita com o Framework v5 para ecossistemas Google (Gemini CLI, Google Antigravity), todo relatório de encerramento de tarefa deve apresentar a tabela de utilização de modelos utilizando **exclusivamente a nomenclatura do Google (`Flash` e `Pro`)**:
+No Gemini CLI, a tabela de utilização usa a nomenclatura do Google (`Flash` e `Pro`). O `GEMINI.md` do pacote define apenas essas duas famílias de modelos; outros provedores (como Claude ou ChatGPT em Google Antigravity) não são verificados e devem ser reportados apenas se o usuário os configurou e realmente os executou.
 
 ### Utilização dos modelos
 
@@ -234,9 +232,9 @@ Em conformidade estrita com o Framework v5 para ecossistemas Google (Gemini CLI,
 
 **Total de execuções de subagentes:** X
 
-- Execuções em tiers inferiores ou workers rápidos são contabilizadas em **Flash** (`gemini-2.5-flash`, `gemini-3-flash`).
-- Execuções em tiers de raciocínio, especialistas ou revisores de alto risco são contabilizadas em **Pro** (`gemini-2.5-pro`, `gemini-3-pro`).
-- Quando a tarefa for realizada diretamente pelo modelo principal sem acionamento de subagentes, registra-se 1 execução (100%) no modelo ativo e 0 no outro, informando a justificativa técnica para a execução direta.
+- Execuções em tiers inferiores ou workers rápidos são contabilizadas em **Flash** (`gemini-2.5-flash`).
+- Execuções em tiers de raciocínio, especialistas ou revisores de alto risco são contabilizadas em **Pro** (`gemini-2.5-pro`).
+- Quando a tarefa for realizada diretamente pelo modelo principal sem acionamento de subagentes, registra-se 1 execução (100%) na família do modelo ativo (Flash ou Pro) e 0 nas demais, informando a justificativa técnica para a execução direta.
 
 ---
 

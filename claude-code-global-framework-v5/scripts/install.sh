@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Pure Bash installer for framework files (project or global home)
-# Default: audit-only, never overwrites conflicts. Zero Python required.
+# Default: audit-only (writes nothing), never overwrites conflicts.
 # --uninstall removes only files identical to this package or to a known
 # previous release (scripts/legacy-hashes.sha256); modified files are kept.
 
@@ -71,12 +71,19 @@ while [ $# -gt 0 ]; do
             usage 0
             ;;
         --target)
-            [ $# -ge 2 ] || usage 1
+            if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             TARGET="$2"
             shift 2
             ;;
         --target=*)
             TARGET="${1#--target=}"
+            if [ -z "$TARGET" ]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             shift
             ;;
         --global|-g)
@@ -155,24 +162,41 @@ fi
 
 HOME_DIR="$(cd "$HOME" && pwd -P)"
 
-# Resolve TARGET path
-if [ "$IS_GLOBAL" = true ]; then
-    if [ -n "$TARGET" ]; then
-        TARGET="${TARGET/#\~/$HOME_DIR}"
-        mkdir -p "$TARGET" 2>/dev/null || true
-        TARGET="$(cd "$TARGET" 2>/dev/null && pwd -P || echo "$TARGET")"
-    else
-        TARGET="$HOME_DIR"
+# Lexically normalize an absolute path: collapse //, . and .. without following
+# links (so link targets can still be refused afterwards).
+normalize_path() {
+    local part parts=() out=()
+    IFS=/ read -ra parts <<< "$1"
+    if [ "${#parts[@]}" -gt 0 ]; then
+        for part in "${parts[@]}"; do
+            case "$part" in
+                ""|.) ;;
+                ..) if [ "${#out[@]}" -gt 0 ]; then out=("${out[@]:0:${#out[@]}-1}"); fi ;;
+                *) out+=("$part") ;;
+            esac
+        done
     fi
-else
-    TARGET="${TARGET/#\~/$HOME_DIR}"
+    local IFS=/
+    printf '/%s\n' "${out[*]-}"
+}
+
+# Normalize TARGET once: expand ~ (only "~" and "~/..."), make absolute, collapse.
+if [ -n "$TARGET" ]; then
+    case "$TARGET" in
+        "~") TARGET="$HOME_DIR" ;;
+        "~/"*) TARGET="$HOME_DIR/${TARGET#\~/}" ;;
+    esac
     case "$TARGET" in
         /*) ;;
         *) TARGET="$(pwd)/$TARGET" ;;
     esac
-    if [ "$TARGET" = "$HOME_DIR" ]; then
+    TARGET="$(normalize_path "$TARGET")"
+    if [ "$TARGET" = "$HOME_DIR" ] || [ "$TARGET" = "$(normalize_path "$HOME")" ] \
+        || { [ -d "$TARGET" ] && [ ! -L "$TARGET" ] && [ "$TARGET" -ef "$HOME_DIR" ]; }; then
         IS_GLOBAL=true
     fi
+elif [ "$IS_GLOBAL" = true ]; then
+    TARGET="$HOME_DIR"
 fi
 
 # Safety check: refuse root
@@ -236,6 +260,11 @@ check_parent_invalid() {
     return 1
 }
 
+if check_chain_for_symlinks "$TARGET"; then
+    echo "Erro: o destino ou um de seus pais é link simbólico: $TARGET" >&2
+    exit 1
+fi
+
 dest_for() {
     # $1 = payload dir, $2 = source file; prints destination path
     local payload="$1" source_file="$2" source_rel first_part
@@ -285,7 +314,7 @@ if [ "$UNINSTALL" = true ]; then
             else
                 KEPT+=("PRESERVAR (modificado) $dest")
             fi
-        done < <(find "$payload" -type f -print0 | sort -z)
+        done < <(find "$payload" \( -type f -o -type l \) -print0 | sort -z)
     done
 
     if [ "${#REMOVE[@]}" -gt 0 ]; then
@@ -353,7 +382,7 @@ for payload in "${PAYLOAD_DIRS[@]}"; do
             PENDING_DESTS+=("$dest")
             echo "CRIAR $dest"
         fi
-    done < <(find "$payload" -type f -print0 | sort -z)
+    done < <(find "$payload" \( -type f -o -type l \) -print0 | sort -z)
 done
 
 if [ "${#ERRORS[@]}" -gt 0 ]; then
@@ -381,11 +410,9 @@ for i in "${!PENDING_SOURCES[@]}"; do
     dest_dir="$(dirname "$dest")"
     mkdir -p "$dest_dir"
 
-    # Non-destructive copy (fails if destination already exists)
-    if ( set -C; cp "$src" "$dest" ) 2>/dev/null; then
-        :
-    else
-        echo "Falha ao criar arquivo: $dest" >&2
+    # Exclusive create: noclobber makes the redirect fail (O_EXCL) if dest exists
+    if ! ( set -C; cat -- "$src" > "$dest" ); then
+        echo "Falha ao criar arquivo (conflito criado após a auditoria ou erro de gravação); nada foi sobrescrito: $dest" >&2
         exit 1
     fi
 done

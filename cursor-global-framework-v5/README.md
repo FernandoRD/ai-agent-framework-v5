@@ -14,7 +14,7 @@ Principal sugerido: Sonnet 5 selecionado no Cursor. Esta escolha e o mapeamento 
 
 ## Instalar
 
-Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`):
+Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish ou PowerShell), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`):
 
 No Linux/macOS (Bash ou Fish):
 
@@ -44,6 +44,8 @@ No Windows (PowerShell):
 
 O primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.
 
+Uma vez que o destino seja normalizado lexicalmente (`.`, `..`, `//`; só `~` e `~/...` expandem para o HOME), um alvo que resolva para o próprio HOME é tratado como global. Por desenho, o instalador recusa qualquer alvo cujo caminho informado atravesse um link simbólico, inclusive um `$HOME` sob um link (por exemplo `/home -> /var/home`); informe o caminho físico. Divergências conhecidas entre `install.sh` e `install.ps1`: link de diretório dentro do payload é detectado de forma diferente no Windows PowerShell 5.1 e no PowerShell 7, e um link pendente no destino só é tratado de forma garantida pelo `install.sh`.
+
 ### Especialistas opcionais
 
 Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
@@ -57,7 +59,7 @@ evals de domínio, use as opções explícitas junto à aplicação:
 ./scripts/install.sh --target /caminho/do/projeto --with-all-specialists --apply
 ```
 
-No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
+No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.
@@ -85,7 +87,7 @@ privacidade, release, deploy, force push ou reescrita de histórico.
 
 Peça uma correção trivial: deve ser direta. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
 
-A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks, migração automática de v3/v4, skills nem instalação global: esses recursos do instalador Codex são específicos daquela plataforma. Não houve execução autenticada no Cursor durante a geração.
+A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks nem migração automática de v3/v4: esses recursos do instalador Codex são específicos daquela plataforma. A instalação global (`--global`) grava a regra e os agentes em `~/.cursor/`, e as skills dos especialistas opcionais em `~/.cursor/skills/`; este pacote não verificou se o Cursor carrega esses caminhos globais. Não houve execução autenticada no Cursor durante a geração.
 
 ## Fontes oficiais consultadas em 2026-09-12
 

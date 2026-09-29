@@ -84,17 +84,14 @@ weight, divide by 4, and sum the results:
 Route each bounded unit of work independently. In Gemini CLI and Google Antigravity,
 work is routed across capability tiers:
 
-- 0-25: Flash-Lite / Light Flash tier (`flash_lite`, `gemini-2.5-flash-lite`, `flash` for fast mechanical tasks, narrow file reading, initial reconnaissance).
-- 26-55: Flash tier (`flash`, `gemini-2.5-flash`, `gemini-3.8-flash` for standard implementation workers, targeted refactors, routine publication).
-- 56-100: Pro tier (`pro`, `gemini-2.5-pro`, `gemini-3.8-pro` for deep reasoning, complex multi-file engineering, high-risk changes, and independent reviews).
+- 0-34: Flash tier (`flash-explorer`, `flash-worker`; `gemini-2.5-flash`) for discovery, mechanical tasks, narrow low-risk changes, and routine publication.
+- 35-69: Pro tier (`pro-worker`, `pro-reviewer`; `gemini-2.5-pro`) for normal implementation, debugging, multi-file changes, and independent review.
+- 70-100: Pro tier for high-risk work (`pro-specialist`, `pro-risk-reviewer`, `pro-critical`; `gemini-2.5-pro`). The package pins the same Pro model for the last two bands; the band selects the agent role, not a different model.
 
-### Multi-provider support (Google Antigravity & Hybrid Workspaces)
+### Other providers (not verified)
 
-When running in Google Antigravity or environments with multi-provider models available:
-- **Anthropic Claude (Sonnet / Opus)** and **OpenAI ChatGPT (GPT-4o / o-series)** may be selected as the active session model in the interface.
-- Subagents using `inherit` automatically inherit the active Claude or ChatGPT model.
-- Explicit subagent delegations may choose `pro` (Google Pro reasoning), `flash` (Google fast execution), `flash_lite` (lightweight mechanical tasks), or `inherit` (preserve active Claude/GPT context).
-- **Mandatory Flash delegation**: When the active parent session is Flash (`gemini-flash` or `gemini-3.8-flash`), the parent **MUST NOT** retain tasks that reach the Pro risk floor (such as multi-component implementation, schema changes, security boundaries, or critical refactors). It MUST delegate implementation to `pro-worker` (Model: Pro) and verification to `pro-reviewer` (Model: Pro).
+This package pins only Gemini models (`gemini-2.5-pro`, `gemini-2.5-flash`). Using other providers in Antigravity, `inherit` model inheritance, and programmatic cross-model delegation are unverified and not supported by the Gemini CLI documentation consulted; do not rely on them.
+- **Mandatory Flash delegation**: When the active parent session is Flash (`gemini-2.5-flash`), the parent **MUST NOT** retain tasks that reach the Pro risk floor (such as multi-component implementation, schema changes, security boundaries, or critical refactors). It MUST delegate implementation to `pro-worker` (Model: Pro) and verification to `pro-reviewer` (Model: Pro).
 
 Do not expose the full score calculation unless it helps the user understand a
 decision or the user requests it.
@@ -209,7 +206,7 @@ trivial turns to avoid these checkpoints.
 
 ### Active parallelization & batch dispatch (Fan-Out/Fan-In)
 
-- **Prioritize parallel dispatching**: Whenever a non-trivial request can be decomposed into independent subtasks with disjoint read or write boundaries, **actively dispatch 2–4 concurrent subagents in a single batch call** (`Subagents: [...]`) instead of executing them sequentially.
+- **Prioritize parallel dispatching**: Whenever a non-trivial request can be decomposed into independent subtasks with disjoint read or write boundaries, **actively dispatch 2–4 concurrent subagents in the same turn, when the platform supports concurrent subagent calls,** instead of executing them sequentially.
 - **Concurrent exploration & audit**: For large or multi-component discovery, launch parallel explorers targeting distinct domains (e.g. core architecture, test infrastructure, documentation/contracts) concurrently.
 - **Partitioned write scopes**: When changes affect distinct modules, services, or platform packages with non-overlapping directory trees, assign each partition to a dedicated concurrent worker.
 - **Pipelined review & test execution**: As soon as a deliverable is ready, launch an independent read-only reviewer in parallel with ongoing work (such as test execution, parent integration, or next-phase implementation). Do not serialize review after all work is done if it can proceed alongside parent verification.
@@ -296,16 +293,13 @@ subagent ran on non-trivial work, state that fact and the concrete reason for
 direct execution. Report which required delegation/review checkpoints were
 completed or blocked; do not expose the full numeric routing calculation.
 
-### Model usage report format (Google & Multi-Provider Antigravity)
+### Model usage report format (Gemini)
 
-In Gemini CLI, model metrics and utilization reporting focus on Google models (**Flash** and **Pro**). In Google Antigravity, where multi-provider models (Anthropic Claude and OpenAI ChatGPT) can be selected in the interface or inherited by subagents, report the actual models executed during the turn.
-
-Standard Google reporting categories:
-- Lower-tier / fast executions: **Flash** (`gemini-2.5-flash`, `gemini-3.8-flash`, `flash_lite`)
-- Higher-tier / reasoning / specialist executions: **Pro** (`gemini-2.5-pro`, `gemini-3.8-pro`)
-- Multi-provider active / inherited executions: **Claude** (Sonnet / Opus) or **ChatGPT** (GPT-4o / o-series) when actively used in the session.
-
-When presenting a model utilization table or breakdown:
+The package defines Google agents only: **Flash** (`gemini-2.5-flash`) for lower-tier
+executions and **Pro** (`gemini-2.5-pro`) for reasoning, specialist and high-risk review
+executions. Report the models that actually ran. Other providers (for example Claude or
+ChatGPT in Google Antigravity) are not verified by this package; add a row for one only
+if the user configured it and it really executed.
 
 ### Utilização dos modelos
 
@@ -313,15 +307,13 @@ When presenting a model utilization table or breakdown:
 |---|---:|---:|
 | Flash | X | XX% |
 | Pro | X | XX% |
-| Claude (quando ativo/utilizado) | X | XX% |
-| ChatGPT (quando ativo/utilizado) | X | XX% |
 
 **Total de execuções de subagentes:** X
 
 If no subagents were used and work was completed directly by the parent agent,
 state that fact clearly as required above. If a summary table is presented for
-direct execution, record 1 execution (100%) under the active model family (Flash,
-Pro, Claude, or ChatGPT) and 0 for the others. Never claim an execution on a model that did not run.
+direct execution, record 1 execution (100%) under the active model family and 0 for
+the others. Never claim an execution on a model that did not run.
 <!-- GEMINI-CLI-GLOBAL-FRAMEWORK:END v5 -->
 
 

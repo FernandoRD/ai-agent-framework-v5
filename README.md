@@ -21,7 +21,7 @@ Os arquivos `.zip` na raiz contêm as mesmas distribuições prontas para transp
 
 ## Extensões opcionais
 
-Os 9 especialistas de domínio são distribuídos em todos os quatro pacotes como skills opcionais, não fazendo parte da instalação padrão nem alterando os papéis centrais do framework:
+Os 11 especialistas de domínio são distribuídos em todos os quatro pacotes como skills opcionais, não fazendo parte da instalação padrão nem alterando os papéis centrais do framework:
 
 1. **Zabbix Specialist**: automação Zabbix, templates, LLD, proxies, API, HA e coletor RAG opcional.
 2. **Grafana Specialist**: foco em Grafana 12, desenvolvimento avançado em HTML Graphics (`gapit-htmlgraphics-panel`), UI/UX de NOC/dashboards e automação via API.
@@ -32,6 +32,8 @@ Os 9 especialistas de domínio são distribuídos em todos os quatro pacotes com
 7. **SRE Incident Specialist**: resposta e gestão de incidentes, runbooks de crise, post-mortems estruturados (RCA), SLOs/SLIs e error budgets.
 8. **Database Tuning Specialist**: otimização de bancos relacionais e analíticos, tuning de queries/índices, pool de conexões e mitigação de locks/deadlocks.
 9. **Proxmox Specialist**: virtualização e clustering empresarial com foco em Proxmox VE 8.x e 9.x, Corosync v3, Ceph (Reef/Squid), Proxmox SDN (VLAN/VXLAN/EVPN), Proxmox Backup Server (PBS), automação via QEMU/LXC, Terraform (`bpg/proxmox`), cloud-init e alta disponibilidade (HA CRM/LRM).
+10. **Shell & Python Specialist**: programação Shell Script (Bash 4+, POSIX sh, fish) e Python 3.10+ para automação de infraestrutura, com scripts robustos (`set -euo pipefail`, `shellcheck`, `ruff`, `pytest`), UserParameters, LLD e `zabbix_sender` do Zabbix, clientes de API e agendamento com cron/timers do systemd.
+11. **Docker & Kubernetes Specialist**: contêineres com Docker Engine e Compose v2 (imagens multi-stage, hardening) e orquestração com Kubernetes (workloads, probes, PDB, RBAC, NetworkPolicy, Helm/Kustomize, upgrades, backup do etcd) e observabilidade com Prometheus, Loki e Zabbix.
 
 Instale-os somente quando o projeto precisar:
 

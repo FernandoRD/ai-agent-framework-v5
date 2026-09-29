@@ -18,6 +18,8 @@ ALL_KNOWN_SPECS=(
     "sre-incident-specialist"
     "database-tuning-specialist"
     "proxmox-specialist"
+    "shell-python-specialist"
+    "docker-kubernetes-specialist"
 )
 
 add_specialist() {
@@ -52,7 +54,10 @@ Especialistas de domínio opcionais:
   --with-database-tuning-specialist Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                     (alias: --with-db-tuning-specialist)
   --with-proxmox-specialist         Instala o especialista Proxmox VE (8.x/9.x, PBS, Ceph, ZFS, SDN)
-  --with-all-specialists            Instala todos os 9 especialistas de domínio acima
+  --with-shell-python-specialist    Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  --with-docker-kubernetes-specialist
+                                    Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
+  --with-all-specialists            Instala todos os 11 especialistas de domínio acima
 EOF
     exit "${1:-0}"
 }
@@ -121,6 +126,14 @@ while [ $# -gt 0 ]; do
             ;;
         --with-proxmox-specialist)
             add_specialist "proxmox-specialist"
+            shift
+            ;;
+        --with-shell-python-specialist)
+            add_specialist "shell-python-specialist"
+            shift
+            ;;
+        --with-docker-kubernetes-specialist)
+            add_specialist "docker-kubernetes-specialist"
             shift
             ;;
         --with-all-specialists)

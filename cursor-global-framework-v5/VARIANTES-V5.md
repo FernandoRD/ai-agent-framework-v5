@@ -23,7 +23,7 @@ No Linux/macOS (Bash ou Fish):
 ./scripts/install.sh --target "/caminho/do/projeto"
 ./scripts/install.sh --target "/caminho/do/projeto" --apply
 
-# Instalação com todos os 9 especialistas:
+# Instalação com todos os 11 especialistas:
 ./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 
 # Instalação global ($HOME):
@@ -40,7 +40,7 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto"
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
 
-# Instalação com todos os 9 especialistas:
+# Instalação com todos os 11 especialistas:
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -WithAllSpecialists -Apply
 
 # Instalação global:
@@ -48,7 +48,7 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Global -Apply
 ```
 
-A auditoria (sem `--apply`) nunca escreve em disco, inclusive com `--global`, e só mostra o que seria criado. Com `--apply`, o instalador cria arquivos novos (no Bash, criação exclusiva via `cat > destino` sob `noclobber`), preserva idênticos, recusa conflitos e links simbólicos (inclusive alvo global que seja link simbólico) e não modifica configurações pessoais. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação. Os scripts são nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`); Python não é necessário para instalar. Só o Claude Code (`install.sh` e `install.fish`) tem `--uninstall` (auditoria por padrão, remoção com `--apply`, preservando arquivos modificados); `install.ps1`, Gemini CLI e Cursor não têm. Os especialistas aceitam aliases (`--with-sre-specialist`, `--with-db-tuning-specialist`; no PowerShell, `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`). Para consultar as opções e o catálogo completo dos 9 especialistas, execute `./scripts/install.sh --help` ou `.\scripts\install.ps1 -Help`. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
+A auditoria (sem `--apply`) nunca escreve em disco, inclusive com `--global`, e só mostra o que seria criado. Com `--apply`, o instalador cria arquivos novos (no Bash, criação exclusiva via `cat > destino` sob `noclobber`), preserva idênticos, recusa conflitos e links simbólicos (inclusive alvo global que seja link simbólico) e não modifica configurações pessoais. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação. Os scripts são nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`); Python não é necessário para instalar. Só o Claude Code (`install.sh` e `install.fish`) tem `--uninstall` (auditoria por padrão, remoção com `--apply`, preservando arquivos modificados); `install.ps1`, Gemini CLI e Cursor não têm. Os especialistas aceitam aliases (`--with-sre-specialist`, `--with-db-tuning-specialist`; no PowerShell, `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`). Para consultar as opções e o catálogo completo dos 11 especialistas, execute `./scripts/install.sh --help` ou `.\scripts\install.ps1 -Help`. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
 
 Nos instaladores `install.sh` das variantes por projeto, o alvo é normalizado lexicalmente (`.`, `..`, `//`) e é recusado se o caminho atravessar um link simbólico, inclusive no modo global.
 

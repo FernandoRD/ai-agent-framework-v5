@@ -151,9 +151,9 @@ Todas as quatro distribuições do framework contam com instaladores e ferrament
 
 ---
 
-## Catálogo modular dos 9 especialistas de domínio
+## Catálogo modular dos 11 especialistas de domínio
 
-Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os quatro pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -192,6 +192,14 @@ Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técn
 - **Domínio:** Virtualização, clustering empresarial e infraestrutura hiperconvergente com Proxmox Virtual Environment (PVE) 8.x e 9.x.
 - **Cobertura técnica:** Arquitetura de cluster Corosync v3, qdevice em topologias de dois nós, procedimentos de upgrade e migração segura PVE 8 para 9 (`pve8to9`), storage hiperconvergente Ceph (versões Reef e Squid com BlueStore) e pools ZFS locais/compartilhados (ashift=12, limites de ARC, compressão zstd), Proxmox SDN (Software-Defined Networking com zones VLAN, VXLAN e EVPN multi-tenancy), automação e provisionamento de VMs e contêineres unprivileged LXC via QEMU/KVM, cloud-init e Terraform (`bpg/proxmox`), ecossistema de backup com Proxmox Backup Server (PBS com deduplicação e dirty-bitmaps em tempo real), Alta Disponibilidade com HA CRM/LRM e fencing via watchdog, e integração de telemetria nativa com Zabbix Agent 2 e Prometheus.
 
+### 10. `shell-python-specialist`
+- **Domínio:** Programação Shell Script (Bash 4+, POSIX sh e fish) e Python 3.10+ aplicada a automação de infraestrutura e monitoramento.
+- **Cobertura técnica:** Scripts Bash robustos (`set -euo pipefail`, aspas e arrays, `trap`, `mktemp`, `flock`, `timeout`, escrita atômica), portabilidade entre POSIX sh, Bash e fish, validação com `bash -n`, `shellcheck`, `shfmt` e `bats-core`; CLIs Python com `argparse`, `logging`, `subprocess` sem `shell=True`, timeouts de rede, `pyproject.toml`, ambientes isolados (`venv`/`uv`), `ruff`, `mypy` e `pytest`; integração com Zabbix (UserParameters, saída de LLD em JSON, `zabbix_sender`, API com `zabbix_utils` e API token), agendamento com cron e timers do systemd e troubleshooting de ambiente, encoding e desempenho.
+
+### 11. `docker-kubernetes-specialist`
+- **Domínio:** Contêineres com Docker Engine e Docker Compose v2 e orquestração com Kubernetes (kubeadm, k3s, RKE2 e serviços gerenciados).
+- **Cobertura técnica:** Dockerfiles multi-stage com usuário não-root, segredos de build via BuildKit e imagens multi-arquitetura, Compose com healthchecks, limites e rotação de logs; workloads Kubernetes com `requests`/`limits`, probes, `PodDisruptionBudget`, `topologySpreadConstraints` e `securityContext` restritivo, Pod Security Admission, RBAC mínimo, `NetworkPolicy` de negação padrão, Services, Ingress/Gateway API, storage persistente, Helm e Kustomize com `diff`/`dry-run` antes de aplicar, manutenção de nós (`cordon`/`drain`), upgrades de cluster uma versão minor por vez, backup do etcd e observabilidade com kube-prometheus-stack, Loki/Alloy e os templates e Helm chart oficiais do Zabbix para Kubernetes.
+
 ---
 
 ### Estrutura dos Arquivos de Especialistas
@@ -211,9 +219,9 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 ### Flags de Instalação dos Especialistas
 
 - **Instalação Individual:**
-  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`.
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`. Aliases reais no Claude, Gemini e Cursor: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
-- **Instalação Agregadora (Todos os 9 especialistas):**
+  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`, `--with-shell-python-specialist`, `--with-docker-kubernetes-specialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini e Cursor: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
+- **Instalação Agregadora (Todos os 11 especialistas):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
 

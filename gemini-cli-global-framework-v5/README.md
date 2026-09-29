@@ -161,9 +161,10 @@ No Windows (PowerShell):
 
 ### Especialistas opcionais
 
-Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+Os 11 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`
+e `docker-kubernetes-specialist`) não são instalados por padrão e não alteram os sete
 agentes centrais ou o roteamento Flash/Pro. Para incluir skills, conhecimento e evals,
 use as opções explícitas junto à aplicação:
 
@@ -172,7 +173,7 @@ use as opções explícitas junto à aplicação:
 ./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
+No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A auditoria não escreve; a aplicação cria somente arquivos novos e recusa conflitos e links simbólicos. Depois faça a ativação descrita acima. Principal sugerido: Pro selecionado explicitamente com `/model`; o pacote não altera a seleção da sessão.

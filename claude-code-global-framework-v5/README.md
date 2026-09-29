@@ -79,9 +79,10 @@ Divergências conhecidas entre `install.sh` e `install.ps1`: `install.sh` oferec
 
 ### Especialistas opcionais
 
-Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+Os 11 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão. Cada
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`
+e `docker-kubernetes-specialist`) não são instalados por padrão. Cada
 opção instala:
 
 - o **agente nativo** `.claude/agents/<nome>.md`, que aparece em `/agents` e pode receber

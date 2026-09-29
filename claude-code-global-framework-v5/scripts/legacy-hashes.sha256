@@ -88,3 +88,5 @@ d09f5289d7e69aebe1faada5ef3249cc2d0fb9328040500a39911f65f9c79dca  optional/loki-
 e3add9de8e81d4a010544241bea8291fe1f585317b7f31baece45f81de94f24c  optional/zabbix-specialist/payload/.claude/agents/zabbix-specialist.md
 2bdac26d2c74add50fc3ba0753ea7ed8b7d30d0dd325667db7df206a87bc4209  optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/SKILL.md
 9e5798b6bb3e001f9d45fa46d6d046bba067629bcfa19cafe761b452dd53eced  payload/CLAUDE.md
+# v5.2.0-claude-code (antes de shell-python-specialist e docker-kubernetes-specialist)
+07bbe65048d6f1aaa768b9757677507533445ca899badc5ccdef0ea74d9f82c1  payload/CLAUDE.md

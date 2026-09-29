@@ -1,6 +1,6 @@
-797627471efece09dc05dcbe32bef7db251e216db55b8a74d9dee270ad377188  ./README.md
-bd4228059c3fee4f1c63b30a1ed42b74d40f5b941e1f32723b5b11fe9caf1d6c  ./VALIDACAO.md
-2240d2d278b2f3acc655234932f9b04f72af435a0c4ba54290e288c506efc450  ./VARIANTES-V5.md
+9efe57680620219ba62e0cffb137a908fe9fdf8f0f3c3da3bec4d2dfddbcf6ed  ./README.md
+e057f110bb89ec24a77d74812bbe70a4c086f028033db50b19ee5d7b78b46262  ./VALIDACAO.md
+119f9c7740bcb002ec5f7a17034135a2ceef564c138abc445787be5b884ada0c  ./VARIANTES-V5.md
 a23a00019419c07c4e92f33e8afd0f85ac5a0d2b9138059c2cdd1d10dce3ec3f  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/inventory-and-vault.md
@@ -16,6 +16,13 @@ dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ans
 dbcc56a85f01951bea4542bcafe4f434ec4a76dd84e13d8f5b47b11edfde0c7a  ./optional/database-tuning-specialist/payload/.cursor/skills/database-tuning-specialist/troubleshooting.md
 e2217936bff12a935a392187893fe0acba9f0ae40ae091e9976af82e45a775f2  ./optional/database-tuning-specialist/payload/evals/database-tuning/001-routing.md
 f4250ac8d1ac48052c706d485651168809245d0f9a65f082ffca7568aa332d5f  ./optional/database-tuning-specialist/payload/knowledge/database-tuning/README.md
+b0abae9af2c2453633b770f6edd504b625910c4718c474778979050f243f4994  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/SKILL.md
+6cf7317c19e3e32897d4bb16aa045044a7cca0b7aef5b5083b3ab62902b14e1a  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/cluster-operations.md
+2d28e351f9a725529ff40b492b7f55acd49c971e32125acde7ae1fd091735fbd  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/docker-images-and-compose.md
+e9fcc3629692461459e83fa8f43dec9fd8e72b6c601c6849b4cc19b01b8a0b40  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/kubernetes-workloads.md
+e83524fb1e723852a682b4982db31221224e82952ebb8860582a431dca730aab  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/troubleshooting.md
+82486efb1ac99ea72d3fbf923ba303b573f179ee8b7e01f5c19c2efffc2034e6  ./optional/docker-kubernetes-specialist/payload/evals/docker-kubernetes/001-routing.md
+2493a446c1a607884da38f19d35dbdb4f8740b8cf390d130d6d4e7ee3a2f3834  ./optional/docker-kubernetes-specialist/payload/knowledge/docker-kubernetes/README.md
 0886dee7ac7081b9a4563f507f344b3d5277990b27e7f4929b635418cba410fc  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/SKILL.md
 6819ac2f11f3d6661bf79436139ceaaeae85640bcf19028e272e64a9fd9bf50b  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/api-and-provisioning.md
 7307565ece2ede0e3d3f2c10e0338946cc6ef8a383a307be7c43a43b58581fff  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/dashboard-design.md
@@ -51,6 +58,13 @@ dfe955f795eb6cb1ba1473d9c2407379e0e318de66a3117186f6cd65c3ab5589  ./optional/pro
 5d1fbe62c9f569d741c73af93655d5de69a78aa10a0004af40776002a7beccd8  ./optional/proxmox-specialist/payload/.cursor/skills/proxmox-specialist/vm-lxc-automation.md
 e959e3edd05f45a39bd0ce47341aae7d26fa4f44b656cc64046e6bbf442b02d3  ./optional/proxmox-specialist/payload/evals/proxmox/001-routing.md
 c497fe16437083710c3ab94c7f56cc627a36f1e688d78078c104344819c00551  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
+7d6eba7ee47cf8b601097153c1a564bf08458c4bf98d270760cf3797340d4e0a  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/SKILL.md
+240abe70f82f1f496d8fab1b333063f313faf9f245c049c7f8080c2bf9265cb8  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/monitoring-integration.md
+19f94d4ac075d83545b7936d49a845ab7ec01a863c7eac0af1bbaed8c65f996f  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/python-engineering.md
+94e85ee6f4ef9a041d25d324b0937b8f478ee61524dc3165e953082a600af318  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/shell-scripting.md
+7f7a5cf148eaf4b2921ef7681abcda80f526d0fd4919ccf6dea9c3d1ae9943a2  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/troubleshooting.md
+5285d51b3209858ea10b044e574fd97689c4736a93e8fca09bd511b4e8e85ddb  ./optional/shell-python-specialist/payload/evals/shell-python/001-routing.md
+4eadab917f0db0b31e1ff8f474ea24f4c1d03cb2c5a30806dbedd087497fd8e8  ./optional/shell-python-specialist/payload/knowledge/shell-python/README.md
 40bf5012f1821b1ee2500393ad9de307676123e1011828b38bc9f01b5b2c1d89  ./optional/sre-incident-specialist/payload/.cursor/skills/sre-incident-specialist/SKILL.md
 6f34b1be915a36b0f97948f1590ad970c9ed093d80a8ba3090879800dd81a40e  ./optional/sre-incident-specialist/payload/.cursor/skills/sre-incident-specialist/incident-triage-and-runbooks.md
 f90e37d134ccecfefc8f02b8b89c8c47e2f3e3bbf8f221b490e5eabd612523da  ./optional/sre-incident-specialist/payload/.cursor/skills/sre-incident-specialist/rca-and-post-mortem.md
@@ -78,6 +92,6 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
 638dd83e3a8ad40ca85511c14b352328dedec2a389c350a502b26cba61e5a233  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-808b2dae96760532b0136f176764d04f075f230c9ddbb54b16295a9cf7d4a366  ./scripts/install.ps1
-323675a641c59b8973237940585f724198e567fc87ccf416fec5d89c15fe4059  ./scripts/install.sh
-c07448e69f59523db2eb90c593916482e496e874a9ca5bef12e60d13820d812e  ./scripts/test_install.py
+482e1f960e1680dfd53f7edc37626d47fe99660f21283ca98b70a25889abf2de  ./scripts/install.ps1
+e296b55b5825eeac154d8f601a3ce485a40056948973ef37f3f31f7e6c6401ab  ./scripts/install.sh
+8d043987415eded5f6216e0982eb8e15a4c6aa0c6799321081295f1befe1d0ac  ./scripts/test_install.py

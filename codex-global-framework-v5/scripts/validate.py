@@ -61,6 +61,8 @@ ALL_OPTIONAL_SPECS = [
     "sre-incident-specialist",
     "database-tuning-specialist",
     "proxmox-specialist",
+    "shell-python-specialist",
+    "docker-kubernetes-specialist",
 ]
 for spec in ALL_OPTIONAL_SPECS:
     opt_skill = ROOT / "optional" / spec / ".agents" / "skills" / spec

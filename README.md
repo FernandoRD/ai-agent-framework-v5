@@ -45,6 +45,8 @@ Instale-os somente quando o projeto precisar:
 
 No PowerShell, use os parâmetros correspondentes (`-WithAnsibleSpecialist`, `-WithGrafanaSpecialist`, etc.) ou `-WithAllSpecialists`. Nas variantes por projeto, combine com `-Apply`. Sem essas opções, o conteúdo dos especialistas não é instalado.
 
+No Claude Code (v5.1.0), cada opção instala também o **agente nativo** `.claude/agents/<nome>-specialist.md`, que pré-carrega a skill homônima, usa `model: sonnet` por padrão e segue o roteamento v5 (para unidade de nível Haiku ou Opus, o principal o invoca com o modelo correspondente). O instalador Bash/Fish dessa variante ganhou `--uninstall`, que remove apenas arquivos intactos (inclusive de versões anteriores listadas em `scripts/legacy-hashes.sha256`). Detalhes em [claude-code-global-framework-v5/README.md](claude-code-global-framework-v5/README.md).
+
 O Zabbix Specialist inclui um coletor RAG opcional para fontes Git e Jira. Ele fica
 dentro da skill, recebe configuração JSON criada pelo usuário e grava dados
 somente no diretório de dados informado pelo usuário. Veja `rag-ingestion.md`

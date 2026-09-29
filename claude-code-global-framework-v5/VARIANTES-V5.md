@@ -12,7 +12,7 @@ Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalado
 
 ## Usar
 
-Extraia o ZIP da plataforma. Dentro da pasta extraída, execute com o instalador de sua preferência (Bash, Fish, PowerShell ou Python):
+Extraia o ZIP da plataforma. Dentro da pasta extraída, execute com o instalador de sua preferência (Bash, Fish ou PowerShell):
 
 No Linux/macOS (Bash ou Fish):
 
@@ -20,6 +20,9 @@ No Linux/macOS (Bash ou Fish):
 # Instalação por projeto:
 ./scripts/install.sh --target "/caminho/do/projeto"
 ./scripts/install.sh --target "/caminho/do/projeto" --apply
+
+# Instalação com todos os 9 especialistas:
+./scripts/install.sh --target "/caminho/do/projeto" --with-all-specialists --apply
 
 # Instalação global ($HOME):
 ./scripts/install.sh --global
@@ -35,12 +38,15 @@ No Windows (PowerShell):
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto"
 .\scripts\install.ps1 -Target "C:\caminho\do\projeto" -Apply
 
+# Instalação com todos os 9 especialistas:
+.\scripts\install.ps1 -Target "C:\caminho\do\projeto" -WithAllSpecialists -Apply
+
 # Instalação global:
 .\scripts\install.ps1 -Global
 .\scripts\install.ps1 -Global -Apply
 ```
 
-O comando de auditoria (sem `--apply`) somente mostra o que seria criado. Com `--apply`, cria arquivos novos, preserva idênticos e recusam conflitos; não modifica configurações pessoais. Os scripts são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem necessidade de interpretador Python para instalação. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
+O comando de auditoria (sem `--apply`) somente mostra o que seria criado. Com `--apply`, cria arquivos novos, preserva idênticos e recusam conflitos; não modifica configurações pessoais. Os scripts são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem necessidade de interpretador Python para instalação. Para consultar as opções e o catálogo completo dos 9 especialistas, execute `./scripts/install.sh --help` ou `.\scripts\install.ps1 -Help`. Leia o README da plataforma antes da ativação, especialmente o exemplo de settings do Gemini.
 
 Para conferir o instalador sem acessar nenhum provedor:
 

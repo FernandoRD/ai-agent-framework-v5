@@ -27,7 +27,8 @@ class InstallerTests(unittest.TestCase):
             install = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-zabbix-specialist', '--apply'], capture_output=True, text=True)
             self.assertEqual(install.returncode, 0)
             self.assertEqual(specialist.read_bytes(), (OPTIONAL_PAYLOAD / '.claude' / 'skills' / 'zabbix-specialist' / 'SKILL.md').read_bytes())
-            self.assertFalse(native_agent.exists(), 'specialist must not install a model-pinned native agent')
+            self.assertTrue(native_agent.exists(), 'specialist must install its native agent')
+            self.assertIn('skills:\n', native_agent.read_text(encoding='utf-8'))
 
     def test_grafana_specialist_is_opt_in(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -43,7 +44,8 @@ class InstallerTests(unittest.TestCase):
             install = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-grafana-specialist', '--apply'], capture_output=True, text=True)
             self.assertEqual(install.returncode, 0)
             self.assertEqual(specialist.read_bytes(), (GRAFANA_PAYLOAD / '.claude' / 'skills' / 'grafana-specialist' / 'SKILL.md').read_bytes())
-            self.assertFalse(native_agent.exists(), 'specialist must not install a model-pinned native agent')
+            self.assertTrue(native_agent.exists(), 'specialist must install its native agent')
+            self.assertIn('skills:\n', native_agent.read_text(encoding='utf-8'))
 
     def test_with_all_specialists(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -59,6 +61,13 @@ class InstallerTests(unittest.TestCase):
             for s in specs:
                 skill_file = target / '.claude' / 'skills' / s / 'SKILL.md'
                 self.assertTrue(skill_file.exists(), f"Skill {s} missing with --with-all-specialists")
+                agent_file = target / '.claude' / 'agents' / f'{s}.md'
+                self.assertTrue(agent_file.exists(), f"Agent {s} missing with --with-all-specialists")
+                text = agent_file.read_text(encoding='utf-8')
+                self.assertTrue(text.startswith('---\n'), f"Agent {s} lacks frontmatter")
+                self.assertIn(f'name: {s}\n', text)
+                self.assertIn(f'skills:\n  - {s}\n', text, f"Agent {s} must preload its skill")
+                self.assertNotIn('bypassPermissions', text)
 
     def test_install_preserves_existing_data(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -102,6 +111,44 @@ class InstallerTests(unittest.TestCase):
             if tool_dot_dir:
                 for p in PAYLOAD.glob('*.md'):
                     self.assertTrue((target / tool_dot_dir / p.name).exists(), f"{p.name} missing inside {tool_dot_dir}")
+
+    def test_uninstall_removes_only_intact_files(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary) / 'home'
+
+            def run(*extra):
+                return subprocess.run(
+                    ['bash', str(SCRIPT), '--target', str(home), '--global', '--with-all-specialists', *extra],
+                    capture_output=True, text=True)
+
+            self.assertEqual(run('--apply').returncode, 0)
+            modified = home / '.claude' / 'skills' / 'zabbix-specialist' / 'api.md'
+            modified.write_text('user content', encoding='utf-8')
+            foreign = home / '.claude' / 'agents' / 'user-agent.md'
+            foreign.write_text('user agent', encoding='utf-8')
+            installed_agent = home / '.claude' / 'agents' / 'zabbix-specialist.md'
+
+            audit = run('--uninstall')
+            self.assertEqual(audit.returncode, 0)
+            self.assertTrue(installed_agent.exists(), 'uninstall audit must not delete')
+
+            res = run('--uninstall', '--apply')
+            self.assertEqual(res.returncode, 0)
+            self.assertFalse(installed_agent.exists())
+            self.assertFalse((home / '.claude' / 'CLAUDE.md').exists())
+            self.assertFalse((home / '.claude' / 'knowledge').exists(), 'empty dirs must be pruned')
+            self.assertEqual(modified.read_text(encoding='utf-8'), 'user content')
+            self.assertEqual(foreign.read_text(encoding='utf-8'), 'user agent')
+
+    def test_legacy_hashes_cover_payload_paths(self):
+        legacy = SCRIPT.with_name('legacy-hashes.sha256')
+        self.assertTrue(legacy.is_file())
+        for line in legacy.read_text(encoding='utf-8').splitlines():
+            if not line or line.startswith('#'):
+                continue
+            digest, rel = line.split('  ', 1)
+            self.assertEqual(len(digest), 64)
+            self.assertTrue('/payload/' in '/' + rel, rel)
 
     def test_rejects_link_target(self):
         with tempfile.TemporaryDirectory() as temporary:

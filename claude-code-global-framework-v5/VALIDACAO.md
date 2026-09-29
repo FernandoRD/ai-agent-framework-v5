@@ -1,6 +1,8 @@
 # Validação da distribuição
 
 - Sete agentes e frontmatter YAML verificados.
+- 5.1.0: nove agentes especialistas opcionais com `skills` pré-carregada, verificados pelos testes do instalador.
+- 5.1.0: `--uninstall` testado contra uma instalação global exata da v5.0.0 (75 arquivos): removeu os intactos, incluindo arquivos alterados entre versões, e preservou arquivo modificado e agente do usuário.
 - Ferramentas/permissões de descoberta e revisão conferidas.
 - Testes offline do instalador aprovados: auditoria sem escrita, instalação, idempotência, recusa de conflito sem instalação parcial por conflito detectado e recusa de link simbólico.
 - Pacote ZIP e checksums SHA-256 conferidos.

@@ -198,12 +198,17 @@ Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técn
 
 ### Estrutura dos Arquivos de Especialistas
 
-Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos:
+Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos (mais o agente nativo `.claude/agents/<nome>-specialist.md` na variante Claude Code):
 1. `SKILL.md`: Manifesto com objetivos, limites operacionais, requisitos de modelo e conformidade v5;
 2. Três guias de engenharia de domínio e boas práticas;
 3. `troubleshooting.md`: Matriz de diagnóstico, códigos de erro e armadilhas técnicas;
 4. `knowledge/<dominio>/README.md`: Repositório local de decisões de arquitetura e snippets;
 5. `evals/<dominio>/001-routing.md`: Casos de teste automatizáveis para aferir respeito a gates de aprovação e pisos de risco.
+
+### Agentes nativos e desinstalação (Claude Code 5.1.0)
+
+- Na variante Claude Code, cada especialista inclui também `.claude/agents/<nome>-specialist.md` (8º arquivo da estrutura), com o campo `skills` pré-carregando a skill homônima, `model: sonnet` e `effort: high` como padrão. O padrão Sonnet não contorna o roteamento: para unidade de nível Haiku ou Opus o principal invoca o especialista com o modelo correspondente, e a revisão independente continua com `sonnet-reviewer` ou `opus-reviewer`.
+- `install.sh`/`install.fish` dessa variante aceitam `--uninstall` (auditoria por padrão; remoção com `--apply`). Só removem arquivos idênticos ao pacote atual ou cujo hash conste em `scripts/legacy-hashes.sha256` (versão anterior); arquivos modificados ou de terceiros são preservados e listados, e diretórios vazios são removidos. `install.ps1` não possui `--uninstall`.
 
 ### Flags de Instalação dos Especialistas
 

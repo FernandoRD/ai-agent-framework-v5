@@ -12,4 +12,4 @@ Establish the Grafana version (prioritizing Grafana 12 while supporting 11.x/10.
 - Read [api-and-provisioning.md](api-and-provisioning.md) for Grafana HTTP API, Service Accounts, JSON exports/imports, dashboard versioning, and datasource bindings.
 - Read [troubleshooting.md](troubleshooting.md) for panel render debugging, Query Inspector, time range bugs, browser performance, and transformation errors.
 
-Use `knowledge/grafana/` only for reviewed corporate design tokens, palettes, approved SVG assets, and reusable HTML Graphics templates. Never store API tokens, service account credentials, or production data dumps. For non-trivial work report context, evidence, routing rationale, validation, rollback, and uncertainty.
+Use `knowledge/grafana/` (project root) or `~/.claude/knowledge/grafana/` (global install) only for reviewed corporate design tokens, palettes, approved SVG assets, and reusable HTML Graphics templates. Never store API tokens, service account credentials, or production data dumps. For non-trivial work report context, evidence, routing rationale, validation, rollback, and uncertainty.

@@ -13,4 +13,4 @@ Establish the Zabbix version, affected component, topology, environment, scope, 
 - Read [database.md](database.md) for history, trends, retention, schema, or SQL.
 - Read [rag-ingestion.md](rag-ingestion.md) when project owners explicitly ask to collect reviewed candidates from allowlisted Git or Jira sources. The helper is opt-in, has no scheduler, and writes only beneath an explicit project-local `--data-root`.
 
-Use `knowledge/zabbix/` only for reviewed local context. Never store secrets or production dumps. For non-trivial work report context, evidence, routing rationale, validation, rollback, and uncertainty.
+Use `knowledge/zabbix/` (project root) or `~/.claude/knowledge/zabbix/` (global install) only for reviewed local context. Never store secrets or production dumps. For non-trivial work report context, evidence, routing rationale, validation, rollback, and uncertainty.

@@ -219,6 +219,10 @@ aparentemente triviais para evitar estes checkpoints.
 - `opus-reviewer`: revisão independente de trabalho complexo ou de alto risco.
 - `opus-critical`: análise somente leitura de risco crítico de segurança, dados, concorrência ou produção antes de qualquer mutação.
 
+### Especialistas de domínio (opcionais)
+
+Quando instalados, os agentes `zabbix-specialist`, `grafana-specialist`, `ansible-specialist`, `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`, `database-tuning-specialist` e `proxmox-specialist` carregam a skill homônima e são a escolha preferencial para unidades daquele domínio. Eles não substituem o roteamento: o padrão deles é Sonnet; para unidade de nível Haiku ou Opus, invoque o especialista com o modelo correspondente na própria chamada. Revisão independente continua com `sonnet-reviewer` ou `opus-reviewer`, e o especialista não revisa o próprio trabalho. Se o especialista não estiver instalado, use o papel genérico do nível exigido e a skill do domínio, quando existir.
+
 Ao delegar, forneça entrega delimitada, escopo autorizado, contexto conciso, critérios de aceitação, validação esperada e condição de parada. O agente principal deve aguardar, verificar e sintetizar as entregas e continua responsável pela resposta.
 
 ## Execução e validação

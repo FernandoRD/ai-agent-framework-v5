@@ -75,9 +75,19 @@ Sem `--apply`, o instalador apenas audita. Com `--apply`, cria arquivos novos e 
 
 Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
-agentes ou o roteamento Haiku/Sonnet/Opus. Para incluir a skill, conhecimento e
-evals de domínio, acrescente a opção explícita:
+`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão. Cada
+opção instala:
+
+- o **agente nativo** `.claude/agents/<nome>.md`, que aparece em `/agents` e pode receber
+  delegação do principal. Ele pré-carrega a skill homônima pelo campo `skills` do
+  frontmatter, usa `model: sonnet` e `effort: high` por padrão e segue o roteamento v5:
+  para unidade de nível Haiku ou Opus, o principal invoca o especialista com o modelo
+  correspondente na própria chamada;
+- a **skill** `.claude/skills/<nome>/` com o procedimento e as referências do domínio;
+- `knowledge/<domínio>/` e `evals/<domínio>/` (no modo global, dentro de `~/.claude/`).
+
+Os sete agentes de roteamento não mudam. Revisão independente continua com
+`sonnet-reviewer` ou `opus-reviewer`. Para instalar:
 
 ```bash
 ./scripts/install.sh --target /caminho/projeto --with-ansible-specialist --apply
@@ -87,22 +97,50 @@ evals de domínio, acrescente a opção explícita:
 No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
+### Desinstalação e atualização
+
+`--uninstall` remove somente arquivos intactos: os idênticos ao pacote atual e os que
+batem com o hash de uma versão anterior registrada em `scripts/legacy-hashes.sha256`.
+Arquivos modificados e arquivos que não pertencem ao pacote são preservados e listados.
+Diretórios que ficarem vazios são removidos. Sem `--apply`, apenas audita.
+
+```bash
+# Auditar e depois remover uma instalação global com todos os especialistas:
+./scripts/install.sh --global --with-all-specialists --uninstall
+./scripts/install.sh --global --with-all-specialists --uninstall --apply
+
+# Atualizar de uma versão anterior: desinstale com o pacote novo e instale de novo.
+./scripts/install.sh --global --with-all-specialists --apply
+```
+
+Use as mesmas opções de destino e de especialistas da instalação. O modo
+`--uninstall` existe apenas no instalador Bash/Fish; no Windows, remova manualmente.
+
 ## Estrutura
 
 ```text
 claude-code-global-framework-v5/
 ├── README.md
-└── payload/
-    ├── CLAUDE.md
-    └── .claude/
-        └── agents/
-            ├── haiku-explorer.md
-            ├── haiku-worker.md
-            ├── sonnet-worker.md
-            ├── sonnet-reviewer.md
-            ├── opus-specialist.md
-            ├── opus-reviewer.md
-            └── opus-critical.md
+├── payload/
+│   ├── CLAUDE.md
+│   └── .claude/
+│       └── agents/
+│           ├── haiku-explorer.md
+│           ├── haiku-worker.md
+│           ├── sonnet-worker.md
+│           ├── sonnet-reviewer.md
+│           ├── opus-specialist.md
+│           ├── opus-reviewer.md
+│           └── opus-critical.md
+├── optional/<nome>-specialist/payload/
+│   ├── .claude/agents/<nome>-specialist.md
+│   ├── .claude/skills/<nome>-specialist/
+│   ├── knowledge/<domínio>/
+│   └── evals/<domínio>/
+└── scripts/
+    ├── install.sh / install.fish / install.ps1
+    ├── legacy-hashes.sha256
+    └── test_install.py
 ```
 
 ## Limitações conhecidas
@@ -110,7 +148,8 @@ claude-code-global-framework-v5/
 - Isto é configuração declarativa: o Claude Code decide a delegação a partir de `description`, portanto a política orienta o comportamento e não é um roteador externo que garanta a pontuação ou a chamada de cada modelo.
 - `effort` depende de versão, plano e disponibilidade do modelo no ambiente. Se um valor não for suportado, ajuste-o à lista aceita pela instalação local.
 - O pacote inclui testes offline do instalador (`python scripts/test_install.py`), mas não foi executado em sessão autenticada no Claude Code. Confirme a descoberta invocando um agente de leitura e confira o modelo efetivo em `/tasks`.
-- Apesar do nome histórico “global framework”, a distribuição desta variante é somente por projeto. Ela não migra configuração global, não instala hooks e não transporta Skills do Codex; esses recursos precisam de uma adaptação própria se forem desejados.
+- A instalação pode ser por projeto ou global. O pacote não migra configuração existente, não instala hooks e não transporta Skills do Codex; as skills incluídas são as dos especialistas opcionais.
+- O campo `skills` dos agentes especialistas depende de uma versão do Claude Code que suporte pré-carregamento de skills em subagentes. Se a skill não carregar, o agente ainda pode invocá-la pela ferramenta `Skill`.
 - O escopo do projeto tem prioridade sobre agentes pessoais quando os nomes colidem; evite duplicar os nomes deste pacote dentro da mesma árvore `.claude/agents/`.
 
 ## Fontes

@@ -28,8 +28,12 @@
     Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
 .PARAMETER WithProxmoxSpecialist
     Instala a extensão opcional Proxmox Specialist (Proxmox VE 8.x/9.x, Corosync, Ceph, SDN, ZFS).
+.PARAMETER WithShellPythonSpecialist
+    Instala a extensão opcional Shell & Python Specialist (Bash, POSIX sh, fish, Python 3.10+).
+.PARAMETER WithDockerKubernetesSpecialist
+    Instala a extensão opcional Docker & Kubernetes Specialist (Docker Engine, Compose v2, Kubernetes, Helm).
 .PARAMETER WithAllSpecialists
-    Instala simultaneamente todos os 9 especialistas de domínio disponíveis.
+    Instala simultaneamente todos os 11 especialistas de domínio disponíveis.
 .PARAMETER Help
     Exibe a mensagem de ajuda com todas as opções.
 #>
@@ -70,6 +74,12 @@ param(
     [Alias("with-proxmox-specialist")]
     [switch]$WithProxmoxSpecialist,
 
+    [Alias("with-shell-python-specialist")]
+    [switch]$WithShellPythonSpecialist,
+
+    [Alias("with-docker-kubernetes-specialist")]
+    [switch]$WithDockerKubernetesSpecialist,
+
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -101,7 +111,10 @@ Especialistas de domínio opcionais:
   -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                  (alias: -with-db-tuning-specialist, -with-database-tuning-specialist)
   -WithProxmoxSpecialist         Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
-  -WithAllSpecialists            Instala todos os 9 especialistas de domínio acima
+  -WithShellPythonSpecialist     Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  -WithDockerKubernetesSpecialist
+                                 Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
+  -WithAllSpecialists            Instala todos os 11 especialistas de domínio acima
 "@
 }
 
@@ -162,6 +175,8 @@ $knownSpecialists = @(
     @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
     @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
     @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
+    @{ Name = "shell-python-specialist"; Enabled = ($WithShellPythonSpecialist -or $WithAllSpecialists) }
+    @{ Name = "docker-kubernetes-specialist"; Enabled = ($WithDockerKubernetesSpecialist -or $WithAllSpecialists) }
 )
 
 foreach ($spec in $knownSpecialists) {

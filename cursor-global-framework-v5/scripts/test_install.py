@@ -15,6 +15,7 @@ SPECS = [
     'zabbix-specialist', 'grafana-specialist', 'ansible-specialist',
     'loki-specialist', 'prometheus-specialist', 'netops-specialist',
     'sre-incident-specialist', 'database-tuning-specialist', 'proxmox-specialist',
+    'shell-python-specialist', 'docker-kubernetes-specialist',
 ]
 
 
@@ -69,7 +70,8 @@ class InstallerTests(unittest.TestCase):
                 "zabbix-specialist", "grafana-specialist", "ansible-specialist",
                 "loki-specialist", "prometheus-specialist", "netops-specialist",
                 "sre-incident-specialist", "database-tuning-specialist",
-                "proxmox-specialist"
+                "proxmox-specialist", "shell-python-specialist",
+                "docker-kubernetes-specialist"
             ]
             for s in specs:
                 skill_file = target / TOOL / 'skills' / s / 'SKILL.md'

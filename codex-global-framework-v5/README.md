@@ -71,9 +71,10 @@ non-zero without writing to disk.
 
 ### Optional Specialists
 
-The 9 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+The 11 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist`, and `proxmox-specialist`) are not installed by default and do not change the seven
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`,
+and `docker-kubernetes-specialist`) are not installed by default and do not change the seven
 framework roles or Luna/Terra/Sol routing. Add `--with-<spec>-specialist` or `--with-all-specialists`
 to install domain skills. For a project target it also installs optional knowledge
 and evaluations; global installation adds only the skills under `~/.agents/skills/`.
@@ -88,7 +89,8 @@ PowerShell accepts `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`,
 `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`,
 `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-WithSreIncidentSpecialist`),
 `-WithDbTuningSpecialist` (alias `-WithDatabaseTuningSpecialist`),
-`-WithProxmoxSpecialist` and `-WithAllSpecialists`. The options
+`-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`,
+`-WithDockerKubernetesSpecialist` and `-WithAllSpecialists`. The options
 remain subject to the installer's normal audit, backup, and conflict behavior.
 
 Windows PowerShell:

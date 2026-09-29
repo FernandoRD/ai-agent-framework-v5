@@ -48,9 +48,10 @@ Uma vez que o destino seja normalizado lexicalmente (`.`, `..`, `//`; só `~` e 
 
 ### Especialistas opcionais
 
-Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+Os 11 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`
+e `docker-kubernetes-specialist`) não são instalados por padrão e não alteram os sete
 agentes ou o roteamento Composer/Sonnet/Opus. Para incluir a skill, conhecimento e
 evals de domínio, use as opções explícitas junto à aplicação:
 
@@ -59,7 +60,7 @@ evals de domínio, use as opções explícitas junto à aplicação:
 ./scripts/install.sh --target /caminho/do/projeto --with-all-specialists --apply
 ```
 
-No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
+No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.

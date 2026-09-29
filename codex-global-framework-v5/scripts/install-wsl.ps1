@@ -32,6 +32,10 @@ param(
     [switch]$WithDbTuningSpecialist,
     [Alias("with-proxmox-specialist")]
     [switch]$WithProxmoxSpecialist,
+    [Alias("with-shell-python-specialist")]
+    [switch]$WithShellPythonSpecialist,
+    [Alias("with-docker-kubernetes-specialist")]
+    [switch]$WithDockerKubernetesSpecialist,
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -62,7 +66,10 @@ Especialistas de domínio opcionais:
   -WithDbTuningSpecialist    Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                              (alias: -WithDatabaseTuningSpecialist)
   -WithProxmoxSpecialist     Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
-  -WithAllSpecialists        Instala todos os 9 especialistas de domínio acima
+  -WithShellPythonSpecialist Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  -WithDockerKubernetesSpecialist
+                             Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
+  -WithAllSpecialists        Instala todos os 11 especialistas de domínio acima
 "@
 }
 
@@ -92,6 +99,8 @@ if ($WithNetopsSpecialist -or $WithAllSpecialists) { $specArgs += " --with-netop
 if ($WithSreSpecialist -or $WithAllSpecialists) { $specArgs += " --with-sre-specialist" }
 if ($WithDbTuningSpecialist -or $WithAllSpecialists) { $specArgs += " --with-db-tuning-specialist" }
 if ($WithProxmoxSpecialist -or $WithAllSpecialists) { $specArgs += " --with-proxmox-specialist" }
+if ($WithShellPythonSpecialist -or $WithAllSpecialists) { $specArgs += " --with-shell-python-specialist" }
+if ($WithDockerKubernetesSpecialist -or $WithAllSpecialists) { $specArgs += " --with-docker-kubernetes-specialist" }
 $command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$specArgs"
 & wsl.exe -d $Distro -- bash -lc $command
 if ($LASTEXITCODE -ne 0) { throw "WSL installation failed with exit code $LASTEXITCODE." }

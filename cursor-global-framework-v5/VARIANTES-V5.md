@@ -1,6 +1,6 @@
 # Variantes v5 para outras plataformas
 
-Geradas em 12/09/2026; política de execução e publicação sincronizada em 17/09/2026 com `codex-global-framework-v5/.codex/AGENTS.md`.
+Geradas em 12/09/2026; política de execução e publicação alinhada em redação, em 01/10/2026, com `codex-global-framework-v5/.codex/AGENTS.md`, exceto pelas divergências intencionais descritas abaixo.
 
 | Pacote | Versão | Plataforma | Faixas de execução |
 | --- | --- | --- | --- |
@@ -8,7 +8,7 @@ Geradas em 12/09/2026; política de execução e publicação sincronizada em 17
 | `gemini-cli-global-framework-v5.zip` | 5.0.0-gemini-cli | Gemini CLI / Antigravity | 0-34 Flash; 35-69 e 70-100 Pro (mesmo modelo Pro nas duas faixas superiores; a faixa escolhe o papel do agente) |
 | `cursor-global-framework-v5.zip` | 5.0.0-cursor | Cursor | Composer / Sonnet / Opus |
 
-As versões vêm do arquivo `VERSION` de cada pacote e divergem porque as variantes evoluem separadamente. Em particular, a política do Claude Code (`CLAUDE.md`) é a mais recente: torna a delegação mandatória para trabalho não trivial (o principal pode executar diretamente tarefa trivial) e traz agentes nativos de especialistas e `--uninstall`. As políticas do Gemini CLI e do Cursor não foram sincronizadas com essa versão e podem diferir na delegação e nas exceções de execução direta. Não há paridade funcional entre as variantes; compare o `CLAUDE.md`, o `GEMINI.md` e a regra do Cursor antes de assumir o mesmo comportamento.
+As versões vêm do arquivo `VERSION` de cada pacote e divergem porque as variantes evoluem separadamente. As quatro variantes permitem execução direta de tarefa trivial (até 3 arquivos do mesmo componente) e leitura pontual, mantendo a delegação obrigatória para o trabalho não trivial e a publicação sempre delegada; a diferença do Claude Code é a regra textual "delegar sempre que possível" (delegação mandatória, 5.2.0) para o trabalho não trivial, que nas demais variantes decorre dos checkpoints e do princípio do menor agente. A variante Claude Code ainda traz agentes nativos de especialistas e `--uninstall`. Não há paridade funcional completa entre as variantes; compare o `CLAUDE.md`, o `AGENTS.md`, o `GEMINI.md` e a regra do Cursor antes de assumir o mesmo comportamento.
 
 Cada pacote tem sete agentes, política v5 adaptada, README próprio e instalador unificado com suporte a instalação por projeto (`--target <pasta>`) ou global no `$HOME` (`--global` ou `--target ~`). Na instalação no projeto, o arquivo de instruções fica na raiz do projeto; na instalação global, ele fica guardado dentro da respectiva pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, a regra em `~/.cursor/rules/`), mantendo o `$HOME` limpo.
 
@@ -52,9 +52,9 @@ A auditoria (sem `--apply`) nunca escreve em disco, inclusive com `--global`, e 
 
 Nos instaladores `install.sh` das variantes por projeto, o alvo é normalizado lexicalmente (`.`, `..`, `//`) e é recusado se o caminho atravessar um link simbólico, inclusive no modo global.
 
-Divergência intencional: a política de delegação mandatória (5.2.0) existe apenas no `payload/CLAUDE.md` da variante Claude Code; não se afirma sincronização com as demais distribuições, incluindo a Codex.
+Divergência intencional: a regra "delegar sempre que possível" (delegação mandatória, 5.2.0) para o trabalho não trivial existe apenas no `payload/CLAUDE.md` da variante Claude Code (as demais exigem delegação por checkpoints e pelo princípio do menor agente), e somente o Claude Code não tem a cláusula de tier equivalente (Codex, Gemini CLI e Cursor a têm).
 
-Para conferir o instalador sem acessar nenhum provedor (Python 3.10+; 17 testes no Claude Code, 15 no Gemini CLI e no Cursor):
+Para conferir o instalador sem acessar nenhum provedor (Python 3.10+; 19 testes no Claude Code, 20 no Gemini CLI e no Cursor):
 
 ```sh
 python3 scripts/test_install.py

@@ -10,8 +10,10 @@ standalone files under `~/.codex/agents` on Codex for Windows.
 
 The policy assigns each bounded unit to the smallest capable named agent. A
 larger parent delegates lower-tier units unless the task is trivial under the
-`AGENTS.md` definition (direct execution allowed) or a documented concrete
-exception applies. It requires targeted `luna_explorer` discovery for large or unfamiliar
+`AGENTS.md` definition (up to 3 files of the same component; live-system writes,
+production messaging or persistence, credentials and secrets, and deploy/systemd
+are never trivial), is pinpoint reading (at most 3 files and 2 searches per question and 2 consecutive questions without delegating, path-listing/count searches only, Read/Glob/Grep only, no edits, never secret files), or a documented
+concrete exception applies. It requires targeted `luna_explorer` discovery for large or unfamiliar
 repositories, a delegated unit for uncertain or coordinated multi-file work,
 and independent review before applicable multi-component, compatibility,
 public-contract, or high-risk changes are completed.

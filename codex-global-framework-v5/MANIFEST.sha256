@@ -6,7 +6,7 @@ d46660d744ff20c65069902b25e00f953f85ea6af96f0aa38d99570a960e8798  ./.agents/skil
 ab81e0b262f6a4308487f9d882078d1dc47b04df4eceb4a34a53e84152430bf1  ./.agents/skills/documentation/agents/openai.yaml
 2e6186f9cec182068658a039ca4aa846b7a195ae9a9519a699356136659762ae  ./.agents/skills/security-review/SKILL.md
 287b5b82785aae19edacf4a0ed5be4cc7ed7f0b64746acbf6af905c76faa6f77  ./.agents/skills/security-review/agents/openai.yaml
-8011abf2472952cc58c9788da6f2dbd3719e7c92430c465f4d485b4c87a6bcb2  ./.codex/AGENTS.md
+1b8828776dce2e5312b805c05ce6fbbdbc5f460f2a9ca70c9d223441a407bdad  ./.codex/AGENTS.md
 794ba190beaad312ae39f2d41c93e1d601cdffd6f4ddfc254bf0771235392fc8  ./.codex/agent-configs/luna_explorer.toml
 fe105d314d6368bf5a78bebbc9d77ba897bfbecfb613192a74e33815dc5cc3bb  ./.codex/agent-configs/luna_worker.toml
 5c5dd8b01ecb7ffd8abd7e15a504eb51a39b53db6a1a80595c7c5b801ff74f17  ./.codex/agent-configs/sol_critical.toml
@@ -16,12 +16,12 @@ a9c1db15e574a4e152bdb6517004b444564686c55560d7ffce32f4b1a779289a  ./.codex/agent
 80d6059f19efcea2872c556b029f2847b6d2795fc6a2e7edd9960a83288b1f73  ./.codex/agent-configs/terra_worker.toml
 0cd9f326c1f1c2843dd0b54d61745e3399edf336ae0ea36cb29183d50825a2f1  ./.codex/hooks/mandatory-router.ps1
 727ca9f4eff24f45808df8b9e1218e9131a9695205050265f69f18fec7972c1e  ./.codex/hooks/mandatory-router.sh
-94b888fa2dd9a5a30ddce6ad556300ede046d395e78cbda7bcf2785c979e282e  ./README.md
+84ead605d5769d642351704d3d941ef1302821faabc3dccf85298dcd1fefc1a5  ./README.md
 1cc3d76ac7c21a664e79848fd481e9791016451b244e7de5feeeb9bea5fd2184  ./VERSION
 7b869c1d042a3f02bb32c23e8189663868d29e5670bed962161914aeb1ee6478  ./docs/LINUX.md
 ee2480cef90349b77f63641f74dfe245b33ef9eab4687dc26eca02d83828a558  ./docs/MIGRATION-V3-V4.md
-c2b15917af4b9993d840eac7e1daa28e531219397c0c2691890fbb7218b60bf6  ./docs/SMOKE-TESTS.md
-c6e80ee5d14d05b2f455f3aa879d48fa130e3683330acf11afedba7a6ee85693  ./docs/TOKEN-ECONOMY.md
+45fabf178b9c5bffa7fa40613b2d1e360d6a23d1bb98b739da680ab6df14f983  ./docs/SMOKE-TESTS.md
+d9c8dc9be54d250005dd6c661543080db860a3be9a22eeae98a6a9966cee59e0  ./docs/TOKEN-ECONOMY.md
 b983199c373815eaceaa346e7b2098c859771bac5b0cd40e6dcd40e30a63ea6f  ./docs/TROUBLESHOOTING.md
 f2fa1d6c113eca8e60e4c28dfdbd5b2e4dd4f1c7b4e75c1903021dd3f562f813  ./docs/WINDOWS.md
 3a6060be39c1862e2a93b0c6b379009cfc4255452878d867b317ef4def2fc204  ./docs/WSL.md

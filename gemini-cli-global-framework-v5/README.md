@@ -105,6 +105,20 @@ contorno de aprovação. A política não concede autoridade para novos destinos
 mudança de privacidade, release, deploy, force push ou reescrita de histórico;
 a delegação indisponível deve ser reportada com o bloqueio concreto.
 
+## Exceções de execução direta
+
+Duas exceções dispensam subagente e a declaração de bloqueio. (1) Trabalho
+trivial: até 3 arquivos do mesmo componente (mais que isso, ou componentes
+diferentes, não é trivial); escritas em sistemas vivos (ex.: criar ou remover
+hosts no Zabbix), mensageria ou persistência de produção, credenciais e
+segredos, e deploy/systemd são sempre não triviais, qualquer que seja o
+tamanho. (2) Leitura pontual: o principal pode ler diretamente no máximo 3 arquivos e 2 buscas por pergunta, e 2 perguntas consecutivas sem delegar (somente ferramentas nativas de leitura, listagem e busca, sem shell; buscas só em modo de listagem de caminhos ou contagem), para
+responder a uma pergunta ou preparar um repasse, sem editar nada. Descoberta
+ampla, repositórios desconhecidos e investigação continuam com o explorer.
+Arquivos de segredo (.env, chaves, tokens, credenciais) nunca são lidos pelo
+principal: vão a um worker, que reporta apenas caminho e tipo, nunca valores.
+Publicação continua sempre delegada e nunca é trivial nem leitura pontual.
+
 ## Limites de permissão
 
 `flash-explorer`, `pro-reviewer`, `pro-risk-reviewer` e

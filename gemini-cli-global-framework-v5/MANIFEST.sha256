@@ -1,6 +1,6 @@
-2813551deb685771c6f0bef3b9d35cb3b1c508e286419840cbd311274ba6fc9f  ./README.md
-1061c05b1fb76b8e86f003798070455ef12117f951d9f9c0ff26cb1f8604f577  ./VALIDACAO.md
-1b601f7e2cd5546f54d8ead338dcc74d8776aefdbe582957fad93cb7d6587a3e  ./VARIANTES-V5.md
+368a9dffb9295be26aa670658fca50dd28722ba7d762d0b65aa34ca122dba166  ./README.md
+bde227e05ae5f8463d0dd762f0d9764ba156943e478575703e24feeb816b8f17  ./VALIDACAO.md
+07d8cc933272df0c0b497e9c025b36f11b3ed8300e1edb859212aad3dfbcd6b2  ./VARIANTES-V5.md
 025ed4580d9b7b451d96cf4fcf3ca366be6caf6cfc34b8b19efdee083360c7fb  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.gemini/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.gemini/skills/ansible-specialist/inventory-and-vault.md
@@ -94,7 +94,7 @@ b9008388a2d611f3ea0bcf0fa86a38cb9cff0011eb65df6f0dcf8d6d9323ddef  ./payload/.gem
 9a09b3d101bed421b1f45cfdb8daa0b90a1f82faec6d32f758fbddfd08c70319  ./payload/.gemini/agents/pro-risk-reviewer.md
 78c4eb06e9ec04f115f2b6c0b190968ce5a22f5fbcd36796fb89f7285ba3cdf3  ./payload/.gemini/agents/pro-specialist.md
 5d8b80f56e1210609ab5f85f50308cdc5f036073dcd8aebc07717b9b853c1170  ./payload/.gemini/agents/pro-worker.md
-1a170ae0ef6553709c80ac21f0ee015ae23628252aaea3f4851c1bad127ee96a  ./payload/GEMINI.md
+508adc937bd83e36d3609e4bf4b0d627ab25af2d8a8ec9efb9cb2927bb6a7bc7  ./payload/GEMINI.md
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
 482e1f960e1680dfd53f7edc37626d47fe99660f21283ca98b70a25889abf2de  ./scripts/install.ps1
 e296b55b5825eeac154d8f601a3ce485a40056948973ef37f3f31f7e6c6401ab  ./scripts/install.sh

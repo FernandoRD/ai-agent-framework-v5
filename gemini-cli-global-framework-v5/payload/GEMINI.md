@@ -16,21 +16,28 @@ selection or Skill invocation.
 A task is trivial only when every condition below is true:
 
 - it has one narrow, clearly stated objective;
-- it affects at most one file or one isolated location;
+- it affects up to 3 files of the same component (more than that, or different
+  components, is not trivial);
 - the cause, required change, and expected result are already known;
 - there is no meaningful design decision or uncertain investigation;
 - it does not change externally consumed behavior or a shared contract;
 - it does not involve any mandatory non-trivial trigger listed below;
 - failure would have only local, low-impact consequences;
-- it is immediately reversible with one small change; and
+- it is immediately reversible (e.g., git revert/checkout, without losing user changes); and
 - one focused, deterministic check can validate it.
+
+A component is the same service or package within the same project (e.g., a
+script and its test or README).
 
 Typical trivial work includes correcting spelling or formatting, updating a
 comment, renaming a purely local symbol, or applying an obvious isolated fix
 whose cause and result are already established.
 
-File count alone never makes work trivial. A one-line change to authorization,
-SQL, networking, deployment, or a public interface is non-trivial.
+More than 3 files, or more than one component, is not trivial work. A one-line
+change to authorization, SQL, networking, deployment, or a public interface is
+non-trivial. Writes to live systems (e.g., creating or deleting hosts in
+Zabbix), production messaging or persistence, credentials and secrets, and
+deploy/systemd are always non-trivial, whatever the size.
 
 If any trivial-work condition is false, unknown, or uncertain, classify the
 task as non-trivial. Uncertainty increases classification; it never justifies
@@ -39,7 +46,8 @@ treating work as trivial.
 The main agent may handle trivial work directly, without a subagent and
 without declaring a blocker, only when every condition above is true. Do not
 calculate a numeric score or produce a routing report unless the user asks for
-one. Delegation remains required for all non-trivial work.
+one. Delegation remains required for all non-trivial work, except pinpoint
+reading and the tier-equivalent clause below, which never applies to publication, writes to live systems, production messaging/persistence, credentials/secrets or deploy/systemd (see "Boundaries and exceptions").
 
 ### Mandatory non-trivial triggers
 
@@ -47,13 +55,15 @@ Always classify work as non-trivial when it involves at least one of these:
 
 - an unknown or uncertain root cause;
 - more than one component, service, subsystem, or repository;
-- coordinated changes across multiple files;
+- coordinated changes across more than 3 files or across different components (changes to 2-3 files linked by a dependency between them, e.g., a contract and its consumer, are coordinated and non-trivial; independent or mechanical changes are not; the dependency between the files prevails over being mechanical);
 - architecture, data flow, shared state, or cross-component behavior;
 - a public API, file format, protocol, schema, or externally consumed contract;
 - authentication, authorization, secrets, privacy, or another security boundary;
 - persistent data, database writes, migrations, or schema changes;
 - concurrency, asynchronous execution, locking, races, or distributed behavior;
 - infrastructure, networking, deployment, containers, CI/CD, or production configuration;
+- writes to a live system, messaging, or production persistence;
+- credentials and secrets, and deploy/systemd;
 - dependency addition, removal, upgrade, advisory, or supply-chain risk;
 - backward compatibility or a supported runtime/platform matrix;
 - destructive, difficult-to-reverse, or operationally disruptive actions;
@@ -130,14 +140,15 @@ unit independently, including discovery, implementation, and review.
 - Before substantial execution, identify the deliverables, dependencies,
   acceptance criteria, and minimum safe tier of each unit. Do only the initial
   reconnaissance needed to route the work; do not complete the investigation
-  in the parent before delegating it.
+  in the parent before delegating it, except pinpoint reading (see Boundaries
+  and exceptions).
 - Explicitly delegate lower-tier units to the matching named agent role when
   the parent is a larger model, subject to the boundaries below. The parent's
   ability to do non-trivial work is not a reason to retain it. Reducing unnecessary
   higher-tier execution is itself a concrete delegation benefit.
 - Keep the parent focused on decomposition, coordination, integration, and
   acceptance of results. Retain execution only where its capability or
-  exclusive access is required, or a concrete exception below applies. Do not
+  exclusive access is required, or a concrete exception below applies, and never for publication, writes to live systems, production messaging/persistence, credentials/secrets or deploy/systemd. Do not
   repeat an agent's full investigation or implementation as routine validation.
 - Select the smallest sufficient tier immediately. Do not try Flash first when
   the score or a risk floor already requires Pro. Escalate only the affected
@@ -165,7 +176,7 @@ inherit its capability tier because publication is in the same conversation.
   rerun checks only for new changes, failures, or unresolved concerns.
 - The main agent coordinates and accepts the result. It must not retain a
   whole routine publication workflow; publication is never handled directly as
-  trivial work. If delegation is unavailable or prohibited, state the concrete blocker and use
+  trivial work or pinpoint reading. If delegation is unavailable or prohibited, state the concrete blocker and use
   only the necessary authorized fallback without claiming Flash execution.
 - Escalate only the affected unit when conflicts, uncertain scope,
   compatibility, release semantics, deployment, or material risk requires Pro.
@@ -190,8 +201,7 @@ trivial turns to avoid these checkpoints.
   capsule must contain relevant files and symbols, execution path, constraints,
   likely tests, and unresolved questions. Reuse it instead of repeating the
   scan.
-- For an uncertain root cause, multiple components, coordinated multi-file
-  changes, or compatibility-sensitive work, delegate at least one concrete
+- For an uncertain root cause, multiple components, coordinated changes across more than 3 files or across different components (changes to 2-3 files linked by a dependency between them, e.g., a contract and its consumer, are coordinated and non-trivial; independent or mechanical changes are not; the dependency between the files prevails over being mechanical), or compatibility-sensitive work, delegate at least one concrete
   analysis, implementation, or validation unit. Keep useful complementary work
   with the parent.
 - Before completing multi-component, compatibility-sensitive, public-contract,
@@ -216,13 +226,27 @@ trivial turns to avoid these checkpoints.
 
 ### Boundaries and exceptions
 
-- Trivial work, as defined above (every condition true), may be handled
+- Trivial work, as defined above (every condition true: up to 3 files of the
+  same component, never a live-system write, production messaging or
+  persistence, credentials and secrets, or deploy/systemd), may be handled
   directly by the main agent and needs no declared blocker. Do not create
   agents just to meet a quota.
+- Pinpoint reading: the main agent may read directly, without editing anything and
+  without declaring an exception, to answer a question or prepare a delegation
+  brief: at most 3 files and 2 searches per question, and at most 2 consecutive
+  questions without delegating. Use only native read, list, and search tools (no shell, no queries to live systems); Glob and Grep (or equivalents) count as searches. Searches must use path-listing or count mode only (files_with_matches/count), never content mode. Never read .env files, keys, tokens, credentials, or files that may contain secrets (e.g., .conf/.ini files with passwords, systemd unit files with Environment=, ~/.aws, ~/.ssh, docker-compose with variables, settings, Ansible vault). If a result exposes a secret, stop and report only the
+  path and type, never values. Do not generalize pinpoint reading into an
+  investigation: investigation goes to the explorer. Anything beyond this goes
+  to the explorer/worker.
 - For bounded non-trivial work without the mandatory checkpoints, direct
   execution is allowed if the parent already matches the smallest sufficient
-  tier and delegation adds no independent benefit. A larger parent must route
-  lower-tier work to the matching agent unless a concrete exception applies.
+  tier and delegation adds no independent benefit. This clause never applies to
+  publication, writes to live systems, production messaging or persistence,
+  credentials and secrets, deploy/systemd, or the mandatory non-trivial
+  triggers. A larger parent must route lower-tier work to the matching agent
+  unless a concrete exception applies.
+- Do not generalize the trivial-work or pinpoint-reading exceptions to an
+  investigation, a task beyond 3 files of one component, or routine publication.
 - If the active model is below the required tier, delegate that unit to an
   agent at or above the required tier. Never escalate the entire request when
   only one bounded unit requires Pro.
@@ -230,7 +254,7 @@ trivial turns to avoid these checkpoints.
 - Keep a shared browser session, live mutation, or other exclusive resource
   under one owner's control. Delegate local artifact analysis or review of
   captured evidence instead of letting agents interfere with the live session.
-- Apart from trivial work, exceptions to required delegation must identify a
+- Apart from trivial work and pinpoint reading, exceptions to required delegation must identify a
   concrete blocker: a higher-priority restriction, unavailable tools, explicit
   user request for solo work, or no bounded independent unit that can run
   alongside useful parent work. For non-trivial work, parent capability, task
@@ -291,7 +315,8 @@ For substantial work, report the outcome, checks performed, unresolved issues,
 and relevant assumptions. If subagents ran, include actual execution counts by
 model and percentages of subagent executions. Do not present execution share as
 token usage or invent unavailable token, credit, or cost telemetry. If no
-subagent ran on non-trivial work, state that fact and the concrete reason for
+subagent ran on non-trivial work (trivial work and pinpoint reading need no
+declared blocker), state that fact and the concrete reason for
 direct execution. Report which required delegation/review checkpoints were
 completed or blocked; do not expose the full numeric routing calculation.
 
@@ -313,7 +338,8 @@ if the user configured it and it really executed.
 **Total de execuções de subagentes:** X
 
 If no subagents were used and work was completed directly by the parent agent,
-state that fact clearly as required above. If a summary table is presented for
+state that fact clearly as required above, except for trivial work or pinpoint
+reading, which need no declaration. If a summary table is presented for
 direct execution, record 1 execution (100%) under the active model family and 0 for
 the others. Never claim an execution on a model that did not run.
 <!-- GEMINI-CLI-GLOBAL-FRAMEWORK:END v5 -->

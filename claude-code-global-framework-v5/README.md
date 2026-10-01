@@ -4,7 +4,7 @@ Pacote v5 com roteamento obrigatório, econômico e orientado a risco para uso p
 
 ## Modelo principal sugerido
 
-Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica, decompõe, delega, coordena e integra. **O uso de subagentes é mandatório**: toda unidade delegável não trivial vai para o subagente do nível exigido, e a execução direta só é aceita diante de uma das exceções listadas em `CLAUDE.md` (subagentes indisponíveis, pedido explícito do usuário, recurso exclusivo do principal, pergunta sem ação ou tarefa trivial conforme a definição, que o principal pode executar sem declarar bloqueio). Na dúvida, a tarefa é não trivial e é delegada; a publicação continua delegada ao `haiku-worker`.
+Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica, decompõe, delega, coordena e integra. **O uso de subagentes é mandatório**: toda unidade delegável não trivial vai para o subagente do nível exigido, e a execução direta só é aceita diante de uma das exceções listadas em `CLAUDE.md` (subagentes indisponíveis, pedido explícito do usuário, recurso exclusivo do principal, pergunta sem ação, tarefa trivial conforme a definição (até 3 arquivos do mesmo componente, nunca escrita em sistema vivo, produção, segredos ou deploy) ou leitura pontual (exceção (f): no máximo 3 arquivos e 2 buscas por pergunta, ferramentas nativas sem shell, como Read, Glob e Grep), que o principal pode executar sem declarar bloqueio; arquivos de segredos nunca são lidos pelo principal). Na dúvida, a tarefa é não trivial e é delegada; a publicação continua delegada ao `haiku-worker`.
 
 ## Mapeamento v5
 
@@ -160,7 +160,7 @@ claude-code-global-framework-v5/
 - A instalação pode ser por projeto ou global. O pacote não migra configuração existente, não instala hooks e não transporta Skills do Codex; as skills incluídas são as dos especialistas opcionais.
 - O campo `skills` dos agentes especialistas depende de uma versão do Claude Code que suporte pré-carregamento de skills em subagentes. Se a skill não carregar, o agente ainda pode invocá-la pela ferramenta `Skill`.
 - O escopo do projeto tem prioridade sobre agentes pessoais quando os nomes colidem; evite duplicar os nomes deste pacote dentro da mesma árvore `.claude/agents/`.
-- Divergência intencional: a política de delegação mandatória (5.2.0) existe apenas no `payload/CLAUDE.md` desta variante Claude Code; não se afirma sincronização com as demais distribuições, incluindo a Codex.
+- Divergência intencional: a regra "delegar sempre que possível" (delegação mandatória, 5.2.0) para o trabalho não trivial existe apenas no `payload/CLAUDE.md` desta variante Claude Code; não se afirma sincronização com as demais distribuições, incluindo a Codex.
 
 ## Fontes
 

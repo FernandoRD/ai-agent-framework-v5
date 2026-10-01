@@ -86,9 +86,13 @@ Terra ou Sol. Credencial, rede ou aprovação ausente exigem o fluxo normal de
 acesso. A política não concede autoridade para novos destinos, mudança de
 privacidade, release, deploy, force push ou reescrita de histórico.
 
+## Trabalho trivial e leitura pontual
+
+Trabalho trivial afeta até 3 arquivos do mesmo componente; mais de 3 arquivos ou mais de um componente não é trivial. Escritas em sistemas vivos (por exemplo, criar ou apagar hosts no Zabbix), mensageria ou persistência de produção, credenciais e segredos, e deploy/systemd são sempre não triviais, qualquer que seja o tamanho. Leitura pontual: o principal pode ler diretamente no máximo 3 arquivos e 2 buscas por pergunta, e 2 perguntas consecutivas sem delegar (ferramentas nativas de leitura, listagem e busca, sem shell; buscas só em modo de listagem de caminhos ou contagem), para responder uma pergunta ou preparar um repasse, sem editar. Descoberta ampla, repositórios desconhecidos e investigação ficam com o explorador. Arquivos secretos (.env, chaves, tokens, credenciais) nunca são lidos pelo principal: vão a um worker, que informa só caminho e tipo, nunca valores. Nenhum dos dois exige declarar bloqueio; publicação continua sempre delegada e nunca é trivial nem leitura pontual.
+
 ## Verificação e limites
 
-Peça uma correção trivial: deve ser direta. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
+Peça uma correção trivial (até 3 arquivos do mesmo componente): deve ser direta. Peça uma leitura pontual (até 3 arquivos e 2 buscas): o principal lê direto, sem editar. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
 
 A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks nem migração automática de v3/v4: esses recursos do instalador Codex são específicos daquela plataforma. A instalação global (`--global`) grava a regra e os agentes em `~/.cursor/`, e as skills dos especialistas opcionais em `~/.cursor/skills/`; este pacote não verificou se o Cursor carrega esses caminhos globais. Não houve execução autenticada no Cursor durante a geração.
 

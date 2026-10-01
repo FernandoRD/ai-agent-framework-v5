@@ -20,6 +20,19 @@ Divergências conhecidas sh/ps1: link de diretório no payload (PowerShell 5.1 v
 
 Não verificado: execução autenticada em provedores ou no Gemini CLI (carregamento e modelos efetivos dependem de teste na plataforma), Windows nativo e criação exclusiva sob corrida concorrente real (só simulada por shim). ZIP e MANIFEST.sha256 não foram regenerados nesta etapa.
 
+## Manual direct-execution smoke scenarios
+
+- Trivial work: a typo fix touching 2 files of the same component is handled
+  directly with no declared blocker; the same fix across 4 files, or across two
+  components, is routed as non-trivial.
+- Always non-trivial: creating or deleting a host in Zabbix, editing a
+  credential or secret, or touching deploy/systemd in one line is delegated.
+- Pinpoint reading: ask a question answerable from 2 already-identified files;
+  confirm the main agent reads them directly, edits nothing, and declares no
+  blocker. Broad discovery or an unfamiliar repository goes to `flash-explorer`.
+  A `.env` or key file goes to a worker that reports only path and type, never
+  values.
+
 ## Manual publication smoke scenarios
 
 - With explicitly authorized routine publication, known destinations, and

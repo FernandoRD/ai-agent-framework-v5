@@ -3,6 +3,7 @@
 The framework optimizes total work, not merely the model name:
 
 - trivial tasks run directly because delegation has context and synthesis cost;
+- pinpoint reading (at most 3 files and 2 searches per question, Read/Glob/Grep only) runs in the parent;
 - Luna performs one targeted exploration pass for large unfamiliar codebases;
 - stronger agents receive a compact context capsule instead of rescanning;
 - only the difficult subtask escalates;

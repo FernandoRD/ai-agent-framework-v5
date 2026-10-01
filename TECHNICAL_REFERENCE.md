@@ -20,29 +20,31 @@ pedido → classificação trivial/não trivial → score e pisos de risco
 
 Uma tarefa é classificada como **trivial** exclusivamente quando **todas** as condições a seguir forem verdadeiras:
 - Possui um único objetivo estreito e claramente declarado;
-- Afeta no máximo um arquivo ou ponto isolado do sistema;
+- Afeta até 3 arquivos do mesmo componente, isto é, do mesmo serviço ou pacote dentro do mesmo projeto, como um script e seu teste ou README (mais de 3, ou componentes diferentes, não é trivial; a exceção de leitura pontual tem limite próprio de 3 arquivos e 2 buscas por pergunta);
 - A causa raiz, a alteração necessária e o resultado esperado já são previamente conhecidos;
 - Não envolve decisões de design arquitetural ou investigações incertas;
 - Não altera contratos consumidos externamente (APIs públicas, schemas, protocolos);
 - Não aciona nenhum gatilho não trivial obrigatório;
 - Falhas têm apenas impacto local e facilmente reversível;
-- É imediatamente reversível com uma alteração mínima;
+- É imediatamente reversível (ex.: git revert/checkout);
 - Uma única verificação determinística e focada comprova o resultado.
 
-Qualquer incerteza ou dúvida eleva a classificação para **não trivial**. Tarefas triviais são tratadas diretamente pelo agente principal, sem cálculo de score, sem subagentes e sem sobrecarga operacional.
+Qualquer incerteza ou dúvida eleva a classificação para **não trivial**. Escrita em sistema vivo, mensageria ou persistência de produção, credenciais e segredos, e deploy/systemd são sempre não triviais, qualquer que seja o tamanho. Tarefas triviais (exceção de trabalho trivial) são tratadas diretamente pelo agente principal, sem cálculo de score, sem subagentes e sem sobrecarga operacional. A leitura pontual (exceção de leitura pontual) também dispensa subagente, sem editar nada: no máximo 3 arquivos e 2 buscas por pergunta (somente em modo de listagem de caminhos ou contagem) e no máximo 2 perguntas consecutivas sem delegar, somente Read, Glob e Grep, nunca arquivos de segredos; não se generaliza para investigação, que vai ao explorer; o que passar disso vai ao `haiku-explorer` ou a um worker.
 
 ### 2. Gatilhos Não Triviais Obrigatórios
 
 Uma tarefa é compulsoriamente classificada como não trivial se envolver:
 - Causa raiz desconhecida ou incerta;
 - Mais de um componente, subsistema, serviço ou repositório;
-- Alterações coordenadas em múltiplos arquivos;
+- Alterações coordenadas em mais de 3 arquivos ou entre componentes diferentes (mudanças em 2–3 arquivos ligadas por dependência entre eles, ex.: contrato e consumidor, são coordenadas e não triviais; mudanças independentes ou mecânicas não);
 - Mudanças em arquitetura, fluxo de dados, estado compartilhado ou concorrência;
 - APIs públicas, formatos de arquivos, schemas de bancos de dados ou persistência;
 - Autenticação, autorização, segredos, privacidade ou limites de segurança;
 - Migrações, escritas em banco de dados ou alterações de modelo de dados;
 - Concorrência, travamentos (locks), condições de corrida ou comportamento distribuído;
 - Infraestrutura de produção, redes, contêineres, CI/CD ou configurações operacionais;
+- Escrita em sistema vivo, mensageria ou persistência de produção;
+- Credenciais e segredos, e deploy/systemd;
 - Adição, atualização ou remoção de dependências externas;
 - Compatibilidade retroativa ou matriz de runtime suportada;
 - Ações destrutivas, de difícil reversão ou com potencial de parada de serviço;
@@ -90,7 +92,7 @@ O piso de risco aplica-se à fração afetada, não a toda a solicitação. Tare
 
 ### 1. Princípio do Menor Agente Capaz (*Smallest Capable Agent*)
 
-O trabalho é decomposto em unidades delimitadas e cada unidade é atribuída ao menor modelo capaz de executá-la com segurança e validação completa. A capacidade maior do agente principal não justifica reter trabalho simples. Reduzir execuções desnecessárias em tiers elevados é um princípio central de economia de tokens e latência.
+O trabalho é decomposto em unidades delimitadas e cada unidade é atribuída ao menor modelo capaz de executá-la com segurança e validação completa. A capacidade maior do agente principal não justifica reter trabalho não trivial; as únicas retenções legítimas são a exceção de trabalho trivial (todas as condições de "trivial" satisfeitas), a de leitura pontual e, nas variantes que a têm (Codex, Gemini CLI e Cursor), a cláusula de tier equivalente (nunca para publicação, escrita em sistema vivo, mensageria/persistência de produção, credenciais/segredos ou deploy/systemd). Reduzir execuções desnecessárias em tiers elevados é um princípio central de economia de tokens e latência.
 
 O papel do agente principal concentra-se em:
 - Decomposição inicial e delimitação de escopos;
@@ -112,7 +114,7 @@ Quando o agente principal estiver operando em um modelo Flash (por restrição d
 
 ### 4. Suporte Multi-Provedor no Google Antigravity
 
-No ecossistema Google Antigravity, o runtime suporta a seleção e alternância de múltiplos provedores (modelos Google Gemini, Anthropic Claude e OpenAI ChatGPT). As diretivas do framework reconhecem essas capacidades: subagentes invocados com modo de herança (`inherit`) adaptam-se perfeitamente ao modelo ativo, mantendo o controle de escopo e os critérios de validação.
+No ecossistema Google Antigravity, o runtime suporta a seleção e alternância de múltiplos provedores (modelos Google Gemini, Anthropic Claude e OpenAI ChatGPT). As diretivas do framework reconhecem essas capacidades: subagentes invocados com modo de herança (`inherit`) devem seguir o modelo ativo (comportamento não verificado neste pacote), mantendo o controle de escopo e os critérios de validação.
 
 ---
 
@@ -137,9 +139,9 @@ Todas as quatro distribuições do framework contam com instaladores e ferrament
 | Plataforma | Instaladores e Utilitários | Suporte de Instalação |
 |---|---|---|
 | **Codex** | `scripts/install.sh`, `install.fish`, `install.ps1`, `install-wsl.ps1`, `diagnose.*`, `uninstall.*`, `validate.py` | Global padrão (`~/.codex`) ou Por Projeto (`--target`) |
-| **Claude Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (17 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
-| **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (15 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
-| **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (15 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Claude Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (19 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 
 ### Mecanismos de Proteção dos Instaladores
 

@@ -1,6 +1,6 @@
-4610be7f3dc3d6f455d9119b9f96767ceb5b0d3c76f01eabf7848aa2ac6dac88  ./README.md
-0fc415fd5010e528315244c844eeccf0abba32e5c8bd2ed92af68ccc398285ac  ./VALIDACAO.md
-1b601f7e2cd5546f54d8ead338dcc74d8776aefdbe582957fad93cb7d6587a3e  ./VARIANTES-V5.md
+38970c22b05793713c97b60277a97f06c991b9fa7aa4ad84c618a78bf26aa09c  ./README.md
+790d49aa5e0830e9b279c440a215965477dbc3e4545de8adf0ddaccd36e3c320  ./VALIDACAO.md
+07d8cc933272df0c0b497e9c025b36f11b3ed8300e1edb859212aad3dfbcd6b2  ./VARIANTES-V5.md
 a23a00019419c07c4e92f33e8afd0f85ac5a0d2b9138059c2cdd1d10dce3ec3f  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/inventory-and-vault.md
@@ -94,7 +94,7 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 9f03fa743b7ee5672a8a163eb4437159e0ca8aecc480645aea766e40b2ad597b  ./payload/.cursor/agents/sol-specialist.md
 0ae797a60983f296e556d80f56c9f7aab6ae26567742bc7f5cf0d2e8173df07b  ./payload/.cursor/agents/terra-reviewer.md
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
-a7a50eed1d4a50737069a0d727df7d628f6a2acc8f562828c9542c54f2604619  ./payload/.cursor/rules/framework-v5.mdc
+bfb20782c4c774b254dabff510443a31fb5f115943aab1bd3428504efea3f30b  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
 482e1f960e1680dfd53f7edc37626d47fe99660f21283ca98b70a25889abf2de  ./scripts/install.ps1
 e296b55b5825eeac154d8f601a3ce485a40056948973ef37f3f31f7e6c6401ab  ./scripts/install.sh

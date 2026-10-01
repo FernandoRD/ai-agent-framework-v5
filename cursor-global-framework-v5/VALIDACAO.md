@@ -37,3 +37,9 @@ Não verificado: execução autenticada em provedores ou no Cursor (carregamento
 - With multiple authorized remotes, verify each hash and report partial publication
   if one push fails. Confirm no implicit force push, rewrite, destination,
   privacy, release, or deployment authority.
+
+## Manual routing scenarios (trivial work and pinpoint reading)
+
+- Trivial: fix a typo across 2 files of one component; confirm the parent edits directly, with no blocker declared. Ask for the same change across 4 files, or across 2 components, and confirm it is treated as non-trivial and delegated.
+- Always non-trivial: ask for a one-line creation or deletion of a host in Zabbix, a change to a credential or secret, or a systemd unit; confirm delegation whatever the size.
+- Pinpoint reading: ask a question answerable from 2 already-identified files; confirm the parent reads them directly without editing and without declaring a blocker. Point to a `.env`; confirm the parent does not read it and a worker reports only path and type, never values. Ask for broad discovery in an unfamiliar repository; confirm it goes to `luna-explorer`.

@@ -25,7 +25,7 @@ Exemplos típicos são correção de ortografia ou formatação, atualização d
 
 Se qualquer condição for falsa, desconhecida ou incerta, trate como não trivial. Incerteza aumenta a classificação; nunca justifica tratá-la como trivial.
 
-Delegue trabalho trivial ao `haiku-worker` (ou ao `haiku-explorer`, se for somente leitura), conforme a regra de delegação mandatória abaixo. Não calcule pontuação numérica nem produza relatório de roteamento para trabalho trivial, salvo pedido do usuário.
+O principal pode executar diretamente, sem subagente e sem declarar bloqueio, a tarefa que cumprir todas as condições acima (exceção (e) de "Limites e exceções"); pode também delegá-la ao `haiku-worker` (ou ao `haiku-explorer`, se for somente leitura). Em caso de dúvida, trate como não trivial e delegue. Não calcule pontuação numérica nem produza relatório de roteamento para trabalho trivial, salvo pedido do usuário.
 
 ### Gatilhos obrigatórios de trabalho não trivial
 
@@ -89,17 +89,17 @@ Falta de acesso, credenciais, aprovação, ferramentas, dependências ou ambient
 
 ### Regra mandatória: delegar sempre que possível
 
-O uso de subagentes **não é opcional**. Sempre que existir uma unidade de trabalho que um subagente possa executar — descoberta, leitura, implementação, depuração, teste, validação, revisão ou publicação —, ela **deve** ser delegada ao subagente adequado, inclusive quando for trivial e mesmo que o principal tenha capacidade de fazê-la sozinho.
+O uso de subagentes **não é opcional**. Sempre que existir uma unidade de trabalho que um subagente possa executar — descoberta, leitura, implementação, depuração, teste, validação, revisão ou publicação —, ela **deve** ser delegada ao subagente adequado, mesmo que o principal tenha capacidade de fazê-la sozinho, salvo a exceção (e) para trabalho trivial.
 
-- O papel do principal é classificar, decompor, delegar, coordenar, integrar e aceitar resultados. Ele não executa unidades delegáveis.
-- Capacidade do principal, familiaridade com o assunto, tamanho pequeno da tarefa, custo de repasse ou desejo de poupar tempo **não** são motivos para executar diretamente.
+- O papel do principal é classificar, decompor, delegar, coordenar, integrar e aceitar resultados. Ele não executa unidades delegáveis não triviais.
+- Capacidade do principal, familiaridade com o assunto, custo de repasse ou desejo de poupar tempo **não** são motivos para executar diretamente trabalho não trivial; só a tarefa que cumpre todas as condições de "Trabalho trivial" dispensa delegação.
 - Quando existir especialista de domínio instalado, a unidade daquele domínio vai para ele; caso contrário, para o papel genérico do nível exigido.
 - Unidades independentes são despachadas em paralelo.
-- **Unidade delegável** é qualquer trabalho que exija ler arquivos, buscar, executar comandos, testar, editar, integrar mudanças ou publicar. Só não é delegável o que se enquadra em um dos bloqueios (a)–(d) de "Limites e exceções"; não existe outra categoria.
+- **Unidade delegável** é qualquer trabalho que exija ler arquivos, buscar, executar comandos, testar, editar, integrar mudanças ou publicar. Só não é delegável o que se enquadra em uma das exceções (a)–(e) de "Limites e exceções"; não existe outra categoria.
 - Obter aprovação do usuário é do principal, mas executar o trabalho aprovado continua delegável.
 - Integração que exija editar arquivos vai para um worker; o principal integra somente os resultados e relatórios recebidos.
 - Os checkpoints obrigatórios abaixo são pisos adicionais de qualidade (tipo de agente e revisão), não o limite da obrigação de delegar.
-- As únicas exceções estão em "Limites e exceções" e exigem bloqueio concreto declarado.
+- As únicas exceções estão em "Limites e exceções" e exigem bloqueio concreto declarado (exceto (d) e (e)).
 
 ### Princípio primário: o menor agente capaz para cada unidade
 
@@ -120,7 +120,7 @@ unidade, incluindo descoberta, implementação e revisão.
   desnecessário de capacidade maior é benefício concreto da delegação.
 - Mantenha o principal em decomposição, coordenação, integração e aceitação de
   resultados. Ele só executa diretamente sob uma exceção concreta listada em
-  "Limites e exceções".
+  "Limites e exceções" (inclusive a tarefa trivial, exceção (e)).
   Não repita a investigação ou implementação completa do subagente como
   validação rotineira.
 - Escolha imediatamente o menor nível suficiente. Não tente Haiku se score ou
@@ -151,8 +151,9 @@ conversa ou por meio de uma Skill de publicação.
   Reutilize evidência válida; repita verificações apenas para novas mudanças,
   falhas ou dúvidas não resolvidas.
 - O principal obtém a autorização do usuário, coordena e aceita o resultado;
-  commit, push e verificação vão para o worker. Se a delegação for impossível
-  por um dos bloqueios (a)–(d), declare qual e execute somente os passos
+  commit, push e verificação vão para o worker. Publicação nunca é trabalho
+  trivial (a exceção (e) não se aplica) e sempre vai ao `haiku-worker`. Se a
+  delegação for impossível por um dos bloqueios (a)–(c), declare qual e execute somente os passos
   já autorizados pelo usuário, sem alegar execução pelo agente econômico.
 - Eleve apenas a unidade afetada quando conflitos, escopo incerto,
   compatibilidade, semântica de release, deploy ou outro risco material exigem
@@ -202,9 +203,10 @@ aparentemente triviais para evitar estes checkpoints.
 
 ### Limites e exceções
 
-- Delegação é mandatória para toda unidade delegável, trivial ou não, com ou
+- Delegação é mandatória para toda unidade delegável não trivial, com ou
   sem checkpoint obrigatório. Não existe exceção por tamanho, simplicidade ou
-  custo de repasse.
+  custo de repasse além da exceção (e); publicação (commit/push) continua
+  delegada ao `haiku-worker`.
 - Execução direta pelo principal só é permitida quando houver bloqueio
   concreto: (a) a ferramenta de subagentes está indisponível, ou falhou de
   novo depois de uma nova tentativa (falha do trabalho de um subagente não é
@@ -214,7 +216,11 @@ aparentemente triviais para evitar estes checkpoints.
   (a conversa com o usuário ou uma sessão interativa aberta pelo principal).
   Arquivos, repositório, shell e testes nunca são recurso exclusivo; ou
   (d) o pedido é apenas conversa ou pergunta respondível sem executar nenhuma
-  ação, leitura ou ferramenta.
+  ação, leitura ou ferramenta; ou (e) a tarefa cumpre todas as condições de
+  "Trabalho trivial" (objetivo único, no máximo um arquivo ou local isolado,
+  causa, mudança e resultado conhecidos, sem gatilho de trabalho não trivial,
+  baixo impacto, reversível e verificável por checagem focada). Dúvida ou
+  incerteza nunca justificam (e): trate como não trivial e delegue.
 - Não crie agentes vazios nem duplique trabalho para cumprir quota: cada
   subagente recebe uma unidade real e delimitada.
 - Se o modelo ativo estiver abaixo do nível exigido, delegue a unidade a agente
@@ -225,9 +231,9 @@ aparentemente triviais para evitar estes checkpoints.
   recurso exclusivo sob um único proprietário; delegue análise local ou revisão
   de evidência capturada.
 - Toda exceção por (a), (b) ou (c) deve citar o bloqueio na resposta ao
-  usuário, qualquer que seja o tamanho do trabalho. A exceção (d) não precisa
-  ser declarada. Capacidade do principal,
-  familiaridade, tamanho da tarefa ou desejo de poupar tempo nunca bastam. Não
+  usuário, qualquer que seja o tamanho do trabalho. As exceções (d) e (e) não
+  precisam ser declaradas. Capacidade do principal,
+  familiaridade ou desejo de poupar tempo nunca bastam fora de (e). Não
   afirme revisão independente que não ocorreu.
 
 ## Seleção de subagentes
@@ -263,7 +269,7 @@ Skills são recursos especializados opcionais, não o plano de controle do rotea
 
 ## Relatório final
 
-Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se alguma unidade foi executada sem subagente, declare esse fato e qual bloqueio (a)–(d) justificou a execução direta. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
+Para trabalho substancial, reporte resultado, verificações realizadas, problemas não resolvidos e suposições relevantes. Quando houver subagentes, inclua contagem real de execuções por modelo e percentuais das execuções de subagentes. Não apresente isso como uso de tokens, créditos ou custo e não invente telemetria indisponível. Se alguma unidade foi executada sem subagente, declare esse fato e qual bloqueio (a)–(c) justificou a execução direta; unidade trivial executada diretamente (e) ou pergunta (d) não exige essa declaração. Registre quais checkpoints obrigatórios de delegação e revisão foram concluídos ou bloqueados; não exponha o cálculo numérico completo.
 
 ## Evidência para revisores sem shell
 

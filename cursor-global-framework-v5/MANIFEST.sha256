@@ -1,6 +1,6 @@
-9efe57680620219ba62e0cffb137a908fe9fdf8f0f3c3da3bec4d2dfddbcf6ed  ./README.md
-e057f110bb89ec24a77d74812bbe70a4c086f028033db50b19ee5d7b78b46262  ./VALIDACAO.md
-119f9c7740bcb002ec5f7a17034135a2ceef564c138abc445787be5b884ada0c  ./VARIANTES-V5.md
+4610be7f3dc3d6f455d9119b9f96767ceb5b0d3c76f01eabf7848aa2ac6dac88  ./README.md
+0fc415fd5010e528315244c844eeccf0abba32e5c8bd2ed92af68ccc398285ac  ./VALIDACAO.md
+1b601f7e2cd5546f54d8ead338dcc74d8776aefdbe582957fad93cb7d6587a3e  ./VARIANTES-V5.md
 a23a00019419c07c4e92f33e8afd0f85ac5a0d2b9138059c2cdd1d10dce3ec3f  ./VERSION
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/SKILL.md
 dd504bfb4938e0017fe17501a9763103bdac96b72995a140be1f94a8f6b440e5  ./optional/ansible-specialist/payload/.cursor/skills/ansible-specialist/inventory-and-vault.md
@@ -23,12 +23,14 @@ e9fcc3629692461459e83fa8f43dec9fd8e72b6c601c6849b4cc19b01b8a0b40  ./optional/doc
 e83524fb1e723852a682b4982db31221224e82952ebb8860582a431dca730aab  ./optional/docker-kubernetes-specialist/payload/.cursor/skills/docker-kubernetes-specialist/troubleshooting.md
 82486efb1ac99ea72d3fbf923ba303b573f179ee8b7e01f5c19c2efffc2034e6  ./optional/docker-kubernetes-specialist/payload/evals/docker-kubernetes/001-routing.md
 2493a446c1a607884da38f19d35dbdb4f8740b8cf390d130d6d4e7ee3a2f3834  ./optional/docker-kubernetes-specialist/payload/knowledge/docker-kubernetes/README.md
-0886dee7ac7081b9a4563f507f344b3d5277990b27e7f4929b635418cba410fc  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/SKILL.md
+f3a120bdbbfc2125f33a752647ec547a5d46d83c26c2903c194872ca34f51bb3  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/SKILL.md
 6819ac2f11f3d6661bf79436139ceaaeae85640bcf19028e272e64a9fd9bf50b  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/api-and-provisioning.md
 7307565ece2ede0e3d3f2c10e0338946cc6ef8a383a307be7c43a43b58581fff  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/dashboard-design.md
 ac57026209dfec184a74e27aa6e9a96fd7dbcebe3c9149bfe80c2af545ef3403  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/html-graphics.md
+8e848d5681d48b83c33c9b9e9c4790fe515015edc36249b6656444b71b823e4f  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/infra-rag.md
 28ded8c6750016e5336ab51e2ae31155bc09834595933d957b9b01b02e1bf640  ./optional/grafana-specialist/payload/.cursor/skills/grafana-specialist/troubleshooting.md
 ee8c94c2f3105810a67cb509ccba10f7b8cde8d6adb00273400339033f34bad3  ./optional/grafana-specialist/payload/evals/grafana/001-routing.md
+412c8adc479ad3c7ef56238a6812ec6bd43d88584aba27bc52e3ec839dbea400  ./optional/grafana-specialist/payload/evals/grafana/002-infra-rag-fallback.md
 fe0b7d4b45dcf079715eb4e9e0c54a6fe784da9b8ab696e797956f07e77a2594  ./optional/grafana-specialist/payload/knowledge/grafana/README.md
 9aee5c5345abf310de8b0c045e83e61e1bde07aa0da9b1e1505f1bf33035dfd1  ./optional/loki-specialist/payload/.cursor/skills/loki-specialist/SKILL.md
 0052eee7da560d483851ab956cc993be8365e55fc99e91a318a1844d496a918b  ./optional/loki-specialist/payload/.cursor/skills/loki-specialist/cardinality-and-chunking.md
@@ -57,7 +59,7 @@ dfe955f795eb6cb1ba1473d9c2407379e0e318de66a3117186f6cd65c3ab5589  ./optional/pro
 34f4d8ecdb943a9a773820029814f3563e9833db6f1263643e2dc64f1c300078  ./optional/proxmox-specialist/payload/.cursor/skills/proxmox-specialist/troubleshooting.md
 5d1fbe62c9f569d741c73af93655d5de69a78aa10a0004af40776002a7beccd8  ./optional/proxmox-specialist/payload/.cursor/skills/proxmox-specialist/vm-lxc-automation.md
 e959e3edd05f45a39bd0ce47341aae7d26fa4f44b656cc64046e6bbf442b02d3  ./optional/proxmox-specialist/payload/evals/proxmox/001-routing.md
-c497fe16437083710c3ab94c7f56cc627a36f1e688d78078c104344819c00551  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
+16db0b02d5103883b314c21fc0653a388555baaaab7d3793f67cf98427dad3d1  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
 7d6eba7ee47cf8b601097153c1a564bf08458c4bf98d270760cf3797340d4e0a  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/SKILL.md
 240abe70f82f1f496d8fab1b333063f313faf9f245c049c7f8080c2bf9265cb8  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/monitoring-integration.md
 19f94d4ac075d83545b7936d49a845ab7ec01a863c7eac0af1bbaed8c65f996f  ./optional/shell-python-specialist/payload/.cursor/skills/shell-python-specialist/python-engineering.md
@@ -72,9 +74,10 @@ f90e37d134ccecfefc8f02b8b89c8c47e2f3e3bbf8f221b490e5eabd612523da  ./optional/sre
 f01a2c1a512d0a5d6f75c2a190f20292337e23d08c8832099ad6de67fd7e77f2  ./optional/sre-incident-specialist/payload/.cursor/skills/sre-incident-specialist/troubleshooting.md
 6849c10c737a90729b91f8bc0dd8595b7d99d1ee20f297faa50d54c3bd34bceb  ./optional/sre-incident-specialist/payload/evals/sre/001-routing.md
 828939d3a81db293ec61495e156fd927d62c40683226f68c3653a66e343200c8  ./optional/sre-incident-specialist/payload/knowledge/sre/README.md
-9ca629720bc02e354ee761f150c771ea389cda34ebbc6e09eb2dd44c0bf87baa  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/SKILL.md
+7921357aee3bb9434dd88c7787ed23d6d786ce51a91723c719c8fba4b34c19c4  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/SKILL.md
 10b9e82bad7a15ce653f4446fb1dca6a84c89fd210896a29358a3b3b858dcff0  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/api.md
 32a42f658243ddbbc8e3343e258ccdcd16eae5f83ab5f17669ebefeed08e0e9b  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/database.md
+2f2f6272e8018b86cee22e6745f25545aed0c61b3cc16da76bae4792639a34e2  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/infra-rag.md
 be8e553f3b485c4f9149d0b9e5825b91cbfd67546a81f751d9173c1b6a6d74fc  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/rag-ingestion.md
 a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/rag_sources.example.json
 2accf63328c9447c5e879152211e6061ce344102369a87de0c1f7f0f06df98d5  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/scripts/rag_ingest.py
@@ -82,6 +85,7 @@ a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zab
 b6136fddd69567bd28e8f88c8510618e8713522fbb5196c24c8634ba6a5ed36c  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/templates.md
 a6fd555bb094f0a7bf834bef3a013d47ac3e2fb8491d58acec438998aaf8538f  ./optional/zabbix-specialist/payload/.cursor/skills/zabbix-specialist/troubleshooting.md
 9cb32b01bf8fffb937f0667ac764b448783bfef461f6c7122c5936aa5b054d68  ./optional/zabbix-specialist/payload/evals/zabbix/001-routing.md
+0d800d9c4bdb456044aa0829c6b949d7cff9c2bdea58bbf69a4bc94f40a9b8c8  ./optional/zabbix-specialist/payload/evals/zabbix/002-infra-rag-fallback.md
 39c54e796f9a97c6a533ddf654ce5ea2814c47229667f4e281270f989c282192  ./optional/zabbix-specialist/payload/knowledge/zabbix/README.md
 b8087510fcac213ffd1673d476abf7ab15b941c8172134729325a2a3c8f34b2e  ./payload/.cursor/agents/luna-explorer.md
 91e6491ccb06840e9a3cbd8979d7c3d3a11242628600692713ce67f5d8d62919  ./payload/.cursor/agents/luna-worker.md
@@ -90,7 +94,7 @@ e5e8c82abf5845d414a9893f75c5274f84ff4467ec6e9f4c9a15d98623f6e8b5  ./payload/.cur
 9f03fa743b7ee5672a8a163eb4437159e0ca8aecc480645aea766e40b2ad597b  ./payload/.cursor/agents/sol-specialist.md
 0ae797a60983f296e556d80f56c9f7aab6ae26567742bc7f5cf0d2e8173df07b  ./payload/.cursor/agents/terra-reviewer.md
 d1c9ac24d00d90edae6af1d1c98c76baefe8eabb7756a2c13f643615a99a5134  ./payload/.cursor/agents/terra-worker.md
-638dd83e3a8ad40ca85511c14b352328dedec2a389c350a502b26cba61e5a233  ./payload/.cursor/rules/framework-v5.mdc
+a7a50eed1d4a50737069a0d727df7d628f6a2acc8f562828c9542c54f2604619  ./payload/.cursor/rules/framework-v5.mdc
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
 482e1f960e1680dfd53f7edc37626d47fe99660f21283ca98b70a25889abf2de  ./scripts/install.ps1
 e296b55b5825eeac154d8f601a3ce485a40056948973ef37f3f31f7e6c6401ab  ./scripts/install.sh

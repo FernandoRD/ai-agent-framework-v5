@@ -6,11 +6,13 @@ After installation and a full restart:
 2. Install, then run `scripts/diagnose.ps1` on Windows or `scripts/diagnose.sh` on Linux/WSL.
 3. Open `/hooks`, review the v5 hook, and mark it trusted.
 4. Start a new session and ask: `Summarize the global routing policy currently loaded.`
-5. Give a trivial request. Expected: direct execution, no unnecessary subagent.
+5. Give a trivial request meeting every trivial-work condition. Expected: direct
+   execution by the parent, no subagent, no declared blocker. For a doubtful
+   case, expect non-trivial classification and delegation.
 6. Give a bounded low-risk code task to a parent above Luna tier. Expected:
-   explicit delegation to `luna_worker`, unless it reports a concrete exception
-   such as a tiny fully specified operation where handoff exceeds the work, or
-   a higher-priority restriction on delegation with no useful parent work that
+   explicit delegation to `luna_worker`, unless it is trivial under the
+   trivial-work definition (direct execution allowed) or it reports a concrete
+   exception such as a higher-priority restriction on delegation with no useful parent work that
    can proceed in parallel.
 7. Give a multi-file normal engineering task. Expected: Terra tier and at least
    one delegated analysis, implementation, or validation unit; when the
@@ -38,5 +40,5 @@ After installation and a full restart:
 14. Remove credentials, network access, or sandbox permission needed for
     publication. Expected: the agent requests normal access and does not escalate
     the model or weaken permissions to compensate.
-15. Verify publication to two authorized remotes. Expected: each remote hash is
+15. Verify publication to multiple authorized remotes. Expected: each remote hash is
     checked independently, with partial publication reported if one fails.

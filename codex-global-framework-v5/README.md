@@ -9,8 +9,9 @@ roles explicitly in `config.toml`, pointing to non-autodiscovered layers under
 standalone files under `~/.codex/agents` on Codex for Windows.
 
 The policy assigns each bounded unit to the smallest capable named agent. A
-larger parent delegates lower-tier units unless a documented concrete exception
-applies. It requires targeted `luna_explorer` discovery for large or unfamiliar
+larger parent delegates lower-tier units unless the task is trivial under the
+`AGENTS.md` definition (direct execution allowed) or a documented concrete
+exception applies. It requires targeted `luna_explorer` discovery for large or unfamiliar
 repositories, a delegated unit for uncertain or coordinated multi-file work,
 and independent review before applicable multi-component, compatibility,
 public-contract, or high-risk changes are completed.
@@ -78,6 +79,8 @@ and `docker-kubernetes-specialist`) are not installed by default and do not chan
 framework roles or Luna/Terra/Sol routing. Add `--with-<spec>-specialist` or `--with-all-specialists`
 to install domain skills. For a project target it also installs optional knowledge
 and evaluations; global installation adds only the skills under `~/.agents/skills/`.
+
+`zabbix-specialist` and `grafana-specialist` include a guide (`infra-rag.md`) for optionally querying, in a non-blocking and read-only way, a local index from the separate `infra-rag` project via `rag-query`. The guide is optional: without it the specialist proceeds normally. Its rules are instructions to the model, not technical enforcement; deployment controls are in the `infra-rag` documentation itself. It has not been tested with a real agent.
 
 ```bash
 ./scripts/install.sh --with-ansible-specialist

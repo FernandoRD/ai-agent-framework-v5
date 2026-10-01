@@ -41,8 +41,11 @@ If any trivial-work condition is false, unknown, or uncertain, classify the
 task as non-trivial. Uncertainty increases classification; it never justifies
 treating work as trivial.
 
-Handle trivial work directly. Do not spawn an agent, calculate a numeric score,
-or produce a routing report unless the user asks for one.
+The parent may handle trivial work directly, without a subagent and without
+declaring a blocker. Do not calculate a numeric score or produce a routing
+report unless the user asks for one. When in doubt, treat the task as
+non-trivial and delegate. Publication (commit/push) is not exempted by this
+rule and remains delegated as described below.
 
 ### Mandatory non-trivial triggers
 
@@ -129,8 +132,8 @@ each unit independently, including discovery, implementation, and review.
   reconnaissance needed to route the work; do not complete the investigation
   in the parent before delegating it.
 - Explicitly delegate lower-tier units to the matching named agent role when
-  the parent is a larger model, subject to the boundaries below. The parent's
-  ability to do the work is not a reason to retain it. Reducing unnecessary
+  the parent is a larger model, subject to the boundaries below. For non-trivial
+  work, the parent's ability to do it is not a reason to retain it. Reducing unnecessary
   higher-tier execution is itself a concrete delegation benefit.
 - Keep the parent focused on decomposition, coordination, integration, and
   acceptance of results. Retain execution only where its capability or
@@ -162,7 +165,8 @@ inherit its capability tier because publication is in the same conversation.
   authorization, completed checks, and known limits. Reuse valid evidence;
   rerun checks only for new changes, failures, or unresolved concerns.
 - A larger parent coordinates and accepts the result. It must not retain a
-  whole routine publication workflow under the tiny-operation exception. If
+  whole routine publication workflow; publication is never handled directly as
+  trivial work. If
   native Task delegation is unavailable or prohibited, state the concrete
   blocker and use only the necessary authorized fallback without claiming
   Composer execution.
@@ -214,14 +218,13 @@ trivial turns to avoid these checkpoints.
 
 ### Boundaries and exceptions
 
-- Handle trivial work directly. Do not create agents just to meet a quota.
+- Trivial work, as defined above, may be executed directly by the parent
+  without a subagent and without declaring a blocker. Do not create agents just
+  to meet a quota. Delegation remains required for all non-trivial work.
 - For bounded non-trivial work without the mandatory checkpoints, direct
   execution is allowed if the parent already matches the smallest sufficient
   tier and delegation adds no independent benefit. A larger parent must route
   lower-tier work to the matching agent unless a concrete exception applies.
-- For a tiny, fully specified operation, direct execution is allowed when the
-  handoff and verification would clearly exceed the operation itself. Do not
-  generalize this exception to an entire investigation or multi-file task.
 - If the active model is below the required tier, delegate that unit to an
   agent at or above the required tier. Never escalate the entire request when
   only one bounded unit requires a stronger model.
@@ -229,11 +232,12 @@ trivial turns to avoid these checkpoints.
 - Keep a shared browser session, live mutation, or other exclusive resource
   under one owner's control. Delegate local artifact analysis or review of
   captured evidence instead of letting agents interfere with the live session.
-- Exceptions to required delegation must identify a concrete blocker: a
+- Except for trivial work (which needs no declaration), exceptions to required
+  delegation must identify a concrete blocker: a
   higher-priority restriction, unavailable tools, explicit user request for
   solo work, or no bounded independent unit that can run alongside useful
-  parent work. Parent capability, task familiarity, or a generic desire to
-  save time is not enough. State the exception briefly and continue authorized
+  parent work. For non-trivial work, parent capability, task familiarity, or a generic
+  desire to save time is not enough. State the exception briefly and continue authorized
   work; do not claim an independent review that did not happen.
 
 ## Agent selection

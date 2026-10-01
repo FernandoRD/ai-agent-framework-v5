@@ -159,10 +159,12 @@ Os quatro pacotes disponibilizam um catálogo modular de **11 especialistas téc
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
 - **Cobertura técnica:** Zabbix Server, Proxies ativos/passivos, Zabbix Agent 2 em Go, templates modulares, LLD (Low-Level Discovery) com filtros regex, regras de pré-processamento (JSONPath, JavaScript, throttling), triggers com histerese, automação via API HTTP JSON-RPC, particionamento de tabelas de histórico/trends e configurações de Alta Disponibilidade (HA).
 - **Alimentação RAG opcional:** Inclui CLI local de ingestão (`rag_ingest.py`) para fontes Git e Jira em diretório isolado com quarentena, sanitização e promoção explícita via `--approve`.
+- **Consulta RAG opcional:** O guia `infra-rag.md` descreve a consulta opcional, não bloqueante e somente leitura a um índice local do projeto separado `infra-rag` (comando `rag-query`); sem ele, o especialista segue normalmente.
 
 ### 2. `grafana-specialist`
 - **Domínio:** Visualização avançada de dados, focado em **Grafana 12** (com suporte retrocompatível para 11.x e 10.x).
 - **Cobertura técnica:** Desenvolvimento de alto desempenho no plugin **HTML Graphics** (`gapit-htmlgraphics-panel`), ciclo de vida segregado (`onInit` para estruturação do DOM/SVG e estado em `htmlGraphics.state`; `onRender` para mutações cirúrgicas de atributos sem recriar nós DOM), manipulação eficiente de DataFrames (`data.series`), gráficos SVG dinâmicos e responsivos com `viewBox`, escopo rigoroso de CSS para não contaminar a interface do Grafana, conformidade com a Content Security Policy (CSP) do Grafana 12, princípios de UI/UX para telas de NOC (regra dos 5 segundos, layout hierárquico vertical, grid de 24 colunas, paletas semânticas anti-fadiga) e governança por API via Service Accounts, tokens RBAC e provisionamento declarativo YAML.
+- **Consulta RAG opcional:** O guia `infra-rag.md` descreve a consulta opcional, não bloqueante e somente leitura a um índice local do projeto separado `infra-rag` (comando `rag-query`); sem ele, o especialista segue normalmente.
 
 ### 3. `ansible-specialist`
 - **Domínio:** Automação de infraestrutura como código (IaC) e orquestração com Ansible 2.15+.
@@ -210,6 +212,8 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 3. `troubleshooting.md`: Matriz de diagnóstico, códigos de erro e armadilhas técnicas;
 4. `knowledge/<dominio>/README.md`: Repositório local de decisões de arquitetura e snippets;
 5. `evals/<dominio>/001-routing.md`: Casos de teste automatizáveis para aferir respeito a gates de aprovação e pisos de risco.
+
+Zabbix e Grafana acrescentam, além dessa estrutura padrão, o guia opcional `infra-rag.md` (consulta não bloqueante e somente leitura ao índice do projeto separado `infra-rag`) e o eval `evals/<dominio>/002-infra-rag-fallback.md`.
 
 ### Agentes nativos e desinstalação (Claude Code, desde 5.1.0)
 

@@ -14,7 +14,7 @@ Para evitar colisões e manter a governança clara em múltiplos clusters ou dat
 | `200 - 299` | Serviços de Observabilidade e Monitoramento | Zabbix Server, Grafana, Prometheus, Loki |
 | `300 - 399` | Bancos de Dados e Armazenamento Central | PostgreSQL, TimescaleDB, MySQL, Redis |
 | `400 - 499` | Aplicações e Microsserviços Internos | APIs, Web Apps, Portais corporativos |
-| `500 - 599` | Contêineres de Desenvolvimento e CI/CD | Runners Gitea/GitHub, staging |
+| `500 - 599` | Contêineres de Desenvolvimento e CI/CD | Runners de CI, staging |
 | `9000 - 9999` | Templates Imutáveis de Cloud-Init | `template-debian-12`, `template-ubuntu-2404` |
 
 ---

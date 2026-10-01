@@ -34,6 +34,6 @@ Não verificado: execução autenticada em provedores ou no Cursor (carregamento
   and uses only the authorized fallback. Simulate conflict, uncertain scope,
   compatibility, release, or deployment; confirm only that unit rises to Terra
   or Sol. Missing access must use normal approval.
-- With two authorized remotes, verify each hash and report partial publication
+- With multiple authorized remotes, verify each hash and report partial publication
   if one push fails. Confirm no implicit force push, rewrite, destination,
   privacy, release, or deployment authority.

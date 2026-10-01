@@ -1,6 +1,6 @@
-783d24f641d15009089c45388eec2a5ae151e0030abc2dd1c016f20cdf5aa4d3  ./README.md
-dcf8080a532795c683f70feb2835af16fcc1c03532f0113339a369841f147e17  ./VALIDACAO.md
-119f9c7740bcb002ec5f7a17034135a2ceef564c138abc445787be5b884ada0c  ./VARIANTES-V5.md
+e8ce26bac7d8130e9c56c805e79a1cf97f23c09e52c905175a83f429b7e36e0d  ./README.md
+4342fe061e1da6be6d9e6406da1f4e6398a69e4751cf0b51dee375a1937cd825  ./VALIDACAO.md
+1b601f7e2cd5546f54d8ead338dcc74d8776aefdbe582957fad93cb7d6587a3e  ./VARIANTES-V5.md
 34c8b7b0e731575866c9eb8b28ca747c87f7bff7848c0be555b321827cd0b8d3  ./VERSION
 3ec7899bee3197afa91daa4f6b02be7f7c2aa1a4204874b5a50c655aea9a91e2  ./optional/ansible-specialist/payload/.claude/agents/ansible-specialist.md
 e0869bc5d674f6ed37de1bc68acc7bf73732d055c912b6dfbdbbb1a6b1bcec9c  ./optional/ansible-specialist/payload/.claude/skills/ansible-specialist/SKILL.md
@@ -27,12 +27,14 @@ e83524fb1e723852a682b4982db31221224e82952ebb8860582a431dca730aab  ./optional/doc
 82486efb1ac99ea72d3fbf923ba303b573f179ee8b7e01f5c19c2efffc2034e6  ./optional/docker-kubernetes-specialist/payload/evals/docker-kubernetes/001-routing.md
 2493a446c1a607884da38f19d35dbdb4f8740b8cf390d130d6d4e7ee3a2f3834  ./optional/docker-kubernetes-specialist/payload/knowledge/docker-kubernetes/README.md
 378bce0aafc4a2341ff881c2f5335066835b52f5094ae7b0787e73d76b6ffd6a  ./optional/grafana-specialist/payload/.claude/agents/grafana-specialist.md
-518f581b82398e0ee9c9c22d3116c7820548400cf67bd41b1cf4eadea6423fbc  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/SKILL.md
+04fccf8157bccd8ee6e7da7adbf0deb7df4fdf0c73258c5b4cc4ba30aa09816e  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/SKILL.md
 6819ac2f11f3d6661bf79436139ceaaeae85640bcf19028e272e64a9fd9bf50b  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/api-and-provisioning.md
 7307565ece2ede0e3d3f2c10e0338946cc6ef8a383a307be7c43a43b58581fff  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/dashboard-design.md
 ac57026209dfec184a74e27aa6e9a96fd7dbcebe3c9149bfe80c2af545ef3403  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/html-graphics.md
+8e848d5681d48b83c33c9b9e9c4790fe515015edc36249b6656444b71b823e4f  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/infra-rag.md
 28ded8c6750016e5336ab51e2ae31155bc09834595933d957b9b01b02e1bf640  ./optional/grafana-specialist/payload/.claude/skills/grafana-specialist/troubleshooting.md
 ee8c94c2f3105810a67cb509ccba10f7b8cde8d6adb00273400339033f34bad3  ./optional/grafana-specialist/payload/evals/grafana/001-routing.md
+412c8adc479ad3c7ef56238a6812ec6bd43d88584aba27bc52e3ec839dbea400  ./optional/grafana-specialist/payload/evals/grafana/002-infra-rag-fallback.md
 fe0b7d4b45dcf079715eb4e9e0c54a6fe784da9b8ab696e797956f07e77a2594  ./optional/grafana-specialist/payload/knowledge/grafana/README.md
 d09f5289d7e69aebe1faada5ef3249cc2d0fb9328040500a39911f65f9c79dca  ./optional/loki-specialist/payload/.claude/agents/loki-specialist.md
 9aee5c5345abf310de8b0c045e83e61e1bde07aa0da9b1e1505f1bf33035dfd1  ./optional/loki-specialist/payload/.claude/skills/loki-specialist/SKILL.md
@@ -65,7 +67,7 @@ dfe955f795eb6cb1ba1473d9c2407379e0e318de66a3117186f6cd65c3ab5589  ./optional/pro
 34f4d8ecdb943a9a773820029814f3563e9833db6f1263643e2dc64f1c300078  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/troubleshooting.md
 5d1fbe62c9f569d741c73af93655d5de69a78aa10a0004af40776002a7beccd8  ./optional/proxmox-specialist/payload/.claude/skills/proxmox-specialist/vm-lxc-automation.md
 e959e3edd05f45a39bd0ce47341aae7d26fa4f44b656cc64046e6bbf442b02d3  ./optional/proxmox-specialist/payload/evals/proxmox/001-routing.md
-c497fe16437083710c3ab94c7f56cc627a36f1e688d78078c104344819c00551  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
+16db0b02d5103883b314c21fc0653a388555baaaab7d3793f67cf98427dad3d1  ./optional/proxmox-specialist/payload/knowledge/proxmox/README.md
 dc5baf5c638f97295ba45978ccd2ece09e9e784a937420aca59231dc874eda7e  ./optional/shell-python-specialist/payload/.claude/agents/shell-python-specialist.md
 7d6eba7ee47cf8b601097153c1a564bf08458c4bf98d270760cf3797340d4e0a  ./optional/shell-python-specialist/payload/.claude/skills/shell-python-specialist/SKILL.md
 240abe70f82f1f496d8fab1b333063f313faf9f245c049c7f8080c2bf9265cb8  ./optional/shell-python-specialist/payload/.claude/skills/shell-python-specialist/monitoring-integration.md
@@ -83,9 +85,10 @@ f01a2c1a512d0a5d6f75c2a190f20292337e23d08c8832099ad6de67fd7e77f2  ./optional/sre
 6849c10c737a90729b91f8bc0dd8595b7d99d1ee20f297faa50d54c3bd34bceb  ./optional/sre-incident-specialist/payload/evals/sre/001-routing.md
 828939d3a81db293ec61495e156fd927d62c40683226f68c3653a66e343200c8  ./optional/sre-incident-specialist/payload/knowledge/sre/README.md
 e3add9de8e81d4a010544241bea8291fe1f585317b7f31baece45f81de94f24c  ./optional/zabbix-specialist/payload/.claude/agents/zabbix-specialist.md
-2bdac26d2c74add50fc3ba0753ea7ed8b7d30d0dd325667db7df206a87bc4209  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/SKILL.md
+fae91883023abaf2cc299522a7e419a62e8c9396e773f51ff4b7fce16c91ae98  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/SKILL.md
 10b9e82bad7a15ce653f4446fb1dca6a84c89fd210896a29358a3b3b858dcff0  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/api.md
 32a42f658243ddbbc8e3343e258ccdcd16eae5f83ab5f17669ebefeed08e0e9b  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/database.md
+2f2f6272e8018b86cee22e6745f25545aed0c61b3cc16da76bae4792639a34e2  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/infra-rag.md
 be8e553f3b485c4f9149d0b9e5825b91cbfd67546a81f751d9173c1b6a6d74fc  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/rag-ingestion.md
 a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/rag_sources.example.json
 2accf63328c9447c5e879152211e6061ce344102369a87de0c1f7f0f06df98d5  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/scripts/rag_ingest.py
@@ -93,6 +96,7 @@ a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zab
 b6136fddd69567bd28e8f88c8510618e8713522fbb5196c24c8634ba6a5ed36c  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/templates.md
 a6fd555bb094f0a7bf834bef3a013d47ac3e2fb8491d58acec438998aaf8538f  ./optional/zabbix-specialist/payload/.claude/skills/zabbix-specialist/troubleshooting.md
 9cb32b01bf8fffb937f0667ac764b448783bfef461f6c7122c5936aa5b054d68  ./optional/zabbix-specialist/payload/evals/zabbix/001-routing.md
+0d800d9c4bdb456044aa0829c6b949d7cff9c2bdea58bbf69a4bc94f40a9b8c8  ./optional/zabbix-specialist/payload/evals/zabbix/002-infra-rag-fallback.md
 39c54e796f9a97c6a533ddf654ce5ea2814c47229667f4e281270f989c282192  ./optional/zabbix-specialist/payload/knowledge/zabbix/README.md
 3b0f8d53e3ef3d20418e7d800a322e39f65d030e3eb75d87ba0b017eb1f6e5c1  ./payload/.claude/agents/haiku-explorer.md
 f25a91a78d6f27caed9d291e155fcf1ac10a5f948ce8bdb74b1851c98b112c5f  ./payload/.claude/agents/haiku-worker.md
@@ -101,7 +105,7 @@ f25a91a78d6f27caed9d291e155fcf1ac10a5f948ce8bdb74b1851c98b112c5f  ./payload/.cla
 5cc61b1a25e5c09971689726fd80d182572f6b537aba31f1bcd3d54b0a5e7728  ./payload/.claude/agents/opus-specialist.md
 1a28e3ef90ef663428fc4e159c05f7bacf5be57bbcf85de91d36d7f8bb7d48c7  ./payload/.claude/agents/sonnet-reviewer.md
 41af7df2940fe6ab983d1413951df98ea0b92ea8f145c255360a173f9734a085  ./payload/.claude/agents/sonnet-worker.md
-35c874c806a90cc38f7ab88ed07d3a27bed819f035ea0b274e33be19b2215623  ./payload/CLAUDE.md
+d66c8b0f180f6d7b1b915b8495dabf05ce306a39f4e9d815820d95e1abbfa761  ./payload/CLAUDE.md
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
 33e3e7463c63173814ada3f37f505794aa4a543f241c4f31aef27b4788783987  ./scripts/install.ps1
 4dbe20e1e1b354cd68e631cf4633f310ff7b7f0b0d1d020b463b0ca4f8ee7136  ./scripts/install.sh

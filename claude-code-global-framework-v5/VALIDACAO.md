@@ -24,7 +24,7 @@ Somente resultados observados na última execução (Linux, Python 3, `pwsh` no 
 - Indisponibilize ou proíba a delegação; confirme que o principal declara o
   bloqueio concreto e executa apenas o fallback já autorizado, sem atribuir a
   publicação ao Haiku.
-- Em dois remotes autorizados, confira cada hash e reporte publicação parcial
+- Em múltiplos remotes autorizados, confira cada hash e reporte publicação parcial
   se um push falhar. Confirme que a política não permite force push, reescrita,
   novo destino, mudança de privacidade, release ou deploy sem autorização.
 

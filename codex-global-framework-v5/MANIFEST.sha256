@@ -6,7 +6,7 @@ d46660d744ff20c65069902b25e00f953f85ea6af96f0aa38d99570a960e8798  ./.agents/skil
 ab81e0b262f6a4308487f9d882078d1dc47b04df4eceb4a34a53e84152430bf1  ./.agents/skills/documentation/agents/openai.yaml
 2e6186f9cec182068658a039ca4aa846b7a195ae9a9519a699356136659762ae  ./.agents/skills/security-review/SKILL.md
 287b5b82785aae19edacf4a0ed5be4cc7ed7f0b64746acbf6af905c76faa6f77  ./.agents/skills/security-review/agents/openai.yaml
-c2361c5f0e440b3bd582a68802ab27ca741c550d7e5cc83a6fdba0fd419fe154  ./.codex/AGENTS.md
+8011abf2472952cc58c9788da6f2dbd3719e7c92430c465f4d485b4c87a6bcb2  ./.codex/AGENTS.md
 794ba190beaad312ae39f2d41c93e1d601cdffd6f4ddfc254bf0771235392fc8  ./.codex/agent-configs/luna_explorer.toml
 fe105d314d6368bf5a78bebbc9d77ba897bfbecfb613192a74e33815dc5cc3bb  ./.codex/agent-configs/luna_worker.toml
 5c5dd8b01ecb7ffd8abd7e15a504eb51a39b53db6a1a80595c7c5b801ff74f17  ./.codex/agent-configs/sol_critical.toml
@@ -16,11 +16,11 @@ a9c1db15e574a4e152bdb6517004b444564686c55560d7ffce32f4b1a779289a  ./.codex/agent
 80d6059f19efcea2872c556b029f2847b6d2795fc6a2e7edd9960a83288b1f73  ./.codex/agent-configs/terra_worker.toml
 0cd9f326c1f1c2843dd0b54d61745e3399edf336ae0ea36cb29183d50825a2f1  ./.codex/hooks/mandatory-router.ps1
 727ca9f4eff24f45808df8b9e1218e9131a9695205050265f69f18fec7972c1e  ./.codex/hooks/mandatory-router.sh
-4ace8786a7a35760a1ee6c4716462c450d34a75e6a5c008133d273ac6b56ef81  ./README.md
+94b888fa2dd9a5a30ddce6ad556300ede046d395e78cbda7bcf2785c979e282e  ./README.md
 1cc3d76ac7c21a664e79848fd481e9791016451b244e7de5feeeb9bea5fd2184  ./VERSION
 7b869c1d042a3f02bb32c23e8189663868d29e5670bed962161914aeb1ee6478  ./docs/LINUX.md
 ee2480cef90349b77f63641f74dfe245b33ef9eab4687dc26eca02d83828a558  ./docs/MIGRATION-V3-V4.md
-7009827b493cf64cab35792dcd8b61dd3e378b72c95fb7818a71a0bd55f7c31d  ./docs/SMOKE-TESTS.md
+c2b15917af4b9993d840eac7e1daa28e531219397c0c2691890fbb7218b60bf6  ./docs/SMOKE-TESTS.md
 c6e80ee5d14d05b2f455f3aa879d48fa130e3683330acf11afedba7a6ee85693  ./docs/TOKEN-ECONOMY.md
 b983199c373815eaceaa346e7b2098c859771bac5b0cd40e6dcd40e30a63ea6f  ./docs/TROUBLESHOOTING.md
 f2fa1d6c113eca8e60e4c28dfdbd5b2e4dd4f1c7b4e75c1903021dd3f562f813  ./docs/WINDOWS.md
@@ -46,12 +46,14 @@ e9fcc3629692461459e83fa8f43dec9fd8e72b6c601c6849b4cc19b01b8a0b40  ./optional/doc
 e83524fb1e723852a682b4982db31221224e82952ebb8860582a431dca730aab  ./optional/docker-kubernetes-specialist/.agents/skills/docker-kubernetes-specialist/troubleshooting.md
 82486efb1ac99ea72d3fbf923ba303b573f179ee8b7e01f5c19c2efffc2034e6  ./optional/docker-kubernetes-specialist/evals/docker-kubernetes/001-routing.md
 2493a446c1a607884da38f19d35dbdb4f8740b8cf390d130d6d4e7ee3a2f3834  ./optional/docker-kubernetes-specialist/knowledge/docker-kubernetes/README.md
-0886dee7ac7081b9a4563f507f344b3d5277990b27e7f4929b635418cba410fc  ./optional/grafana-specialist/.agents/skills/grafana-specialist/SKILL.md
+f3a120bdbbfc2125f33a752647ec547a5d46d83c26c2903c194872ca34f51bb3  ./optional/grafana-specialist/.agents/skills/grafana-specialist/SKILL.md
 6819ac2f11f3d6661bf79436139ceaaeae85640bcf19028e272e64a9fd9bf50b  ./optional/grafana-specialist/.agents/skills/grafana-specialist/api-and-provisioning.md
 7307565ece2ede0e3d3f2c10e0338946cc6ef8a383a307be7c43a43b58581fff  ./optional/grafana-specialist/.agents/skills/grafana-specialist/dashboard-design.md
 ac57026209dfec184a74e27aa6e9a96fd7dbcebe3c9149bfe80c2af545ef3403  ./optional/grafana-specialist/.agents/skills/grafana-specialist/html-graphics.md
+8e848d5681d48b83c33c9b9e9c4790fe515015edc36249b6656444b71b823e4f  ./optional/grafana-specialist/.agents/skills/grafana-specialist/infra-rag.md
 28ded8c6750016e5336ab51e2ae31155bc09834595933d957b9b01b02e1bf640  ./optional/grafana-specialist/.agents/skills/grafana-specialist/troubleshooting.md
 ee8c94c2f3105810a67cb509ccba10f7b8cde8d6adb00273400339033f34bad3  ./optional/grafana-specialist/evals/grafana/001-routing.md
+412c8adc479ad3c7ef56238a6812ec6bd43d88584aba27bc52e3ec839dbea400  ./optional/grafana-specialist/evals/grafana/002-infra-rag-fallback.md
 fe0b7d4b45dcf079715eb4e9e0c54a6fe784da9b8ab696e797956f07e77a2594  ./optional/grafana-specialist/knowledge/grafana/README.md
 9aee5c5345abf310de8b0c045e83e61e1bde07aa0da9b1e1505f1bf33035dfd1  ./optional/loki-specialist/.agents/skills/loki-specialist/SKILL.md
 0052eee7da560d483851ab956cc993be8365e55fc99e91a318a1844d496a918b  ./optional/loki-specialist/.agents/skills/loki-specialist/cardinality-and-chunking.md
@@ -80,7 +82,7 @@ dfe955f795eb6cb1ba1473d9c2407379e0e318de66a3117186f6cd65c3ab5589  ./optional/pro
 34f4d8ecdb943a9a773820029814f3563e9833db6f1263643e2dc64f1c300078  ./optional/proxmox-specialist/.agents/skills/proxmox-specialist/troubleshooting.md
 5d1fbe62c9f569d741c73af93655d5de69a78aa10a0004af40776002a7beccd8  ./optional/proxmox-specialist/.agents/skills/proxmox-specialist/vm-lxc-automation.md
 e959e3edd05f45a39bd0ce47341aae7d26fa4f44b656cc64046e6bbf442b02d3  ./optional/proxmox-specialist/evals/proxmox/001-routing.md
-c497fe16437083710c3ab94c7f56cc627a36f1e688d78078c104344819c00551  ./optional/proxmox-specialist/knowledge/proxmox/README.md
+16db0b02d5103883b314c21fc0653a388555baaaab7d3793f67cf98427dad3d1  ./optional/proxmox-specialist/knowledge/proxmox/README.md
 7d6eba7ee47cf8b601097153c1a564bf08458c4bf98d270760cf3797340d4e0a  ./optional/shell-python-specialist/.agents/skills/shell-python-specialist/SKILL.md
 240abe70f82f1f496d8fab1b333063f313faf9f245c049c7f8080c2bf9265cb8  ./optional/shell-python-specialist/.agents/skills/shell-python-specialist/monitoring-integration.md
 19f94d4ac075d83545b7936d49a845ab7ec01a863c7eac0af1bbaed8c65f996f  ./optional/shell-python-specialist/.agents/skills/shell-python-specialist/python-engineering.md
@@ -95,9 +97,10 @@ f90e37d134ccecfefc8f02b8b89c8c47e2f3e3bbf8f221b490e5eabd612523da  ./optional/sre
 f01a2c1a512d0a5d6f75c2a190f20292337e23d08c8832099ad6de67fd7e77f2  ./optional/sre-incident-specialist/.agents/skills/sre-incident-specialist/troubleshooting.md
 6849c10c737a90729b91f8bc0dd8595b7d99d1ee20f297faa50d54c3bd34bceb  ./optional/sre-incident-specialist/evals/sre/001-routing.md
 828939d3a81db293ec61495e156fd927d62c40683226f68c3653a66e343200c8  ./optional/sre-incident-specialist/knowledge/sre/README.md
-9ca629720bc02e354ee761f150c771ea389cda34ebbc6e09eb2dd44c0bf87baa  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/SKILL.md
+7921357aee3bb9434dd88c7787ed23d6d786ce51a91723c719c8fba4b34c19c4  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/SKILL.md
 10b9e82bad7a15ce653f4446fb1dca6a84c89fd210896a29358a3b3b858dcff0  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/api.md
 32a42f658243ddbbc8e3343e258ccdcd16eae5f83ab5f17669ebefeed08e0e9b  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/database.md
+2f2f6272e8018b86cee22e6745f25545aed0c61b3cc16da76bae4792639a34e2  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/infra-rag.md
 be8e553f3b485c4f9149d0b9e5825b91cbfd67546a81f751d9173c1b6a6d74fc  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/rag-ingestion.md
 a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/rag_sources.example.json
 2accf63328c9447c5e879152211e6061ce344102369a87de0c1f7f0f06df98d5  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/scripts/rag_ingest.py
@@ -105,6 +108,7 @@ a0a68079c6905d2a5ffeb291ea040efdc4f49fb50fe995c893c65e0fe2ecf56c  ./optional/zab
 b6136fddd69567bd28e8f88c8510618e8713522fbb5196c24c8634ba6a5ed36c  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/templates.md
 a6fd555bb094f0a7bf834bef3a013d47ac3e2fb8491d58acec438998aaf8538f  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/troubleshooting.md
 9cb32b01bf8fffb937f0667ac764b448783bfef461f6c7122c5936aa5b054d68  ./optional/zabbix-specialist/evals/zabbix/001-routing.md
+0d800d9c4bdb456044aa0829c6b949d7cff9c2bdea58bbf69a4bc94f40a9b8c8  ./optional/zabbix-specialist/evals/zabbix/002-infra-rag-fallback.md
 39c54e796f9a97c6a533ddf654ce5ea2814c47229667f4e281270f989c282192  ./optional/zabbix-specialist/knowledge/zabbix/README.md
 6af2cd388535e45cbf98923e214069bf5847216f788d8883108e969b27b864df  ./scripts/diagnose.fish
 fa01dcca5c935cb0ea1b6518649df5dc7f0097855785ff3b449a7d91aa8efdf6  ./scripts/diagnose.ps1

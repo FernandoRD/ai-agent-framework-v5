@@ -36,6 +36,6 @@ Não verificado: execução autenticada em provedores ou no Gemini CLI (carregam
 - Make delegation unavailable or prohibited; confirm the main agent states the
   concrete blocker and uses only the authorized fallback without claiming Flash
   execution.
-- With two authorized remotes, verify each hash and report partial publication
+- With multiple authorized remotes, verify each hash and report partial publication
   if one push fails. Confirm no implicit force push, rewrite, destination,
   privacy, release, or deployment authority.

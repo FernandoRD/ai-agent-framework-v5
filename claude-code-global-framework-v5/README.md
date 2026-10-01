@@ -4,7 +4,7 @@ Pacote v5 com roteamento obrigatório, econômico e orientado a risco para uso p
 
 ## Modelo principal sugerido
 
-Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica, decompõe, delega, coordena e integra. **O uso de subagentes é mandatório**: toda unidade delegável, inclusive trivial, vai para o subagente do nível exigido, e a execução direta só é aceita diante de um dos bloqueios concretos listados em `CLAUDE.md` (subagentes indisponíveis, pedido explícito do usuário, recurso exclusivo do principal ou pergunta sem ação).
+Use **Sonnet com effort `high`** como agente principal para a maior parte dos projetos: ele equilibra classificação, decomposição, integração e custo. Use **Opus com effort `high`** como principal quando arquitetura ambígua e trabalho crítico forem frequentes. O principal classifica, decompõe, delega, coordena e integra. **O uso de subagentes é mandatório**: toda unidade delegável não trivial vai para o subagente do nível exigido, e a execução direta só é aceita diante de uma das exceções listadas em `CLAUDE.md` (subagentes indisponíveis, pedido explícito do usuário, recurso exclusivo do principal, pergunta sem ação ou tarefa trivial conforme a definição, que o principal pode executar sem declarar bloqueio). Na dúvida, a tarefa é não trivial e é delegada; a publicação continua delegada ao `haiku-worker`.
 
 ## Mapeamento v5
 
@@ -92,6 +92,8 @@ opção instala:
   correspondente na própria chamada;
 - a **skill** `.claude/skills/<nome>/` com o procedimento e as referências do domínio;
 - `knowledge/<domínio>/` e `evals/<domínio>/` (no modo global, dentro de `~/.claude/`).
+
+Zabbix e Grafana incluem ainda o guia `infra-rag.md`, para consultar, de forma opcional, não bloqueante e somente leitura, um índice local do projeto separado `infra-rag` via `rag-query`. O guia `infra-rag.md` é opcional e não bloqueante: sem ele, o especialista segue normalmente. Suas regras são instruções ao modelo, não imposição técnica; os controles de implantação estão na documentação do próprio `infra-rag`. Não foi testado com um agente real.
 
 Os sete agentes de roteamento não mudam. Revisão independente continua com
 `sonnet-reviewer` ou `opus-reviewer`. Para instalar:

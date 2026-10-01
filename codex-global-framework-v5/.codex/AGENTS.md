@@ -36,8 +36,10 @@ If any trivial-work condition is false, unknown, or uncertain, classify the
 task as non-trivial. Uncertainty increases classification; it never justifies
 treating work as trivial.
 
-Handle trivial work directly. Do not spawn an agent, calculate a numeric score,
-or produce a routing report unless the user asks for one.
+The parent may execute trivial work directly, without a subagent and without
+declaring a blocker. Do not calculate a numeric score or produce a routing
+report unless the user asks for one. Delegation remains required for all
+non-trivial work.
 
 ### Mandatory non-trivial triggers
 
@@ -125,11 +127,12 @@ each unit independently, including discovery, implementation, and review.
   in the parent before delegating it.
 - Explicitly delegate lower-tier units to the matching named agent role when
   the parent is a larger model, subject to the boundaries below. The parent's
-  ability to do the work is not a reason to retain it. Reducing unnecessary
+  ability to do non-trivial work is not a reason to retain it. Reducing unnecessary
   higher-tier execution is itself a concrete delegation benefit.
 - Keep the parent focused on decomposition, coordination, integration, and
-  acceptance of results. Retain execution only where its capability or exclusive
-  access is required, or a concrete exception below applies. Do not repeat an
+  acceptance of results. Retain execution only for trivial work as defined above,
+  where its capability or exclusive access is required, or a concrete exception
+  below applies. Do not repeat an
   agent's full investigation or implementation as routine validation.
 - Select the smallest sufficient tier immediately. Do not try Luna first when
   the score or a risk floor already requires Terra or Sol. Escalate only the
@@ -157,7 +160,7 @@ happens in the same conversation or is invoked through a publishing skill.
   authorization, completed checks, and known limitations. Reuse valid validation
   evidence; rerun checks only for new changes, failures, or unresolved concerns.
 - A larger parent coordinates and accepts the result; it must not retain a whole
-  routine publication workflow under the tiny-operation exception. If delegation
+  routine publication workflow under the trivial-work exception. If delegation
   is unavailable or prohibited, state the concrete blocker and perform only the
   necessary authorized fallback without claiming cheaper-agent execution.
 - Escalate only the affected unit when conflicts, uncertain scope, compatibility,
@@ -211,14 +214,16 @@ trivial turns to avoid these checkpoints.
 
 ### Boundaries and exceptions
 
-- Handle trivial work directly. Do not create agents just to meet a quota.
+- The parent may handle trivial work directly, exactly as defined in "Trivial
+  work", without a subagent and without declaring an exception. If any
+  condition is false, unknown, or uncertain, treat the task as non-trivial and
+  delegate. Do not create agents just to meet a quota.
 - For bounded non-trivial work without the mandatory checkpoints, direct
   execution is allowed if the parent already matches the smallest sufficient
   tier and delegation adds no independent benefit. A larger parent must route
   lower-tier work to the matching agent unless a concrete exception applies.
-- For a tiny, fully specified operation, direct execution is allowed when the
-  handoff and verification would clearly exceed the operation itself. Do not
-  generalize this exception to an entire investigation or multi-file task.
+- Do not generalize the trivial-work exception to an investigation, a
+  multi-file task, or routine publication.
 - If the active model is below the required tier, delegate that unit to an
   agent at or above the required tier. Never escalate the entire request when
   only one bounded unit requires a stronger model.
@@ -226,8 +231,8 @@ trivial turns to avoid these checkpoints.
 - Keep a shared browser session, live mutation, or other exclusive resource
   under one owner's control. Delegate local artifact analysis or review of
   captured evidence instead of letting agents interfere with the live session.
-- Exceptions to required delegation must identify a concrete blocker: a
-  higher-priority restriction, unavailable tools, explicit user request for
+- Exceptions to required delegation, other than trivial work, must identify a
+  concrete blocker: a higher-priority restriction, unavailable tools, explicit user request for
   solo work, or no bounded independent unit that can run alongside useful
   parent work. Parent capability, task familiarity, or a generic desire to
   save time is not enough. State the exception briefly and continue authorized
@@ -284,6 +289,6 @@ and relevant assumptions. If subagents ran, include actual execution counts by
 model and percentages of subagent executions. Do not present execution share as
 token usage or invent unavailable token, credit, or cost telemetry. If no
 subagent ran on non-trivial work, state that fact and the concrete reason for
-direct execution. Report which required delegation/review checkpoints were
+direct execution; trivial work executed directly needs no such statement. Report which required delegation/review checkpoints were
 completed or blocked; do not expose the full numeric routing calculation.
 <!-- CODEX-GLOBAL-FRAMEWORK:END v5 -->

@@ -4,7 +4,7 @@
 
 A versão 5 (v5) padroniza o comportamento, a governança e a tomada de decisão do agente principal em tarefas de engenharia de software e infraestrutura. Ela não substitui o julgamento técnico do desenvolvedor ou operador: transforma esse julgamento em critérios sistemáticos e explícitos para **classificação de complexidade**, **roteamento orçamentário por faixas de modelo**, **despacho paralelo de subagentes (fan-out / fan-in)**, **revisão independente** e **extensões modulares de domínio**.
 
-A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity e Cursor adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, preservando a semântica de decisão (classificação, score, pisos de risco, delegação e revisão). Não há paridade funcional garantida: nome e disponibilidade de modelos, mecanismos de agente e recursos dos instaladores diferem por plataforma (ver [`VARIANTES-V5.md`](VARIANTES-V5.md)). Versões dos pacotes: Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor (arquivo `VERSION` de cada pacote).
+A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity, Cursor e Hermes Agent adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, preservando a semântica de decisão (classificação, score, pisos de risco, delegação e revisão). Não há paridade funcional garantida: nome e disponibilidade de modelos, mecanismos de agente e recursos dos instaladores diferem por plataforma (ver [`VARIANTES-V5.md`](VARIANTES-V5.md)). Versões dos pacotes: Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor, Hermes 5.0.0-hermes (arquivo `VERSION` de cada pacote).
 
 ---
 
@@ -76,6 +76,8 @@ Para trabalhos não triviais, o agente principal estima a complexidade de 0 a 10
 - **Cursor (3 faixas):** 0–34 Composer (`composer-2.5[fast=false]`), 35–69 Sonnet (`claude-sonnet-5`), 70–100 Opus (`claude-opus-5[effort=high]`), conforme os agentes do pacote.
 - **Gemini CLI / Google Antigravity (faixas 0–34 / 35–69 / 70–100):** 0–34 Flash (`gemini-2.5-flash`); 35–69 e 70–100 usam Pro (`gemini-2.5-pro`). O pacote fixa o mesmo modelo Pro nas duas faixas superiores: a faixa escolhe o papel do agente (`pro-worker`/`pro-reviewer` vs. `pro-specialist`/`pro-risk-reviewer`/`pro-critical`), não um modelo diferente.
 
+- **Hermes Agent (3 faixas, sem modelo fixo):** 0–34 Luna = filhos do `delegate_task` em `delegation.model`/`delegation.provider` (pin global por sessão); 35–69 Terra e 70–100 Sol = `hermes chat -Q --oneshot -m <modelo> -s <papel>`, tarefa kanban com modelo por tarefa, ou filhos herdando um principal daquela faixa. Os papéis são skills (`.hermes/skills/<papel>/SKILL.md`); o usuário escolhe os modelos.
+
 Os IDs acima são os configurados nos pacotes; não comprovam disponibilidade nem o modelo efetivo em uma sessão autenticada.
 
 ### 4. Pisos de Risco (Risk Floors)
@@ -92,7 +94,7 @@ O piso de risco aplica-se à fração afetada, não a toda a solicitação. Tare
 
 ### 1. Princípio do Menor Agente Capaz (*Smallest Capable Agent*)
 
-O trabalho é decomposto em unidades delimitadas e cada unidade é atribuída ao menor modelo capaz de executá-la com segurança e validação completa. A capacidade maior do agente principal não justifica reter trabalho não trivial; as únicas retenções legítimas são a exceção de trabalho trivial (todas as condições de "trivial" satisfeitas), a de leitura pontual e, nas variantes que a têm (Codex, Gemini CLI e Cursor), a cláusula de tier equivalente (nunca para publicação, escrita em sistema vivo, mensageria/persistência de produção, credenciais/segredos ou deploy/systemd). Reduzir execuções desnecessárias em tiers elevados é um princípio central de economia de tokens e latência.
+O trabalho é decomposto em unidades delimitadas e cada unidade é atribuída ao menor modelo capaz de executá-la com segurança e validação completa. A capacidade maior do agente principal não justifica reter trabalho não trivial; as únicas retenções legítimas são a exceção de trabalho trivial (todas as condições de "trivial" satisfeitas), a de leitura pontual e, nas variantes que a têm (Codex, Gemini CLI, Cursor e Hermes), a cláusula de tier equivalente (nunca para publicação, escrita em sistema vivo, mensageria/persistência de produção, credenciais/segredos ou deploy/systemd). Reduzir execuções desnecessárias em tiers elevados é um princípio central de economia de tokens e latência.
 
 O papel do agente principal concentra-se em:
 - Decomposição inicial e delimitação de escopos;
@@ -127,6 +129,7 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
   - **Claude Code:** `haiku-worker`
   - **Gemini CLI / Antigravity:** `flash-worker`
   - **Cursor:** `luna-worker` (Composer)
+  - **Hermes:** `luna-worker` (skill carregada por um filho do `delegate_task` em `delegation.model`)
 - **Repasse Compacto:** O subagente de publicação recebe apenas o contexto necessário: repositório, branch, arquivos permitidos, remotes autorizados e confirmação de testes concluídos.
 - **Verificação Obrigatória de Hashes:** A publicação só é dada como concluída após a verificação de paridade de hash do commit entre a branch local e todos os remotes configurados (`git rev-parse HEAD`, `git ls-remote <remote> <branch>`).
 
@@ -134,7 +137,7 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
 
 ## Pacotes e instaladores nativos (sem Python para instalar)
 
-Todas as quatro distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Python é usado apenas para validação e testes (`validate.py` no Codex, com Python 3.11+; `test_install.py` nas variantes, com 3.10+), nunca para instalar:
+Todas as cinco distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Python é usado apenas para validação e testes (`validate.py` no Codex, com Python 3.11+; `test_install.py` nas variantes, com 3.10+), nunca para instalar:
 
 | Plataforma | Instaladores e Utilitários | Suporte de Instalação |
 |---|---|---|
@@ -142,20 +145,21 @@ Todas as quatro distribuições do framework contam com instaladores e ferrament
 | **Claude Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (19 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 | **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 | **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Hermes** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes; idênticos aos do Gemini CLI e do Cursor) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 
 ### Mecanismos de Proteção dos Instaladores
 
 - **Auditoria Prévia Conservadora:** Por padrão, a execução sem `--apply` / `-Apply` apenas audita e reporta as ações planejadas sem gravar nenhum byte em disco, inclusive com `--global`. O Codex é diferente: aplica por padrão, `--audit-only` audita e `--apply` é um no-op documentado; o plano é calculado antes de qualquer mutação, Skills divergentes abortam a instalação e o hook usa caminho absoluto.
 - **Prevenção de Sobrescrita e Conflitos:** Com `--apply`, o instalador cria apenas arquivos novos (criação exclusiva real via `cat > destino` sob `noclobber` no Bash / `CreateNew` no PowerShell). Arquivos idênticos são preservados (`IDÊNTICO`); arquivos existentes com conteúdo divergente geram erro de conflito explícito, exigindo comparação manual.
 - **Inspeção de Links Simbólicos:** Varre toda a cadeia de diretórios do destino e do payload recusando instalação em caminhos que contenham links simbólicos (*symlinks* ou *reparse points*); alvo que é link simbólico é recusado também no modo global no Bash. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação.
-- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, `~/.cursor/rules/`), garantindo que o diretório `$HOME` permaneça limpo.
+- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, `~/.cursor/rules/`; no Hermes, `~/.hermes/`), garantindo que o diretório `$HOME` permaneça limpo. Exceção do Hermes: a política só vale com o `HERMES.md` na pasta do projeto (`--target`), porque o Hermes não lê regras globais; a instalação global instala apenas as skills, e o `~/.hermes/HERMES.md` fica como cópia de referência.
 - **Help Completo Integrado:** Todos os scripts aceitam `-h` e `--help` (Bash/Fish) e `-Help`, `-h`, `-?` (PowerShell), exibindo ajuda contextual com todas as opções gerais e catálogo de especialistas.
 
 ---
 
 ## Catálogo modular dos 11 especialistas de domínio
 
-Os quatro pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os cinco pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -208,7 +212,7 @@ Os quatro pacotes disponibilizam um catálogo modular de **11 especialistas téc
 
 ### Estrutura dos Arquivos de Especialistas
 
-Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos (mais o agente nativo `.claude/agents/<nome>-specialist.md` na variante Claude Code):
+Em cada uma das 5 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos (mais o agente nativo `.claude/agents/<nome>-specialist.md` na variante Claude Code):
 1. `SKILL.md`: Manifesto com objetivos, limites operacionais, requisitos de modelo e conformidade v5;
 2. Três guias de engenharia de domínio e boas práticas;
 3. `troubleshooting.md`: Matriz de diagnóstico, códigos de erro e armadilhas técnicas;
@@ -220,13 +224,13 @@ Zabbix e Grafana acrescentam, além dessa estrutura padrão, o guia opcional `in
 ### Agentes nativos e desinstalação (Claude Code, desde 5.1.0)
 
 - Na variante Claude Code, cada especialista inclui também `.claude/agents/<nome>-specialist.md` (8º arquivo da estrutura), com o campo `skills` pré-carregando a skill homônima, `model: sonnet` e `effort: high` como padrão. O padrão Sonnet não contorna o roteamento: para unidade de nível Haiku ou Opus o principal invoca o especialista com o modelo correspondente, e a revisão independente continua com `sonnet-reviewer` ou `opus-reviewer`.
-- `install.sh`/`install.fish` dessa variante aceitam `--uninstall` (auditoria por padrão; remoção com `--apply`). Só removem arquivos idênticos ao pacote atual ou cujo hash conste em `scripts/legacy-hashes.sha256` (versão anterior); arquivos modificados ou de terceiros são preservados e listados, e diretórios vazios são removidos. `install.ps1` e as variantes Gemini CLI e Cursor não possuem `--uninstall`.
+- `install.sh`/`install.fish` dessa variante aceitam `--uninstall` (auditoria por padrão; remoção com `--apply`). Só removem arquivos idênticos ao pacote atual ou cujo hash conste em `scripts/legacy-hashes.sha256` (versão anterior); arquivos modificados ou de terceiros são preservados e listados, e diretórios vazios são removidos. `install.ps1` e as variantes Gemini CLI, Cursor e Hermes não possuem `--uninstall`.
 
 ### Flags de Instalação dos Especialistas
 
 - **Instalação Individual:**
   - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`, `--with-shell-python-specialist`, `--with-docker-kubernetes-specialist`.
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini e Cursor: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini, Cursor e Hermes: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
 - **Instalação Agregadora (Todos os 11 especialistas):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
@@ -254,11 +258,12 @@ No Gemini CLI, a tabela de utilização usa a nomenclatura do Google (`Flash` e 
 
 ## Distribuições e pacotes compactados
 
-Na raiz do repositório encontram-se quatro arquivos `.zip`, gerados diretamente a partir das pastas correspondentes do projeto:
+Na raiz do repositório encontram-se cinco arquivos `.zip`, gerados diretamente a partir das pastas correspondentes do projeto:
 - `claude-code-global-framework-v5.zip`
 - `codex-global-framework-v5.zip`
 - `cursor-global-framework-v5.zip`
 - `gemini-cli-global-framework-v5.zip`
+- `hermes-global-framework-v5.zip`
 
 **Padrão de Empacotamento:** Cada arquivo `.zip` inclui como prefixo a pasta principal da distribuição (ex.: `claude-code-global-framework-v5/scripts/...`). Ao extrair o arquivo em qualquer diretório (inclusive no `$HOME`), os arquivos não são despejados na raiz, permitindo navegar até a pasta extraída e executar os instaladores com isolamento total.
 

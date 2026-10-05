@@ -215,7 +215,7 @@ Os seis pacotes disponibilizam um catálogo modular de **11 especialistas técni
 
 ### Estrutura dos Arquivos de Especialistas
 
-Em cada uma das 5 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos (mais o agente nativo `.claude/agents/<nome>-specialist.md` na variante Claude Code):
+Em cada uma das 6 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos (mais o agente nativo `.claude/agents/<nome>-specialist.md` na variante Claude Code):
 1. `SKILL.md`: Manifesto com objetivos, limites operacionais, requisitos de modelo e conformidade v5;
 2. Três guias de engenharia de domínio e boas práticas;
 3. `troubleshooting.md`: Matriz de diagnóstico, códigos de erro e armadilhas técnicas;
@@ -263,7 +263,7 @@ No Kimi Code, a tabela usa as linhas **K2.7**, **K2.8** e **K3** e registra os p
 
 ## Distribuições e pacotes compactados
 
-Na raiz do repositório encontram-se cinco arquivos `.zip`, gerados diretamente a partir das pastas correspondentes do projeto:
+Na raiz do repositório encontram-se seis arquivos `.zip`, gerados diretamente a partir das pastas correspondentes do projeto:
 - `claude-code-global-framework-v5.zip`
 - `codex-global-framework-v5.zip`
 - `cursor-global-framework-v5.zip`

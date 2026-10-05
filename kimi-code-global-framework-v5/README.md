@@ -72,7 +72,8 @@ Tudo fica guardado **dentro** de `~/.kimi-code/`, evitando arquivos soltos no di
 Esses são exatamente os caminhos que o Kimi Code documenta para instruções
 globais (`$KIMI_CODE_HOME/AGENTS.md`) e agentes de usuário
 (`$KIMI_CODE_HOME/agents/`). Se você usa `KIMI_CODE_HOME` apontando para outro
-diretório, instale com `--target "$KIMI_CODE_HOME/.."` ou copie o conteúdo para
+diretório, instale com `--global --target "$KIMI_CODE_HOME/.."` para instalar em
+`$KIMI_CODE_HOME`, ou copie o conteúdo para
 dentro dele manualmente.
 
 ## Ativação

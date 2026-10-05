@@ -1,12 +1,12 @@
 # Manutenção do repositório
 
-Este repositório versiona cinco distribuições do AI Agent Framework v5 e seus arquivos compactados. Preserve a consistência entre o conteúdo extraído e o ZIP correspondente quando uma distribuição for alterada.
+Este repositório versiona seis distribuições do AI Agent Framework v5 e seus arquivos compactados. Preserve a consistência entre o conteúdo extraído e o ZIP correspondente quando uma distribuição for alterada.
 
 ## Escopo dos arquivos
 
 - `codex-global-framework-v5/`: pacote global específico do Codex.
-- `claude-code-global-framework-v5/`, `gemini-cli-global-framework-v5/`, `cursor-global-framework-v5/` e `hermes-global-framework-v5/`: payloads de instalação por projeto.
-- `VARIANTES-V5.md`: comparação entre as quatro variantes por projeto.
+- `claude-code-global-framework-v5/`, `gemini-cli-global-framework-v5/`, `cursor-global-framework-v5/`, `hermes-global-framework-v5/` e `kimi-code-global-framework-v5/`: payloads de instalação por projeto.
+- `VARIANTES-V5.md`: comparação entre as cinco variantes por projeto.
 - `Claude code/` e `Codex/`: referências históricas; não são fontes para uma nova instalação v5.
 
 Os `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `HERMES.md`, regras, agentes e skills de papel dentro dos payloads são destinados aos projetos instalados. Não interprete ou aplique essas políticas ao próprio repositório de distribuição. Para manutenção deste repositório, siga apenas estas instruções e as orientações explícitas da tarefa atual.
@@ -15,15 +15,15 @@ Os `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `HERMES.md`, regras, agentes e skills 
 
 Mantenha a semântica da v5: classificação antes da estratégia, score de 0–100, pisos de risco, delegação delimitada, revisão independente e validação proporcional. Ao adaptar uma plataforma, documente claramente qualquer limitação dela; não prometa equivalência de capacidade entre modelos ou comportamento autenticado que não tenha sido observado.
 
-Evite sobrescrever configurações pessoais ou de projeto nos instaladores. Nas quatro variantes por projeto, mantenha auditoria por padrão, criação apenas com `--apply`, preservação de conteúdo idêntico e recusa de conflitos e links simbólicos. O instalador Codex usa `--audit-only` para auditoria; sua aplicação normal faz backup e atualiza apenas blocos gerenciados. Skills v5 existentes só podem ser reutilizadas se forem idênticas ao pacote; conteúdo divergente interrompe a instalação para mesclagem manual.
+Evite sobrescrever configurações pessoais ou de projeto nos instaladores. Nas cinco variantes por projeto, mantenha auditoria por padrão, criação apenas com `--apply`, preservação de conteúdo idêntico e recusa de conflitos e links simbólicos. O instalador Codex usa `--audit-only` para auditoria; sua aplicação normal faz backup e atualiza apenas blocos gerenciados. Skills v5 existentes só podem ser reutilizadas se forem idênticas ao pacote; conteúdo divergente interrompe a instalação para mesclagem manual.
 
 Não adicione caminhos pessoais, hostnames internos, tokens ou credenciais à documentação, scripts ou exemplos. Não invente licença, resultados de testes ou suporte a modelos.
 
 ## Especialistas opcionais
 
 Todo especialista de domínio novo ou alterado deve ser incluído neste repositório
-como extensão opcional compatível com as cinco distribuições (Codex, Claude
-Code, Gemini CLI, Cursor e Hermes). A instalação padrão não pode ativá-lo. O
+como extensão opcional compatível com as seis distribuições (Codex, Claude
+Code, Gemini CLI, Cursor, Hermes e Kimi Code). A instalação padrão não pode ativá-lo. O
 especialista deve complementar o agente de capacidade que o roteamento já
 selecionou; não crie um perfil nativo de modelo fixo que contorne as faixas de
 risco. Atualize instaladores e testes de cada plataforma, manifestos e ZIPs
@@ -39,6 +39,7 @@ python3 claude-code-global-framework-v5/scripts/test_install.py
 python3 gemini-cli-global-framework-v5/scripts/test_install.py
 python3 cursor-global-framework-v5/scripts/test_install.py
 python3 hermes-global-framework-v5/scripts/test_install.py
+python3 kimi-code-global-framework-v5/scripts/test_install.py
 ```
 
 Após alterar conteúdo distribuído, atualize manifestos e arquivos ZIP somente depois de verificar seu conteúdo. Confira links relativos do README e da referência técnica antes de publicar. Registre limitações de ambiente no relatório da mudança. A validação Codex também deve cobrir uma instalação temporária com caminhos personalizados e o comportamento de conflito de Skills.
@@ -52,5 +53,5 @@ d=$(mktemp -d) && unzip -q claude-code-global-framework-v5.zip -d "$d" \
 ```
 
 - Mantenha `sha256sum -c MANIFEST.sha256` limpo em cada pacote alterado e o ZIP sem diferenças em relação à pasta (`diff -r` do ZIP extraído), regenerando manifesto e ZIP somente depois de verificar o conteúdo.
-- Mantenha as cinco cópias de `VARIANTES-V5.md` (raiz e quatro variantes) idênticas e sincronizadas com o `TECHNICAL_REFERENCE.md` e o `README.md`; confira as versões contra o `VERSION` de cada pacote.
+- Mantenha as seis cópias de `VARIANTES-V5.md` (raiz e cinco variantes) idênticas e sincronizadas com o `TECHNICAL_REFERENCE.md` e o `README.md`; confira as versões contra o `VERSION` de cada pacote.
 - Mantenha paridade de comportamento entre `install.sh`, `install.fish` e `install.ps1` de cada pacote; qualquer diferença deve estar documentada.

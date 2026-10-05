@@ -4,7 +4,7 @@
 
 A versão 5 (v5) padroniza o comportamento, a governança e a tomada de decisão do agente principal em tarefas de engenharia de software e infraestrutura. Ela não substitui o julgamento técnico do desenvolvedor ou operador: transforma esse julgamento em critérios sistemáticos e explícitos para **classificação de complexidade**, **roteamento orçamentário por faixas de modelo**, **despacho paralelo de subagentes (fan-out / fan-in)**, **revisão independente** e **extensões modulares de domínio**.
 
-A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity, Cursor e Hermes Agent adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, preservando a semântica de decisão (classificação, score, pisos de risco, delegação e revisão). Não há paridade funcional garantida: nome e disponibilidade de modelos, mecanismos de agente e recursos dos instaladores diferem por plataforma (ver [`VARIANTES-V5.md`](VARIANTES-V5.md)). Versões dos pacotes: Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor, Hermes 5.0.0-hermes (arquivo `VERSION` de cada pacote).
+A fonte canônica da política é [`codex-global-framework-v5/.codex/AGENTS.md`](codex-global-framework-v5/.codex/AGENTS.md); as variantes para Claude Code, Gemini CLI / Google Antigravity, Cursor, Hermes Agent e Kimi Code adaptam a política nativamente aos mecanismos e capacidades de cada ecossistema, preservando a semântica de decisão (classificação, score, pisos de risco, delegação e revisão). Não há paridade funcional garantida: nome e disponibilidade de modelos, mecanismos de agente e recursos dos instaladores diferem por plataforma (ver [`VARIANTES-V5.md`](VARIANTES-V5.md)). Versões dos pacotes: Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor, Hermes 5.0.0-hermes, Kimi Code 5.0.0-kimi-code (arquivo `VERSION` de cada pacote).
 
 ---
 
@@ -75,6 +75,7 @@ Para trabalhos não triviais, o agente principal estima a complexidade de 0 a 10
 - **Claude Code (3 faixas):** 0–34 Haiku, 35–69 Sonnet, 70–100 Opus (agentes com `model: haiku`, `sonnet` e `opus`).
 - **Cursor (3 faixas):** 0–34 Composer (`composer-2.5[fast=false]`), 35–69 Sonnet (`claude-sonnet-5`), 70–100 Opus (`claude-opus-5[effort=high]`), conforme os agentes do pacote.
 - **Gemini CLI / Google Antigravity (faixas 0–34 / 35–69 / 70–100):** 0–34 Flash (`gemini-2.5-flash`); 35–69 e 70–100 usam Pro (`gemini-2.5-pro`). O pacote fixa o mesmo modelo Pro nas duas faixas superiores: a faixa escolhe o papel do agente (`pro-worker`/`pro-reviewer` vs. `pro-specialist`/`pro-risk-reviewer`/`pro-critical`), não um modelo diferente.
+- **Kimi Code (3 faixas):** 0–34 K2.7 (`kimi-for-coding-highspeed`; `k27-explorer`, `k27-worker`), 35–69 K2.8 (`kimi-for-coding`; `k28-worker`, `k28-reviewer`), 70–100 K3 (`k3`; `k3-specialist`, `k3-reviewer`, `k3-critical`). O Kimi Code não fixa modelo por subagente (sem campo `model` nos arquivos de agente): os nomes são o modelo de sessão recomendado por faixa e a faixa garante o papel; em runtime todos os subagentes rodam o modelo ativo da sessão.
 
 - **Hermes Agent (3 faixas, sem modelo fixo):** 0–34 Luna = filhos do `delegate_task` em `delegation.model`/`delegation.provider` (pin global por sessão); 35–69 Terra e 70–100 Sol = `hermes chat -Q --oneshot -m <modelo> -s <papel>`, tarefa kanban com modelo por tarefa, ou filhos herdando um principal daquela faixa. Os papéis são skills (`.hermes/skills/<papel>/SKILL.md`); o usuário escolhe os modelos.
 
@@ -130,6 +131,7 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
   - **Gemini CLI / Antigravity:** `flash-worker`
   - **Cursor:** `luna-worker` (Composer)
   - **Hermes:** `luna-worker` (skill carregada por um filho do `delegate_task` em `delegation.model`)
+  - **Kimi Code:** `k27-worker` (K2.7)
 - **Repasse Compacto:** O subagente de publicação recebe apenas o contexto necessário: repositório, branch, arquivos permitidos, remotes autorizados e confirmação de testes concluídos.
 - **Verificação Obrigatória de Hashes:** A publicação só é dada como concluída após a verificação de paridade de hash do commit entre a branch local e todos os remotes configurados (`git rev-parse HEAD`, `git ls-remote <remote> <branch>`).
 
@@ -137,7 +139,7 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
 
 ## Pacotes e instaladores nativos (sem Python para instalar)
 
-Todas as cinco distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Python é usado apenas para validação e testes (`validate.py` no Codex, com Python 3.11+; `test_install.py` nas variantes, com 3.10+), nunca para instalar:
+Todas as seis distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Python é usado apenas para validação e testes (`validate.py` no Codex, com Python 3.11+; `test_install.py` nas variantes, com 3.10+), nunca para instalar:
 
 | Plataforma | Instaladores e Utilitários | Suporte de Instalação |
 |---|---|---|
@@ -146,20 +148,21 @@ Todas as cinco distribuições do framework contam com instaladores e ferramenta
 | **Gemini CLI** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 | **Cursor** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 | **Hermes** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes; idênticos aos do Gemini CLI e do Cursor) | Por Projeto padrão (`--target`) ou Global (`--global`) |
+| **Kimi Code** | `scripts/install.sh`, `install.fish`, `install.ps1`, `test_install.py` (20 testes) | Por Projeto padrão (`--target`) ou Global (`--global`) |
 
 ### Mecanismos de Proteção dos Instaladores
 
 - **Auditoria Prévia Conservadora:** Por padrão, a execução sem `--apply` / `-Apply` apenas audita e reporta as ações planejadas sem gravar nenhum byte em disco, inclusive com `--global`. O Codex é diferente: aplica por padrão, `--audit-only` audita e `--apply` é um no-op documentado; o plano é calculado antes de qualquer mutação, Skills divergentes abortam a instalação e o hook usa caminho absoluto.
 - **Prevenção de Sobrescrita e Conflitos:** Com `--apply`, o instalador cria apenas arquivos novos (criação exclusiva real via `cat > destino` sob `noclobber` no Bash / `CreateNew` no PowerShell). Arquivos idênticos são preservados (`IDÊNTICO`); arquivos existentes com conteúdo divergente geram erro de conflito explícito, exigindo comparação manual.
 - **Inspeção de Links Simbólicos:** Varre toda a cadeia de diretórios do destino e do payload recusando instalação em caminhos que contenham links simbólicos (*symlinks* ou *reparse points*); alvo que é link simbólico é recusado também no modo global no Bash. No PowerShell, caminhos relativos e `~` são resolvidos antes da verificação.
-- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`; no Cursor, `~/.cursor/rules/`; no Hermes, `~/.hermes/`), garantindo que o diretório `$HOME` permaneça limpo. Exceção do Hermes: a política só vale com o `HERMES.md` na pasta do projeto (`--target`), porque o Hermes não lê regras globais; a instalação global instala apenas as skills, e o `~/.hermes/HERMES.md` fica como cópia de referência.
+- **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.kimi-code/AGENTS.md`; no Cursor, `~/.cursor/rules/`; no Hermes, `~/.hermes/`), garantindo que o diretório `$HOME` permaneça limpo. Exceção do Hermes: a política só vale com o `HERMES.md` na pasta do projeto (`--target`), porque o Hermes não lê regras globais; a instalação global instala apenas as skills, e o `~/.hermes/HERMES.md` fica como cópia de referência.
 - **Help Completo Integrado:** Todos os scripts aceitam `-h` e `--help` (Bash/Fish) e `-Help`, `-h`, `-?` (PowerShell), exibindo ajuda contextual com todas as opções gerais e catálogo de especialistas.
 
 ---
 
 ## Catálogo modular dos 11 especialistas de domínio
 
-Os cinco pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os seis pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -230,7 +233,7 @@ Zabbix e Grafana acrescentam, além dessa estrutura padrão, o guia opcional `in
 
 - **Instalação Individual:**
   - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`, `--with-shell-python-specialist`, `--with-docker-kubernetes-specialist`.
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini, Cursor e Hermes: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini, Cursor, Hermes e Kimi Code: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
 - **Instalação Agregadora (Todos os 11 especialistas):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
@@ -254,6 +257,8 @@ No Gemini CLI, a tabela de utilização usa a nomenclatura do Google (`Flash` e 
 - Execuções em tiers de raciocínio, especialistas ou revisores de alto risco são contabilizadas em **Pro** (`gemini-2.5-pro`).
 - Quando a tarefa for realizada diretamente pelo modelo principal sem acionamento de subagentes, registra-se 1 execução (100%) na família do modelo ativo (Flash ou Pro) e 0 nas demais, informando a justificativa técnica para a execução direta.
 
+No Kimi Code, a tabela usa as linhas **K2.7**, **K2.8** e **K3** e registra os papéis de agente que realmente executaram, com o modelo ativo da sessão declarado à parte: o Kimi Code roda todos os subagentes no modelo da sessão, então um tier nunca deve ser reportado como modelo executado sem evidência de runtime.
+
 ---
 
 ## Distribuições e pacotes compactados
@@ -264,6 +269,7 @@ Na raiz do repositório encontram-se cinco arquivos `.zip`, gerados diretamente 
 - `cursor-global-framework-v5.zip`
 - `gemini-cli-global-framework-v5.zip`
 - `hermes-global-framework-v5.zip`
+- `kimi-code-global-framework-v5.zip`
 
 **Padrão de Empacotamento:** Cada arquivo `.zip` inclui como prefixo a pasta principal da distribuição (ex.: `claude-code-global-framework-v5/scripts/...`). Ao extrair o arquivo em qualquer diretório (inclusive no `$HOME`), os arquivos não são despejados na raiz, permitindo navegar até a pasta extraída e executar os instaladores com isolamento total.
 

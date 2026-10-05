@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "zabbix-proxy-runbook",
+      "type": "git",
+      "repo": "https://git.example.invalid/ops/runbooks.git",
+      "ref": "main",
+      "path": "zabbix/proxy-runbook.md",
+      "allowed_repos": ["https://git.example.invalid/ops/runbooks.git"],
+      "allowed_refs": ["main"],
+      "allowed_paths": ["zabbix/proxy-runbook.md"]
+    },
+    {
+      "id": "zabbix-server-runbook",
+      "type": "git",
+      "repo": "https://git.example.invalid/ops/runbooks.git",
+      "ref": "main",
+      "path": "zabbix/server-runbook.md",
+      "allowed_repos": ["https://git.example.invalid/ops/runbooks.git"],
+      "allowed_refs": ["main"],
+      "allowed_paths": ["zabbix/server-runbook.md"]
+    },
+    {
+      "id": "zabbix-incidents",
+      "type": "jira",
+      "url": "https://jira.example.invalid",
+      "project": "OPS",
+      "status": "Resolved",
+      "jql": "project = OPS AND status = Resolved AND labels = zabbix ORDER BY updated DESC",
+      "allowed_urls": ["https://jira.example.invalid"],
+      "allowed_projects": ["OPS"],
+      "allowed_statuses": ["Resolved"],
+      "allowed_jql": ["project = OPS AND status = Resolved AND labels = zabbix ORDER BY updated DESC"],
+      "token_env": "JIRA_RAG_TOKEN",
+      "limit": 25,
+      "timeout_seconds": 15
+    }
+  ]
+}

@@ -37,6 +37,10 @@ Os 11 especialistas de domínio são distribuídos em todos os seis pacotes como
 10. **Shell & Python Specialist**: programação Shell Script (Bash 4+, POSIX sh, fish) e Python 3.10+ para automação de infraestrutura, com scripts robustos (`set -euo pipefail`, `shellcheck`, `ruff`, `pytest`), UserParameters, LLD e `zabbix_sender` do Zabbix, clientes de API e agendamento com cron/timers do systemd.
 11. **Docker & Kubernetes Specialist**: contêineres com Docker Engine e Compose v2 (imagens multi-stage, hardening) e orquestração com Kubernetes (workloads, probes, PDB, RBAC, NetworkPolicy, Helm/Kustomize, upgrades, backup do etcd) e observabilidade com Prometheus, Loki e Zabbix.
 
+Exclusivo da variante Claude Code (os demais pacotes não o incluem):
+
+12. **UX/UI & Frontend Specialist**: criação profissional de interfaces web e de aplicativos, com fluxos de uso e estados de tela, design systems e tokens, acessibilidade WCAG 2.2 AA, HTML/CSS modernos, TypeScript com React/Vue/Svelte, interfaces móveis (Human Interface Guidelines, Material 3, React Native e Flutter), Core Web Vitals e testes visuais, de componente e de ponta a ponta. Opção `--with-ux-ui-frontend-specialist` (PowerShell: `-WithUxUiFrontendSpecialist`); no Claude Code, `--with-all-specialists` instala os 12.
+
 Instale-os somente quando o projeto precisar:
 
 ```bash

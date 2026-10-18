@@ -79,10 +79,10 @@ Divergências conhecidas entre `install.sh` e `install.ps1`: `install.sh` oferec
 
 ### Especialistas opcionais
 
-Os 11 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+Os 12 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`
-e `docker-kubernetes-specialist`) não são instalados por padrão. Cada
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`,
+`docker-kubernetes-specialist` e `ux-ui-frontend-specialist`) não são instalados por padrão. Cada
 opção instala:
 
 - o **agente nativo** `.claude/agents/<nome>.md`, que aparece em `/agents` e pode receber
@@ -92,6 +92,13 @@ opção instala:
   correspondente na própria chamada;
 - a **skill** `.claude/skills/<nome>/` com o procedimento e as referências do domínio;
 - `knowledge/<domínio>/` e `evals/<domínio>/` (no modo global, dentro de `~/.claude/`).
+
+`ux-ui-frontend-specialist` (opção `--with-ux-ui-frontend-specialist`; PowerShell
+`-WithUxUiFrontendSpecialist`) existe somente nesta variante: cobre UX, design systems e
+tokens, acessibilidade WCAG 2.2 AA, frontend web (HTML/CSS, TypeScript com React, Vue ou
+Svelte, Core Web Vitals) e interfaces de aplicativos (HIG, Material 3, React Native e
+Flutter). Os outros pacotes do repositório continuam com 11 especialistas, por isso o
+`VARIANTES-V5.md` compartilhado cita 11.
 
 Zabbix e Grafana incluem ainda o guia `infra-rag.md`, para consultar, de forma opcional, não bloqueante e somente leitura, um índice local do projeto separado `infra-rag` via `rag-query`. O guia `infra-rag.md` é opcional e não bloqueante: sem ele, o especialista segue normalmente. Suas regras são instruções ao modelo, não imposição técnica; os controles de implantação estão na documentação do próprio `infra-rag`. Não foi testado com um agente real.
 

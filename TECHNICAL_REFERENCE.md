@@ -160,9 +160,9 @@ Todas as seis distribuições do framework contam com instaladores e ferramentas
 
 ---
 
-## Catálogo modular dos 11 especialistas de domínio
+## Catálogo modular dos especialistas de domínio
 
-Os seis pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os seis pacotes disponibilizam um catálogo modular de **11 especialistas técnicos de engenharia**; a variante Claude Code acrescenta um 12º, `ux-ui-frontend-specialist`. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -211,6 +211,11 @@ Os seis pacotes disponibilizam um catálogo modular de **11 especialistas técni
 - **Domínio:** Contêineres com Docker Engine e Docker Compose v2 e orquestração com Kubernetes (kubeadm, k3s, RKE2 e serviços gerenciados).
 - **Cobertura técnica:** Dockerfiles multi-stage com usuário não-root, segredos de build via BuildKit e imagens multi-arquitetura, Compose com healthchecks, limites e rotação de logs; workloads Kubernetes com `requests`/`limits`, probes, `PodDisruptionBudget`, `topologySpreadConstraints` e `securityContext` restritivo, Pod Security Admission, RBAC mínimo, `NetworkPolicy` de negação padrão, Services, Ingress/Gateway API, storage persistente, Helm e Kustomize com `diff`/`dry-run` antes de aplicar, manutenção de nós (`cordon`/`drain`), upgrades de cluster uma versão minor por vez, backup do etcd e observabilidade com kube-prometheus-stack, Loki/Alloy e os templates e Helm chart oficiais do Zabbix para Kubernetes.
 
+### 12. `ux-ui-frontend-specialist` (somente Claude Code)
+- **Disponibilidade:** Distribuído apenas na variante Claude Code (`claude-code-global-framework-v5/optional/ux-ui-frontend-specialist/`). Codex, Gemini CLI, Cursor, Hermes e Kimi Code não o incluem; nessas variantes `--with-all-specialists` continua instalando 11 especialistas, e no Claude Code instala 12.
+- **Domínio:** UX/UI e engenharia frontend para a criação profissional de interfaces web e de aplicativos.
+- **Cobertura técnica:** Enquadramento do problema e critérios de sucesso, fluxos com estados obrigatórios (vazio, carregando, erro, parcial, sem permissão), arquitetura de informação e revisão heurística (Nielsen); design tokens em camadas (primitivos, semânticos, de componente), tema claro/escuro, tipografia e grade de espaçamento, documentação de componentes no Storybook; acessibilidade WCAG 2.2 AA (contraste, foco visível e não encoberto, alvo mínimo de 24×24 px, teclado, ARIA conforme o APG, autenticação acessível) com verificação por axe, Lighthouse e leitores de tela; HTML/CSS modernos (Grid, container queries, `clamp()`, `@layer`, propriedades lógicas), TypeScript estrito com React, Vue, Svelte ou Angular, estado de servidor com cache e na URL, Core Web Vitals (LCP, INP, CLS), segurança no cliente e i18n; aplicativos com HIG e Material 3, áreas seguras, teclado virtual, Dynamic Type, React Native/Expo, Flutter, SwiftUI e Jetpack Compose; testes com Vitest/Jest e Testing Library, regressão visual, Playwright/Cypress e Maestro/Detox; troubleshooting de layout, CLS/INP, cascata CSS, hidratação SSR e problemas específicos de aplicativos.
+
 ---
 
 ### Estrutura dos Arquivos de Especialistas
@@ -232,9 +237,9 @@ Zabbix e Grafana acrescentam, além dessa estrutura padrão, o guia opcional `in
 ### Flags de Instalação dos Especialistas
 
 - **Instalação Individual:**
-  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`, `--with-shell-python-specialist`, `--with-docker-kubernetes-specialist`.
-  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`. Aliases reais no Claude, Gemini, Cursor, Hermes e Kimi Code: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
-- **Instalação Agregadora (Todos os 11 especialistas):**
+  - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`, `--with-shell-python-specialist`, `--with-docker-kubernetes-specialist`; somente no Claude Code, `--with-ux-ui-frontend-specialist`.
+  - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist`; somente no Claude Code, `-WithUxUiFrontendSpecialist`. Aliases reais no Claude, Gemini, Cursor, Hermes e Kimi Code: `-with-sre-specialist`, `-with-sre-incident-specialist`, `-with-db-tuning-specialist`, `-with-database-tuning-specialist`; o Codex também aceita `-WithSreIncidentSpecialist` e `-WithDatabaseTuningSpecialist`.
+- **Instalação Agregadora (todos os 11 especialistas; 12 no Claude Code):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
 

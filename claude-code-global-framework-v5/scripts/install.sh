@@ -23,6 +23,7 @@ ALL_KNOWN_SPECS=(
     "proxmox-specialist"
     "shell-python-specialist"
     "docker-kubernetes-specialist"
+    "ux-ui-frontend-specialist"
 )
 
 add_specialist() {
@@ -64,7 +65,8 @@ Especialistas de domínio opcionais (cada um instala o agente nativo
   --with-shell-python-specialist    Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
   --with-docker-kubernetes-specialist
                                     Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
-  --with-all-specialists            Instala todos os 11 especialistas de domínio acima
+  --with-ux-ui-frontend-specialist  Instala o especialista UX/UI & Frontend (web/apps/WCAG 2.2)
+  --with-all-specialists            Instala todos os 12 especialistas de domínio acima
 EOF
     exit "${1:-0}"
 }
@@ -145,6 +147,10 @@ while [ $# -gt 0 ]; do
             ;;
         --with-docker-kubernetes-specialist)
             add_specialist "docker-kubernetes-specialist"
+            shift
+            ;;
+        --with-ux-ui-frontend-specialist)
+            add_specialist "ux-ui-frontend-specialist"
             shift
             ;;
         --with-all-specialists)

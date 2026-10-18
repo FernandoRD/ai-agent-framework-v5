@@ -2,11 +2,14 @@
 set -euo pipefail
 
 # Pure Bash installer for framework files (project or global home)
-# Default: audit-only, never overwrites conflicts. Zero Python required.
+# Default: audit-only (writes nothing), never overwrites conflicts.
+# --uninstall removes only files identical to this package or to a known
+# previous release (scripts/legacy-hashes.sha256); modified files are kept.
 
 TARGET=""
 IS_GLOBAL=false
 APPLY=false
+UNINSTALL=false
 OPTIONAL_SPECS=()
 ALL_KNOWN_SPECS=(
     "zabbix-specialist"
@@ -18,6 +21,8 @@ ALL_KNOWN_SPECS=(
     "sre-incident-specialist"
     "database-tuning-specialist"
     "proxmox-specialist"
+    "shell-python-specialist"
+    "docker-kubernetes-specialist"
 )
 
 add_specialist() {
@@ -38,9 +43,13 @@ Opções gerais:
   --target <caminho>  Diretório de destino (instalação por projeto)
   --global, -g        Instalação no ambiente global do usuário
   --apply             Aplica as alterações no disco (padrão é auditoria)
+  --uninstall         Remove os arquivos instalados por este pacote que estejam
+                      intactos; arquivos modificados são preservados. Combine com
+                      as mesmas opções de destino e especialistas e com --apply
   -h, --help          Exibe esta mensagem de ajuda
 
-Especialistas de domínio opcionais:
+Especialistas de domínio opcionais (cada um instala o agente nativo
+.claude/agents/<nome>.md e a skill .claude/skills/<nome>/):
   --with-zabbix-specialist          Instala o especialista Zabbix
   --with-grafana-specialist         Instala o especialista Grafana (Grafana 12 / HTML Graphics)
   --with-ansible-specialist         Instala o especialista Ansible (playbooks/roles/vault)
@@ -52,7 +61,10 @@ Especialistas de domínio opcionais:
   --with-database-tuning-specialist Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                     (alias: --with-db-tuning-specialist)
   --with-proxmox-specialist         Instala o especialista Proxmox VE (8.x/9.x, PBS, Ceph, ZFS, SDN)
-  --with-all-specialists            Instala todos os 9 especialistas de domínio acima
+  --with-shell-python-specialist    Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  --with-docker-kubernetes-specialist
+                                    Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
+  --with-all-specialists            Instala todos os 11 especialistas de domínio acima
 EOF
     exit "${1:-0}"
 }
@@ -64,12 +76,19 @@ while [ $# -gt 0 ]; do
             usage 0
             ;;
         --target)
-            [ $# -ge 2 ] || usage 1
+            if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" == -* ]]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             TARGET="$2"
             shift 2
             ;;
         --target=*)
             TARGET="${1#--target=}"
+            if [ -z "$TARGET" ]; then
+                echo "Erro: --target exige um caminho." >&2
+                usage 1
+            fi
             shift
             ;;
         --global|-g)
@@ -78,6 +97,10 @@ while [ $# -gt 0 ]; do
             ;;
         --apply)
             APPLY=true
+            shift
+            ;;
+        --uninstall)
+            UNINSTALL=true
             shift
             ;;
         --with-zabbix-specialist)
@@ -116,6 +139,14 @@ while [ $# -gt 0 ]; do
             add_specialist "proxmox-specialist"
             shift
             ;;
+        --with-shell-python-specialist)
+            add_specialist "shell-python-specialist"
+            shift
+            ;;
+        --with-docker-kubernetes-specialist)
+            add_specialist "docker-kubernetes-specialist"
+            shift
+            ;;
         --with-all-specialists)
             for s in "${ALL_KNOWN_SPECS[@]}"; do
                 add_specialist "$s"
@@ -144,24 +175,41 @@ fi
 
 HOME_DIR="$(cd "$HOME" && pwd -P)"
 
-# Resolve TARGET path
-if [ "$IS_GLOBAL" = true ]; then
-    if [ -n "$TARGET" ]; then
-        TARGET="${TARGET/#\~/$HOME_DIR}"
-        mkdir -p "$TARGET" 2>/dev/null || true
-        TARGET="$(cd "$TARGET" 2>/dev/null && pwd -P || echo "$TARGET")"
-    else
-        TARGET="$HOME_DIR"
+# Lexically normalize an absolute path: collapse //, . and .. without following
+# links (so link targets can still be refused afterwards).
+normalize_path() {
+    local part parts=() out=()
+    IFS=/ read -ra parts <<< "$1"
+    if [ "${#parts[@]}" -gt 0 ]; then
+        for part in "${parts[@]}"; do
+            case "$part" in
+                ""|.) ;;
+                ..) if [ "${#out[@]}" -gt 0 ]; then out=("${out[@]:0:${#out[@]}-1}"); fi ;;
+                *) out+=("$part") ;;
+            esac
+        done
     fi
-else
-    TARGET="${TARGET/#\~/$HOME_DIR}"
+    local IFS=/
+    printf '/%s\n' "${out[*]-}"
+}
+
+# Normalize TARGET once: expand ~ (only "~" and "~/..."), make absolute, collapse.
+if [ -n "$TARGET" ]; then
+    case "$TARGET" in
+        "~") TARGET="$HOME_DIR" ;;
+        "~/"*) TARGET="$HOME_DIR/${TARGET#\~/}" ;;
+    esac
     case "$TARGET" in
         /*) ;;
         *) TARGET="$(pwd)/$TARGET" ;;
     esac
-    if [ "$TARGET" = "$HOME_DIR" ]; then
+    TARGET="$(normalize_path "$TARGET")"
+    if [ "$TARGET" = "$HOME_DIR" ] || [ "$TARGET" = "$(normalize_path "$HOME")" ] \
+        || { [ -d "$TARGET" ] && [ ! -L "$TARGET" ] && [ "$TARGET" -ef "$HOME_DIR" ]; }; then
         IS_GLOBAL=true
     fi
+elif [ "$IS_GLOBAL" = true ]; then
+    TARGET="$HOME_DIR"
 fi
 
 # Safety check: refuse root
@@ -225,6 +273,88 @@ check_parent_invalid() {
     return 1
 }
 
+if check_chain_for_symlinks "$TARGET"; then
+    echo "Erro: o destino ou um de seus pais é link simbólico: $TARGET" >&2
+    exit 1
+fi
+
+dest_for() {
+    # $1 = payload dir, $2 = source file; prints destination path
+    local payload="$1" source_file="$2" source_rel first_part
+    source_rel="${source_file#$payload/}"
+    first_part="${source_rel%%/*}"
+    if [ "$IS_GLOBAL" = true ] && [ -n "$TOOL_DOT_DIR" ] && [[ "$first_part" != .* ]]; then
+        printf '%s\n' "$TARGET/$TOOL_DOT_DIR/$source_rel"
+    else
+        printf '%s\n' "$TARGET/$source_rel"
+    fi
+}
+
+sha256_of() {
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha256sum "$1" | cut -d' ' -f1
+    else
+        shasum -a 256 "$1" | cut -d' ' -f1
+    fi
+}
+
+if [ "$UNINSTALL" = true ]; then
+    LEGACY_FILE="$SCRIPT_DIR/legacy-hashes.sha256"
+    REMOVE=()
+    KEPT=()
+    for payload in "${PAYLOAD_DIRS[@]}"; do
+        while IFS= read -r -d '' source_file; do
+            [ -f "$source_file" ] && [ ! -L "$source_file" ] || continue
+            dest="$(dest_for "$payload" "$source_file")"
+            if [ ! -e "$dest" ] && [ ! -L "$dest" ]; then
+                continue
+            fi
+            if check_chain_for_symlinks "$dest"; then
+                KEPT+=("PRESERVAR (link simbólico) $dest")
+                continue
+            fi
+            if [ ! -f "$dest" ]; then
+                KEPT+=("PRESERVAR (não é arquivo regular) $dest")
+                continue
+            fi
+            if cmp -s "$source_file" "$dest"; then
+                REMOVE+=("$dest")
+                continue
+            fi
+            rel="${source_file#$PACKAGE_DIR/}"
+            if [ -f "$LEGACY_FILE" ] && grep -qxF "$(sha256_of "$dest")  $rel" "$LEGACY_FILE"; then
+                REMOVE+=("$dest")
+            else
+                KEPT+=("PRESERVAR (modificado) $dest")
+            fi
+        done < <(find "$payload" \( -type f -o -type l \) -print0 | sort -z)
+    done
+
+    if [ "${#REMOVE[@]}" -gt 0 ]; then
+        for f in "${REMOVE[@]}"; do echo "REMOVER $f"; done
+    fi
+    if [ "${#KEPT[@]}" -gt 0 ]; then
+        for k in "${KEPT[@]}"; do echo "$k"; done
+    fi
+
+    if [ "$APPLY" = false ]; then
+        echo "Auditoria de remoção: ${#REMOVE[@]} arquivo(s) a remover, ${#KEPT[@]} preservado(s); nenhuma alteração."
+        exit 0
+    fi
+
+    for f in ${REMOVE[@]+"${REMOVE[@]}"}; do
+        rm -f -- "$f"
+        # Remove diretórios que ficaram vazios, sem subir além do destino
+        d="$(dirname "$f")"
+        while [ "$d" != "$TARGET" ] && [ "${d#"$TARGET"/}" != "$d" ]; do
+            rmdir -- "$d" 2>/dev/null || break
+            d="$(dirname "$d")"
+        done
+    done
+    echo "Removidos ${#REMOVE[@]} arquivo(s); ${#KEPT[@]} preservado(s) para revisão manual."
+    exit 0
+fi
+
 ERRORS=()
 PENDING_SOURCES=()
 PENDING_DESTS=()
@@ -242,14 +372,7 @@ for payload in "${PAYLOAD_DIRS[@]}"; do
             continue
         fi
 
-        source_rel="${source_file#$payload/}"
-        first_part="${source_rel%%/*}"
-
-        if [ "$IS_GLOBAL" = true ] && [ -n "$TOOL_DOT_DIR" ] && [[ "$first_part" != .* ]]; then
-            dest="$TARGET/$TOOL_DOT_DIR/$source_rel"
-        else
-            dest="$TARGET/$source_rel"
-        fi
+        dest="$(dest_for "$payload" "$source_file")"
 
         if check_chain_for_symlinks "$dest"; then
             ERRORS+=("Link no destino: $dest")
@@ -272,7 +395,7 @@ for payload in "${PAYLOAD_DIRS[@]}"; do
             PENDING_DESTS+=("$dest")
             echo "CRIAR $dest"
         fi
-    done < <(find "$payload" -type f -print0 | sort -z)
+    done < <(find "$payload" \( -type f -o -type l \) -print0 | sort -z)
 done
 
 if [ "${#ERRORS[@]}" -gt 0 ]; then
@@ -300,11 +423,9 @@ for i in "${!PENDING_SOURCES[@]}"; do
     dest_dir="$(dirname "$dest")"
     mkdir -p "$dest_dir"
 
-    # Non-destructive copy (fails if destination already exists)
-    if ( set -C; cp "$src" "$dest" ) 2>/dev/null; then
-        :
-    else
-        echo "Falha ao criar arquivo: $dest" >&2
+    # Exclusive create: noclobber makes the redirect fail (O_EXCL) if dest exists
+    if ! ( set -C; cat -- "$src" > "$dest" ); then
+        echo "Falha ao criar arquivo (conflito criado após a auditoria ou erro de gravação); nada foi sobrescrito: $dest" >&2
         exit 1
     fi
 done

@@ -14,7 +14,7 @@ Principal sugerido: Sonnet 5 selecionado no Cursor. Esta escolha e o mapeamento 
 
 ## Instalar
 
-Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish ou PowerShell), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`). Em `scripts/`, o Python é usado pelos testes offline (`test_install.py`); o pacote pode conter o coletor Python opcional do Zabbix:
+Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish ou PowerShell), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`):
 
 No Linux/macOS (Bash ou Fish):
 
@@ -44,11 +44,14 @@ No Windows (PowerShell):
 
 O primeiro comando apenas audita. O instalador recusa arquivos existentes diferentes e links simbólicos, sem sobrescrever configurações. Arquivos idênticos são preservados. Para atualizar uma instalação conflitante, compare e mescle manualmente antes de repetir.
 
+Uma vez que o destino seja normalizado lexicalmente (`.`, `..`, `//`; só `~` e `~/...` expandem para o HOME), um alvo que resolva para o próprio HOME é tratado como global. Por desenho, o instalador recusa qualquer alvo cujo caminho informado atravesse um link simbólico, inclusive um `$HOME` sob um link (por exemplo `/home -> /var/home`); informe o caminho físico. Divergências conhecidas entre `install.sh` e `install.ps1`: link de diretório dentro do payload é detectado de forma diferente no Windows PowerShell 5.1 e no PowerShell 7, e um link pendente no destino só é tratado de forma garantida pelo `install.sh`.
+
 ### Especialistas opcionais
 
-Os 9 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+Os 11 especialistas (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist` e `proxmox-specialist`) não são instalados por padrão e não alteram os sete
+`database-tuning-specialist`, `proxmox-specialist`, `shell-python-specialist`
+e `docker-kubernetes-specialist`) não são instalados por padrão e não alteram os sete
 agentes ou o roteamento Composer/Sonnet/Opus. Para incluir a skill, conhecimento e
 evals de domínio, use as opções explícitas junto à aplicação:
 
@@ -57,8 +60,10 @@ evals de domínio, use as opções explícitas junto à aplicação:
 ./scripts/install.sh --target /caminho/do/projeto --with-all-specialists --apply
 ```
 
-No PowerShell, use `-With<Nome>Specialist -Apply` ou `-WithAllSpecialists -Apply`.
+No PowerShell, use `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist` (alias `-with-sre-incident-specialist`), `-WithDbTuningSpecialist` (alias `-with-database-tuning-specialist`), `-WithProxmoxSpecialist`, `-WithShellPythonSpecialist`, `-WithDockerKubernetesSpecialist` ou `-WithAllSpecialists`, sempre com `-Apply`.
 Sem as opções, nenhum arquivo de especialista é criado; auditoria e recusa de conflitos permanecem iguais.
+
+Zabbix e Grafana incluem o guia `infra-rag.md`, para consultar, de forma opcional, não bloqueante e somente leitura, um índice local do projeto separado `infra-rag` via `rag-query`. O guia `infra-rag.md` é opcional e não bloqueante: sem ele, o especialista segue normalmente. Suas regras são instruções ao modelo, não imposição técnica; os controles de implantação estão na documentação do próprio `infra-rag`. Não foi testado com um agente real.
 
 A regra `.cursor/rules/framework-v5.mdc` usa `alwaysApply: true`. Os sete agentes ficam em `.cursor/agents`. Abra uma nova conversa no projeto e confira a regra e os agentes. Não instale as variantes Claude e Cursor juntas sem conferir duplicidades: Cursor também descobre agentes de `.claude/agents`.
 
@@ -81,11 +86,15 @@ Terra ou Sol. Credencial, rede ou aprovação ausente exigem o fluxo normal de
 acesso. A política não concede autoridade para novos destinos, mudança de
 privacidade, release, deploy, force push ou reescrita de histórico.
 
+## Trabalho trivial e leitura pontual
+
+Trabalho trivial afeta até 3 arquivos do mesmo componente; mais de 3 arquivos ou mais de um componente não é trivial. Escritas em sistemas vivos (por exemplo, criar ou apagar hosts no Zabbix), mensageria ou persistência de produção, credenciais e segredos, e deploy/systemd são sempre não triviais, qualquer que seja o tamanho. Leitura pontual: o principal pode ler diretamente no máximo 3 arquivos e 2 buscas por pergunta, e 2 perguntas consecutivas sem delegar (ferramentas nativas de leitura, listagem e busca, sem shell; buscas só em modo de listagem de caminhos ou contagem), para responder uma pergunta ou preparar um repasse, sem editar. Descoberta ampla, repositórios desconhecidos e investigação ficam com o explorador. Arquivos secretos (.env, chaves, tokens, credenciais) nunca são lidos pelo principal: vão a um worker, que informa só caminho e tipo, nunca valores. Nenhum dos dois exige declarar bloqueio; publicação continua sempre delegada e nunca é trivial nem leitura pontual.
+
 ## Verificação e limites
 
-Peça uma correção trivial: deve ser direta. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
+Peça uma correção trivial (até 3 arquivos do mesmo componente): deve ser direta. Peça uma leitura pontual (até 3 arquivos e 2 buscas): o principal lê direto, sem editar. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
 
-A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks, migração automática de v3/v4 ou Skills do Codex. A instalação global é suportada pelos instaladores desta variante, mas não migra configurações existentes. Não houve execução autenticada no Cursor durante a geração.
+A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks nem migração automática de v3/v4: esses recursos do instalador Codex são específicos daquela plataforma. A instalação global (`--global`) grava a regra e os agentes em `~/.cursor/`, e as skills dos especialistas opcionais em `~/.cursor/skills/`; este pacote não verificou se o Cursor carrega esses caminhos globais. Não houve execução autenticada no Cursor durante a geração.
 
 ## Fontes oficiais consultadas em 2026-09-12
 

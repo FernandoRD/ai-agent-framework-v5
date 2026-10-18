@@ -30,8 +30,22 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-CODEX_HOME="${CODEX_HOME/#\~/$HOME_DIR}"
-SKILLS_HOME="${SKILLS_HOME/#\~/$HOME_DIR}"
+# Same normalization as install.sh: expands ~, absolute, no symlink resolution, no trailing or doubled slashes.
+norm_path() {
+    local p="$1"
+    case "$p" in
+        "~") p="$HOME_DIR" ;;
+        "~/"*) p="$HOME_DIR/${p#"~/"}" ;;
+    esac
+    case "$p" in /*) ;; *) p="$PWD/$p" ;; esac
+    if command -v realpath >/dev/null 2>&1; then
+        p="$(realpath -sm -- "$p" 2>/dev/null || printf '%s' "$p")"
+    fi
+    while [ "${#p}" -gt 1 ] && [ "${p%/}" != "$p" ]; do p="${p%/}"; done
+    printf '%s' "$p"
+}
+CODEX_HOME="$(norm_path "$CODEX_HOME")"
+SKILLS_HOME="$(norm_path "$SKILLS_HOME")"
 
 ROLES=(
     "luna_explorer" "luna_worker" "terra_worker"
@@ -112,27 +126,55 @@ for name in "${SKILLS[@]}"; do
     else
         fail "missing or invalid skill $name"
     fi
-    if [ -d "$CODEX_HOME/skills/$name" ]; then
-        fail "duplicate legacy .codex/skills copy remains: $name"
+    legacy_copy="$CODEX_HOME/skills/$name"
+    if [ -d "$legacy_copy" ] && ! [ "$legacy_copy" -ef "$SKILLS_HOME/$name" ]; then
+        # Same rule as the installer: identical or framework-owned copies are moved; a divergent one is kept.
+        if diff -rq "$PACKAGE_DIR/.agents/skills/$name" "$legacy_copy" >/dev/null 2>&1 \
+            || { [ -f "$legacy_copy/SKILL.md" ] && grep -qE '(luna|terra|sol)_(explorer|worker|reviewer|specialist|critical)|CODEX-GLOBAL-FRAMEWORK|Codex Global Framework|task-router' "$legacy_copy/SKILL.md"; }; then
+            fail "duplicate legacy .codex/skills copy remains: $name"
+        else
+            warn "divergent .codex/skills/$name kept by the installer (merge or remove manually)"
+        fi
     fi
 done
 
 for name in "${LEGACY[@]}"; do
     if [ -d "$SKILLS_HOME/$name" ]; then
-        fail "legacy user Skill remains: $name"
+        warn "legacy-named user Skill present (left intact by the installer unless proven framework-owned): $name"
     fi
     if [ -d "$CODEX_HOME/skills/$name" ]; then
-        fail "legacy .codex/skills copy remains: $name"
+        warn "legacy-named .codex/skills copy present (left intact unless proven framework-owned): $name"
     fi
 done
 
 hooks_file="$CODEX_HOME/hooks.json"
 if [ -f "$hooks_file" ]; then
     ok "hooks.json exists"
-    if grep -q "mandatory-router" "$hooks_file"; then
-        ok "exactly one routing reminder hook is configured"
+    hook_count=""
+    if command -v python3 >/dev/null 2>&1; then
+        hook_count="$(python3 -c '
+import json, sys
+with open(sys.argv[1], encoding="utf-8-sig") as f:
+    d = json.load(f)
+g = d.get("hooks", {}).get("UserPromptSubmit", [])
+print(sum(1 for x in g if "mandatory-router" in json.dumps(x)))
+' "$hooks_file" 2>/dev/null)" || hook_count="invalid"
+    elif command -v jq >/dev/null 2>&1; then
+        hook_count="$(jq '[(.hooks.UserPromptSubmit // [])[] | select(tostring | contains("mandatory-router"))] | length' "$hooks_file" 2>/dev/null)" || hook_count="invalid"
+    fi
+    if [ "$hook_count" = "invalid" ]; then
+        fail "hooks.json is invalid JSON or has an unexpected structure"
+    elif [ -z "$hook_count" ]; then
+        warn "python3/jq unavailable; cannot validate hooks.json"
     else
-        warn "routing hook absent; AGENTS.md still works"
+        ok "hooks.json is valid JSON"
+        if [ "$hook_count" -eq 1 ]; then
+            ok "exactly one routing reminder hook is configured"
+        elif [ "$hook_count" -eq 0 ]; then
+            warn "routing hook absent; AGENTS.md still works"
+        else
+            fail "duplicate routing hooks: $hook_count"
+        fi
     fi
 else
     warn "hooks.json absent; AGENTS.md still works"

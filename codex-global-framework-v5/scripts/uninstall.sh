@@ -32,6 +32,8 @@ done
 
 CODEX_HOME="${CODEX_HOME/#\~/$HOME_DIR}"
 SKILLS_HOME="${SKILLS_HOME/#\~/$HOME_DIR}"
+case "$CODEX_HOME" in /*) ;; *) CODEX_HOME="$PWD/$CODEX_HOME" ;; esac
+case "$SKILLS_HOME" in /*) ;; *) SKILLS_HOME="$PWD/$SKILLS_HOME" ;; esac
 
 ROLES=(
     "luna_explorer" "luna_worker" "terra_worker"
@@ -40,13 +42,61 @@ ROLES=(
 
 SKILLS=("security-review" "code-review" "dependency-review" "documentation")
 
-timestamp="$(date +%Y%m%d-%H%M%S-%N | cut -b1-21)"
-backup_dir="$CODEX_HOME/backups/framework-v5-uninstall-$timestamp"
-mkdir -p "$backup_dir"
-
 agents_file="$CODEX_HOME/AGENTS.md"
 config_file="$CODEX_HOME/config.toml"
 hooks_file="$CODEX_HOME/hooks.json"
+
+# Reports unbalanced/nested/orphan markers: awk would otherwise drop the rest of the file.
+markers_balanced() {
+    awk -v b="$2" -v e="$3" '
+        $0 ~ b { if (inb) bad=1; inb=1; next }
+        $0 ~ e { if (!inb) bad=1; inb=0; next }
+        END { exit (bad || inb) ? 1 : 0 }
+    ' "$1"
+}
+check_markers() {
+    if [ -f "$1" ] && ! markers_balanced "$1" "$2" "$3"; then
+        echo "Unbalanced framework markers in $1; fix manually. No changes made." >&2
+        exit 1
+    fi
+}
+check_markers "$agents_file" '<!-- CODEX-GLOBAL-FRAMEWORK:BEGIN v5' '<!-- CODEX-GLOBAL-FRAMEWORK:END v5'
+check_markers "$config_file" '# BEGIN CODEX GLOBAL FRAMEWORK V5 AGENTS' '# END CODEX GLOBAL FRAMEWORK V5 AGENTS'
+
+# Plan hooks.json first: an invalid file or missing tooling aborts before any change.
+HOOK_PY='
+import json, sys
+try:
+    with open(sys.argv[1], encoding="utf-8-sig") as f:
+        data = json.load(f)
+except ValueError as exc:
+    raise SystemExit("invalid JSON: %s" % exc)
+if not isinstance(data, dict):
+    raise SystemExit("hooks.json root must be an object")
+hooks = data.get("hooks")
+if isinstance(hooks, dict) and isinstance(hooks.get("UserPromptSubmit"), list):
+    hooks["UserPromptSubmit"] = [g for g in hooks["UserPromptSubmit"] if "mandatory-router" not in json.dumps(g)]
+print(json.dumps(data, indent=2, ensure_ascii=False))
+'
+NEW_HOOKS=""
+if [ -f "$hooks_file" ]; then
+    if command -v python3 >/dev/null 2>&1; then
+        NEW_HOOKS="$(python3 -c "$HOOK_PY" "$hooks_file")" \
+            || { echo "Existing hooks.json is invalid; no changes made: $hooks_file" >&2; exit 1; }
+    elif command -v jq >/dev/null 2>&1; then
+        NEW_HOOKS="$(jq 'if (.hooks | type) == "object" and (.hooks.UserPromptSubmit | type) == "array" then
+              .hooks.UserPromptSubmit |= [.[] | select(tostring | contains("mandatory-router") | not)]
+            else . end' "$hooks_file")" \
+            || { echo "Existing hooks.json is invalid; no changes made: $hooks_file" >&2; exit 1; }
+    else
+        echo "python3 or jq is required to edit $hooks_file; no changes made." >&2
+        exit 1
+    fi
+fi
+
+timestamp="$(date +%Y%m%d-%H%M%S-%N | cut -b1-21)"
+backup_dir="$CODEX_HOME/backups/framework-v5-uninstall-$timestamp"
+mkdir -p "$backup_dir"
 
 for f in "$agents_file" "$config_file" "$hooks_file"; do
     if [ -f "$f" ]; then
@@ -97,26 +147,7 @@ for s in "${SKILLS[@]}"; do
 done
 
 if [ -f "$hooks_file" ]; then
-    if command -v python3 >/dev/null 2>&1; then
-        python3 -c "
-import json
-with open('$hooks_file', 'r', encoding='utf-8-sig') as f:
-    try: data = json.load(f)
-    except Exception: data = None
-if data and 'hooks' in data and 'UserPromptSubmit' in data['hooks']:
-    groups = data['hooks']['UserPromptSubmit']
-    data['hooks']['UserPromptSubmit'] = [g for g in groups if 'mandatory-router' not in json.dumps(g)]
-    with open('$hooks_file', 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
-        f.write('\n')
-"
-    elif command -v jq >/dev/null 2>&1; then
-        jq '
-          if .hooks.UserPromptSubmit then
-            .hooks.UserPromptSubmit |= [.[] | select(tostring | contains("mandatory-router") | not)]
-          else . end
-        ' "$hooks_file" > "$hooks_file.tmp" && mv "$hooks_file.tmp" "$hooks_file"
-    fi
+    printf '%s\n' "$NEW_HOOKS" > "$hooks_file"
 fi
 
 for h in "$CODEX_HOME/hooks/mandatory-router.sh" "$CODEX_HOME/hooks/mandatory-router.ps1"; do

@@ -28,8 +28,8 @@ Grafana data arrives as an array of DataFrames (`data.series`).
   const series = data.series[0];
   const timeField = series.fields.find(f => f.type === 'time');
   const valueField = series.fields.find(f => f.type === 'number');
-  const latestValue = valueField && valueField.values.length > 0 
-    ? valueField.values.get(valueField.values.length - 1) 
+  const latestValue = valueField && valueField.values.length > 0
+    ? valueField.values.get(valueField.values.length - 1)
     : null;
   ```
 - Support field overrides and thresholds (`field.thresholds` or `field.display(value)`). Format numbers and units using Grafana's built-in field display formatters when available.

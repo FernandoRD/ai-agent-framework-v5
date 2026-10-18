@@ -26,12 +26,16 @@ param(
     [switch]$WithPrometheusSpecialist,
     [Alias("with-netops-specialist")]
     [switch]$WithNetopsSpecialist,
-    [Alias("with-sre-specialist")]
+    [Alias("WithSreIncidentSpecialist", "with-sre-specialist", "with-sre-incident-specialist")]
     [switch]$WithSreSpecialist,
-    [Alias("with-db-tuning-specialist")]
+    [Alias("WithDatabaseTuningSpecialist", "with-db-tuning-specialist", "with-database-tuning-specialist")]
     [switch]$WithDbTuningSpecialist,
     [Alias("with-proxmox-specialist")]
     [switch]$WithProxmoxSpecialist,
+    [Alias("with-shell-python-specialist")]
+    [switch]$WithShellPythonSpecialist,
+    [Alias("with-docker-kubernetes-specialist")]
+    [switch]$WithDockerKubernetesSpecialist,
     [Alias("with-ux-ui-frontend-specialist")]
     [switch]$WithUxUiFrontendSpecialist,
     [Alias("with-all-specialists")]
@@ -49,7 +53,7 @@ Opções gerais:
   -Distro <nome>             Nome da distribuição WSL (obrigatório)
   -ShareWindowsCodexHome     Compartilha a configuração do Windows com o WSL
   -NoHook                    Não instala o hook de roteamento obrigatório
-  -AuditOnly                 Modo estrito de auditoria (não altera arquivos)
+  -AuditOnly                 Apenas audita (não altera arquivos); sem ele, aplica
   -Help, -h, -?              Exibe esta mensagem de ajuda
 
 Especialistas de domínio opcionais:
@@ -60,10 +64,15 @@ Especialistas de domínio opcionais:
   -WithPrometheusSpecialist  Instala o especialista Prometheus (PromQL/exporters/alerting)
   -WithNetopsSpecialist      Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
   -WithSreSpecialist         Instala o especialista SRE Incident (Incident Command/SLOs)
+                             (alias: -WithSreIncidentSpecialist)
   -WithDbTuningSpecialist    Instala o especialista Database Tuning (PostgreSQL/queries/locks)
+                             (alias: -WithDatabaseTuningSpecialist)
   -WithProxmoxSpecialist     Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
+  -WithShellPythonSpecialist Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  -WithDockerKubernetesSpecialist
+                             Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
   -WithUxUiFrontendSpecialist Instala o especialista UX/UI e frontend
-  -WithAllSpecialists        Instala todos os 10 especialistas de domínio acima
+  -WithAllSpecialists        Instala todos os 12 especialistas de domínio acima
 "@
 }
 
@@ -93,6 +102,8 @@ if ($WithNetopsSpecialist -or $WithAllSpecialists) { $specArgs += " --with-netop
 if ($WithSreSpecialist -or $WithAllSpecialists) { $specArgs += " --with-sre-specialist" }
 if ($WithDbTuningSpecialist -or $WithAllSpecialists) { $specArgs += " --with-db-tuning-specialist" }
 if ($WithProxmoxSpecialist -or $WithAllSpecialists) { $specArgs += " --with-proxmox-specialist" }
+if ($WithShellPythonSpecialist -or $WithAllSpecialists) { $specArgs += " --with-shell-python-specialist" }
+if ($WithDockerKubernetesSpecialist -or $WithAllSpecialists) { $specArgs += " --with-docker-kubernetes-specialist" }
 if ($WithUxUiFrontendSpecialist -or $WithAllSpecialists) { $specArgs += " --with-ux-ui-frontend-specialist" }
 $command = "$prefix cd '$linuxPackageDir' && bash ./scripts/install.sh$hookArg$auditArg$specArgs"
 & wsl.exe -d $Distro -- bash -lc $command

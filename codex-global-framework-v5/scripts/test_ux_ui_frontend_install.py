@@ -75,7 +75,7 @@ class InstallTests(unittest.TestCase):
                 command = output.read_text()
                 self.assertIn("--with-ux-ui-frontend-specialist", command)
                 if switch == "-WithAllSpecialists":
-                    self.assertEqual(command.count(" --with-"), 10)
+                    self.assertEqual(command.count(" --with-"), 12)
 
 
 if __name__ == "__main__":

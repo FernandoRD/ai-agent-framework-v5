@@ -28,21 +28,23 @@
     Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
 .PARAMETER WithProxmoxSpecialist
     Instala a extensão opcional Proxmox Specialist (Proxmox VE 8.x/9.x, Corosync, Ceph, SDN, ZFS).
+.PARAMETER WithShellPythonSpecialist
+    Instala a extensão opcional Shell & Python Specialist (Bash, POSIX sh, fish, Python 3.10+).
+.PARAMETER WithDockerKubernetesSpecialist
+    Instala a extensão opcional Docker & Kubernetes Specialist (Docker Engine, Compose v2, Kubernetes, Helm).
 .PARAMETER WithAllSpecialists
-    Instala simultaneamente todos os 9 especialistas de domínio disponíveis.
+    Instala simultaneamente todos os 11 especialistas de domínio disponíveis.
 .PARAMETER Help
     Exibe a mensagem de ajuda com todas as opções.
 #>
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
-    [Alias("target")]
     [string]$Target,
 
-    [Alias("global", "g")]
+    [Alias("g")]
     [switch]$Global,
 
-    [Alias("apply")]
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]
@@ -72,6 +74,12 @@ param(
     [Alias("with-proxmox-specialist")]
     [switch]$WithProxmoxSpecialist,
 
+    [Alias("with-shell-python-specialist")]
+    [switch]$WithShellPythonSpecialist,
+
+    [Alias("with-docker-kubernetes-specialist")]
+    [switch]$WithDockerKubernetesSpecialist,
+
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -99,17 +107,26 @@ Especialistas de domínio opcionais:
   -WithPrometheusSpecialist      Instala o especialista Prometheus (PromQL/exporters/alerting)
   -WithNetopsSpecialist          Instala o especialista NetOps (SNMP/BGP/OSPF/VLANs)
   -WithSreSpecialist             Instala o especialista SRE Incident (Incident Command/SLOs)
-                                 (alias: -WithSreIncidentSpecialist)
+                                 (alias: -with-sre-specialist, -with-sre-incident-specialist)
   -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
-                                 (alias: -WithDatabaseTuningSpecialist)
+                                 (alias: -with-db-tuning-specialist, -with-database-tuning-specialist)
   -WithProxmoxSpecialist         Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
-  -WithAllSpecialists            Instala todos os 9 especialistas de domínio acima
+  -WithShellPythonSpecialist     Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
+  -WithDockerKubernetesSpecialist
+                                 Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
+  -WithAllSpecialists            Instala todos os 11 especialistas de domínio acima
 "@
 }
 
 if ($Help) {
     Show-Usage
     exit 0
+}
+
+if ($PSBoundParameters.ContainsKey('Target') -and [string]::IsNullOrWhiteSpace($Target)) {
+    [Console]::Error.WriteLine("Erro: -Target exige um caminho.")
+    Show-Usage
+    exit 1
 }
 
 if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
@@ -120,12 +137,29 @@ if (-not $Global -and [string]::IsNullOrWhiteSpace($Target)) {
 $homeDir = if ($env:USERPROFILE) { $env:USERPROFILE } else { [Environment]::GetFolderPath('UserProfile') }
 $homeFullPath = [IO.Path]::GetFullPath($homeDir)
 
+function Resolve-TargetPath([string]$Path) {
+    # Uses the PowerShell location (not the .NET process directory) and expands ~.
+    if ($Path -eq '~' -or $Path.StartsWith('~/') -or $Path.StartsWith('~\')) {
+        $Path = Join-Path $homeFullPath $Path.Substring(1).TrimStart('\', '/')
+    }
+    $full = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Path)
+    $root = [IO.Path]::GetPathRoot($full)
+    if ($full.Length -gt $root.Length) { $full = $full.TrimEnd('\', '/') }
+    return $full
+}
+
 if ($Global) {
-    $targetPath = if ([string]::IsNullOrWhiteSpace($Target)) { $homeFullPath } else { [IO.Path]::GetFullPath($Target) }
+    $targetPath = if ([string]::IsNullOrWhiteSpace($Target)) { $homeFullPath } else { Resolve-TargetPath $Target }
     $isGlobal = $true
 } else {
-    $targetPath = [IO.Path]::GetFullPath($Target)
+    $targetPath = Resolve-TargetPath $Target
     $isGlobal = ($targetPath.TrimEnd('\', '/') -eq $homeFullPath.TrimEnd('\', '/'))
+}
+
+# Safety check: refuse a filesystem/drive root (parity with install.sh refusing '/')
+if ($targetPath -eq [IO.Path]::GetPathRoot($targetPath)) {
+    [Console]::Error.WriteLine("Erro: Recusando instalar no caminho raiz '$targetPath'.")
+    exit 1
 }
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -141,6 +175,8 @@ $knownSpecialists = @(
     @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
     @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
     @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
+    @{ Name = "shell-python-specialist"; Enabled = ($WithShellPythonSpecialist -or $WithAllSpecialists) }
+    @{ Name = "docker-kubernetes-specialist"; Enabled = ($WithDockerKubernetesSpecialist -or $WithAllSpecialists) }
 )
 
 foreach ($spec in $knownSpecialists) {

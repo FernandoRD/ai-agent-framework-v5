@@ -14,7 +14,7 @@ Principal sugerido: Sonnet 5 selecionado no Cursor. Esta escolha e o mapeamento 
 
 ## Instalar
 
-Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`):
+Extraia o pacote e execute dentro dele usando o instalador de sua preferência (Bash, Fish ou PowerShell), escolhendo entre instalação no projeto (`--target <projeto>`) ou global no `$HOME` (`--global` ou `--target ~`). Em `scripts/`, o Python é usado pelos testes offline (`test_install.py`); o pacote pode conter o coletor Python opcional do Zabbix:
 
 No Linux/macOS (Bash ou Fish):
 
@@ -85,7 +85,7 @@ privacidade, release, deploy, force push ou reescrita de histórico.
 
 Peça uma correção trivial: deve ser direta. Depois peça explicitamente ao `luna-explorer` que localize um símbolo, sem editar; confira modelo efetivo e retorno. Um reviewer deve permanecer somente leitura. Para testar piso de risco, peça apenas um plano de mudança de autorização: deve encaminhar a análise crítica ao Sol antes de mutação.
 
-A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks, migração automática de v3/v4, skills nem instalação global: esses recursos do instalador Codex são específicos daquela plataforma. Não houve execução autenticada no Cursor durante a geração.
+A plataforma pode substituir modelos por restrições de plano/admin; confira o modelo efetivo. O roteamento é instrução ao principal, não um despachante determinístico. Não há garantia de economia ou de disponibilidade de modelos. O pacote não inclui hooks, migração automática de v3/v4 ou Skills do Codex. A instalação global é suportada pelos instaladores desta variante, mas não migra configurações existentes. Não houve execução autenticada no Cursor durante a geração.
 
 ## Fontes oficiais consultadas em 2026-09-12
 

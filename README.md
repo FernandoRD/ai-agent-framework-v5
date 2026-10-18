@@ -31,6 +31,8 @@ Os 9 especialistas de domínio são distribuídos em todos os quatro pacotes com
 8. **Database Tuning Specialist**: otimização de bancos relacionais e analíticos, tuning de queries/índices, pool de conexões e mitigação de locks/deadlocks.
 9. **Proxmox Specialist**: virtualização e clustering empresarial com foco em Proxmox VE 8.x e 9.x, Corosync v3, Ceph (Reef/Squid), Proxmox SDN (VLAN/VXLAN/EVPN), Proxmox Backup Server (PBS), automação via QEMU/LXC, Terraform (`bpg/proxmox`), cloud-init e alta disponibilidade (HA CRM/LRM).
 
+O pacote Codex também inclui o **UX/UI Frontend Specialist**, para projetar e implementar interfaces web e de aplicativos com atenção à usabilidade, acessibilidade e adaptação a diferentes telas. Instale-o com `--with-ux-ui-frontend-specialist` ou inclua-o com `--with-all-specialists`.
+
 Instale-os somente quando o projeto precisar:
 
 ```bash
@@ -70,8 +72,8 @@ Há instaladores equivalentes para PowerShell, Fish e WSL dentro de `scripts/`. 
 
 ### Claude Code, Gemini CLI (Antigravity) e Cursor
 
-As três variantes usam instalador conservador com suporte a escopo por projeto ou global (`$HOME`), com scripts equivalentes em Shell Script (`.sh` para Bash e `.fish` para Fish), PowerShell (`.ps1` para Windows) e Python (`.py`). A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico:
-- **No projeto (`--target "/caminho/do/projeto"`)**: o arquivo de instruções (`CLAUDE.md`, `GEMINI.md`, `AGENTS.md`) é gerado na raiz do repositório, e os subagentes na pasta oculta (`.claude/agents/`, `.gemini/agents/`, `.cursor/`).
+As três variantes usam instalador conservador com suporte a escopo por projeto ou global (`$HOME`), com scripts nativos em Shell Script (`.sh` para Bash e `.fish` para Fish) e PowerShell (`.ps1` para Windows). Nos diretórios `scripts/`, os arquivos Python (`test_install.py`) são testes offline, não instaladores; o pacote também pode conter o coletor Python opcional do Zabbix. A auditoria não escreve; `--apply` / `-Apply` cria somente arquivos inexistentes e interrompe se encontrar conflito ou link simbólico:
+- **No projeto (`--target "/caminho/do/projeto"`)**: Claude grava `CLAUDE.md` na raiz e agentes em `.claude/agents/`; Gemini grava `GEMINI.md` na raiz e agentes em `.gemini/agents/`; Cursor mantém a regra em `.cursor/rules/framework-v5.mdc`.
 - **No Home / Global (`--global` ou `--target ~`)**: o arquivo de instruções fica **dentro** da pasta oculta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), evitando poluir a raiz do diretório pessoal.
 
 No Linux/macOS (Bash ou Fish):
@@ -105,7 +107,7 @@ cd claude-code-global-framework-v5  # ou gemini-cli-global-framework-v5, cursor-
 .\scripts\install.ps1 -Global -Apply
 ```
 
-Os scripts de instalação são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem dependência de interpretadores externos como Python no momento da instalação. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
+Os scripts de instalação são 100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`), sem dependência de interpretadores externos como Python no momento da instalação. Nas três variantes, o Python em `scripts/` aparece nos testes offline `test_install.py`; o pacote também pode conter o coletor Python opcional do Zabbix. Siga o README da variante para ativar agentes e, no Gemini, mesclar `settings.example.json` manualmente.
 
 ## Limites
 

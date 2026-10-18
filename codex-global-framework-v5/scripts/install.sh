@@ -26,6 +26,7 @@ ALL_KNOWN_SPECS=(
     "sre-incident-specialist"
     "database-tuning-specialist"
     "proxmox-specialist"
+    "ux-ui-frontend-specialist"
 )
 
 add_specialist() {
@@ -45,7 +46,7 @@ Uso: install.sh [opções]
 Opções gerais:
   --target <dir>      Diretório de destino (instalação por projeto)
   --global, -g        Instalação no ambiente global do usuário (~/.codex)
-  --apply             Aplica as alterações no disco (padrão é auditoria)
+  --apply             Mantido por compatibilidade; a instalação já aplica por padrão
   --audit-only        Modo estrito de auditoria (não altera arquivos)
   --no-hook           Não instala o hook de roteamento obrigatório
   --codex-home <dir>  Sobrescreve o diretório ~/.codex
@@ -64,7 +65,8 @@ Especialistas de domínio opcionais:
   --with-database-tuning-specialist Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                     (alias: --with-db-tuning-specialist)
   --with-proxmox-specialist         Instala o especialista Proxmox VE (8.x/9.x, PBS, Ceph, ZFS, SDN)
-  --with-all-specialists            Instala todos os 9 especialistas de domínio acima
+  --with-ux-ui-frontend-specialist  Instala o especialista UX/UI e frontend
+  --with-all-specialists            Instala todos os 10 especialistas de domínio acima
 EOF
     exit "${1:-0}"
 }
@@ -143,6 +145,10 @@ while [ $# -gt 0 ]; do
             ;;
         --with-proxmox-specialist)
             add_specialist "proxmox-specialist"
+            shift
+            ;;
+        --with-ux-ui-frontend-specialist)
+            add_specialist "ux-ui-frontend-specialist"
             shift
             ;;
         --with-all-specialists)

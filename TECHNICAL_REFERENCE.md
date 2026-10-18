@@ -74,9 +74,10 @@ Para trabalhos não triviais, o agente principal estima a complexidade de 0 a 10
   - **Score 35–69 (Tier Médio / Padrão):** Terra (`gpt-5.6-terra`), Sonnet (`claude-3-7-sonnet`). Focado em implementação usual, depuração, testes e alterações multi-arquivo.
   - **Score 70–100 (Tier Alto / Raciocínio):** Sol (`gpt-5.6-sol`), Opus (`claude-3-opus`). Focado em raciocínio complexo, problemas ambíguos, refatores de alto impacto ou análises críticas.
 
-- **Plataformas de 2 faixas (Gemini CLI / Google Antigravity):**
-  - **Score 0–34:** **Flash** (`gemini-2.5-flash`, `gemini-3-flash`, suportando `flash_lite` para descoberta somente leitura).
-  - **Score 35–100:** **Pro** (`gemini-2.5-pro`, `gemini-3-pro`). Raciocínio avançado, arquitetura e implementação pesada.
+- **Gemini CLI / Google Antigravity:**
+  - **Score 0–25:** **Flash-Lite** (`flash_lite`, quando disponível), para tarefas mecânicas e descoberta inicial.
+  - **Score 26–55:** **Flash** (`flash`, quando disponível), para implementação padrão e publicação rotineira.
+  - **Score 56–100:** **Pro** (`pro`, quando disponível), para raciocínio profundo e revisões independentes.
 
 ### 4. Pisos de Risco (Risk Floors)
 
@@ -110,7 +111,7 @@ Para evitar gargalos de despacho sequencial defensivo ("1 agente por vez"), o Fr
 
 ### 3. Agentes Pais em Modelo Flash (Gemini CLI / Antigravity)
 
-Quando o agente principal estiver operando em um modelo Flash (por restrição de quota, configuração de IDE ou escolha do usuário), **ele não deve reter a implementação nem a revisão de tarefas com score $\ge 35$ ou que atinjam o piso de risco**. O agente pai Flash deve atuar como coordenador, delegando a implementação ao `pro-worker` e a verificação ao `pro-reviewer`.
+Quando o agente principal estiver operando em um modelo Flash (por restrição de quota, configuração de IDE ou escolha do usuário), **ele não deve reter a implementação nem a revisão de tarefas com score $\ge 56$ ou que atinjam o piso de risco**. O agente pai Flash deve atuar como coordenador, delegando a implementação ao `pro-worker` e a verificação ao `pro-reviewer`; o piso Pro prevalece independentemente da disponibilidade efetiva de modelos.
 
 ### 4. Suporte Multi-Provedor no Google Antigravity
 
@@ -134,7 +135,7 @@ O fluxo de publicação (inspeção de git status/diff, staging explícito, comm
 
 ## Pacotes e instaladores nativos (Zero Python em Runtime)
 
-Todas as quatro distribuições do framework contam com instaladores e ferramentas de manutenção **100% nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**, sem qualquer necessidade de interpretadores Python para instalação ou diagnóstico:
+Todas as quatro distribuições do framework contam com instaladores e ferramentas de manutenção **nativos em Shell Script (`.sh`, `.fish`) e PowerShell (`.ps1`)**. Nos diretórios `scripts/` das variantes Claude, Gemini e Cursor, os arquivos Python (`test_install.py`) são testes offline, não instaladores; o Codex também possui utilitários Python próprios, e os pacotes podem conter o coletor Python opcional do Zabbix.
 
 | Plataforma | Instaladores e Utilitários | Suporte de Instalação |
 |---|---|---|
@@ -145,17 +146,19 @@ Todas as quatro distribuições do framework contam com instaladores e ferrament
 
 ### Mecanismos de Proteção dos Instaladores
 
-- **Auditoria Prévia Conservadora:** Por padrão, a execução sem `--apply` / `-Apply` apenas audita e reporta as ações planejadas sem gravar nenhum byte em disco (no Codex global, use `--audit-only`).
-- **Prevenção de Sobrescrita e Conflitos:** Com `--apply`, o instalador cria apenas arquivos novos (`set -C` no Bash / `CreateNew` no PowerShell). Arquivos idênticos são preservados (`IDÊNTICO`); arquivos existentes com conteúdo divergente geram erro de conflito explícito, exigindo comparação manual.
-- **Inspeção de Links Simbólicos:** Varre toda a cadeia de diretórios do destino e do payload recusando instalação em caminhos que contenham links simbólicos (*symlinks* ou *reparse points*).
+- **Auditoria Prévia:** No Codex, a instalação global ou por projeto aplica por padrão; use `--audit-only` / `-AuditOnly` para somente auditar. Nas outras variantes, a execução sem `--apply` / `-Apply` somente audita.
+- **Prevenção de Sobrescrita e Conflitos:** Nas variantes Claude, Gemini e Cursor, `--apply` cria apenas arquivos novos (`set -C` no Bash / `CreateNew` no PowerShell), preserva arquivos idênticos e recusa conflitos. O Codex mantém suas próprias verificações de conflito e backup, descritas em seu README.
+- **Inspeção de Links Simbólicos:** Nas variantes Claude, Gemini e Cursor, as operações de instalação verificam a cadeia de diretórios do destino e recusam caminhos com links simbólicos (*symlinks* ou *reparse points*); no Bash, os arquivos de origem são enumerados com `find -type f`. Essa garantia não é atribuída ao instalador Codex nem à inspeção universal de toda a árvore do payload.
 - **Instalação Global Limpa:** Na instalação global (`--global`), os arquivos de instruções gerais são gerados **dentro** da respectiva pasta oculta de cada ferramenta (`~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`, `~/.cursor/`), garantindo que o diretório `$HOME` permaneça limpo.
 - **Help Completo Integrado:** Todos os scripts aceitam `-h` e `--help` (Bash/Fish) e `-Help`, `-h`, `-?` (PowerShell), exibindo ajuda contextual com todas as opções gerais e catálogo de especialistas.
 
 ---
 
-## Catálogo modular dos 9 especialistas de domínio
+## Catálogo modular de especialistas
 
-Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+Os quatro pacotes compartilham um catálogo modular de **9 especialistas técnicos de engenharia**. Os especialistas são distribuídos como extensões **opt-in**, não alteram os papéis centrais do framework e não forçam modelos fixos (são sempre operados sob a faixa de capacidade decidida pelo roteamento da v5).
+
+O Codex oferece ainda `ux-ui-frontend-specialist`, para concepção e implementação de interfaces web e de aplicativos, incluindo usabilidade, design visual, acessibilidade e responsividade. Ele é opcional e segue o mesmo roteamento do framework.
 
 ### 1. `zabbix-specialist`
 - **Domínio:** Arquitetura corporativa de monitoramento com Zabbix 7.0 LTS / 6.0 LTS.
@@ -198,7 +201,7 @@ Os quatro pacotes disponibilizam um catálogo modular de **9 especialistas técn
 
 ### Estrutura dos Arquivos de Especialistas
 
-Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrão composta por 7 arquivos:
+Os nove especialistas compartilhados entre as 4 plataformas implementam uma estrutura composta por 7 arquivos:
 1. `SKILL.md`: Manifesto com objetivos, limites operacionais, requisitos de modelo e conformidade v5;
 2. Três guias de engenharia de domínio e boas práticas;
 3. `troubleshooting.md`: Matriz de diagnóstico, códigos de erro e armadilhas técnicas;
@@ -210,7 +213,8 @@ Em cada uma das 4 plataformas, todo especialista implementa uma estrutura padrã
 - **Instalação Individual:**
   - Bash/Fish: `--with-zabbix-specialist`, `--with-grafana-specialist`, `--with-ansible-specialist`, `--with-loki-specialist`, `--with-prometheus-specialist`, `--with-netops-specialist`, `--with-sre-incident-specialist` (alias: `--with-sre-specialist`), `--with-database-tuning-specialist` (alias: `--with-db-tuning-specialist`), `--with-proxmox-specialist`.
   - PowerShell: `-WithZabbixSpecialist`, `-WithGrafanaSpecialist`, `-WithAnsibleSpecialist`, `-WithLokiSpecialist`, `-WithPrometheusSpecialist`, `-WithNetopsSpecialist`, `-WithSreSpecialist`, `-WithDbTuningSpecialist`, `-WithProxmoxSpecialist`.
-- **Instalação Agregadora (Todos os 9 especialistas):**
+- **Somente Codex:** `--with-ux-ui-frontend-specialist` (Bash/Fish) ou `-WithUxUiFrontendSpecialist` (PowerShell).
+- **Instalação Agregadora (todos os especialistas da plataforma; 10 no Codex e 9 nas demais):**
   - Bash/Fish: `--with-all-specialists`
   - PowerShell: `-WithAllSpecialists`
 

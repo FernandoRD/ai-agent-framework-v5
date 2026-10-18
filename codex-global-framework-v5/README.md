@@ -28,30 +28,35 @@ Routine, authorized publication of validated changes is a separate Luna unit: de
 - previous `mandatory-router` hook definitions;
 - stale copies of the four specialist Skills.
 
-Every affected item is backed up under
+For global installation, affected configuration is backed up under
 `$CODEX_HOME/backups/framework-v5-<timestamp>`. Unrelated configuration,
 personal AGENTS text, unrelated agents, Skills, and hooks are preserved. A
-current Skill with the same name but different content is treated as a conflict:
-the installer stops before changing anything, so it can be merged manually.
+conflicting optional Skill is preserved and installation stops for manual resolution.
+In Bash, other framework files may already have changed before the conflict is
+detected; installation can therefore be partial. Audit-only mode does not write,
+but does not guarantee that every optional-file conflict has been checked.
 
 ## Install
 
 ### Optional Specialists
 
-The 9 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
+The 10 optional specialists (`zabbix-specialist`, `grafana-specialist`, `ansible-specialist`,
 `loki-specialist`, `prometheus-specialist`, `netops-specialist`, `sre-incident-specialist`,
-`database-tuning-specialist`, and `proxmox-specialist`) are not installed by default and do not change the seven
+`database-tuning-specialist`, `proxmox-specialist`, and `ux-ui-frontend-specialist`) are not installed by default and do not change the seven
 framework roles or Luna/Terra/Sol routing. Add `--with-<spec>-specialist` or `--with-all-specialists`
-to install domain skills. For a project target it also installs optional knowledge
-and evaluations; global installation adds only the skills under `~/.agents/skills/`.
+to install domain skills. For a project target it also installs knowledge and
+evaluations when present; global installation adds only the skills under `~/.agents/skills/`.
 
 ```bash
 ./scripts/install.sh --with-ansible-specialist
+./scripts/install.sh --with-ux-ui-frontend-specialist
 ./scripts/install.sh --with-all-specialists
 ./scripts/install.sh --target /path/to/project --with-all-specialists
 ```
 
-PowerShell accepts `-With<Name>Specialist` and `-WithAllSpecialists`. The options
+PowerShell and WSL accept `-WithUxUiFrontendSpecialist` and `-WithAllSpecialists`.
+The UX/UI and frontend specialist covers web and app interface design and implementation,
+including accessibility and responsive behavior while respecting the existing design system. The options
 remain subject to the installer's normal audit, backup, and conflict behavior.
 
 Windows PowerShell:

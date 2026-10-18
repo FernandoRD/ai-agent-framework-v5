@@ -2,7 +2,7 @@
 
 Variante da política v5 para projetos usados com o Gemini CLI. O pacote é um
 payload de instalação: contém apenas os arquivos que devem chegar ao projeto.
-Inclui instalador Python por projeto e testes offline. O exemplo de settings fica separado para mesclagem manual.
+Inclui instaladores nativos para Bash, Fish e PowerShell, além de testes offline em Python. O exemplo de settings fica separado para mesclagem manual.
 
 Esta distribuição suporta tanto instalação por projeto (`--target <projeto>`) quanto instalação global no `$HOME` do usuário (`--global` ou `--target ~`). Ela não altera configurações pessoais alheias, hooks ou Skills existentes de outros assistentes.
 
@@ -140,7 +140,7 @@ porque este pacote não instala nem inicia o runtime.
 
 ## Instalação por projeto
 
-Dentro do pacote extraído, execute usando o instalador de sua preferência (Bash, Fish, PowerShell ou Python 3.10+):
+Dentro do pacote extraído, execute usando o instalador de sua preferência (Bash, Fish ou PowerShell). Em `scripts/`, o Python é usado para os testes offline; o pacote também pode conter o coletor Python opcional do Zabbix:
 
 No Linux/macOS (Bash ou Fish):
 

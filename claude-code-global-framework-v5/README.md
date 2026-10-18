@@ -1,6 +1,6 @@
 # Claude Code Global Framework v5
 
-Pacote v5 com roteamento obrigatório, econômico e orientado a risco para uso por projeto no Claude Code. Ele adapta integralmente a política da versão Codex para subagentes nativos do Claude Code, sem alterar a configuração pessoal do usuário.
+Pacote v5 com roteamento obrigatório, econômico e orientado a risco para uso no Claude Code. Ele adapta integralmente a política da versão Codex para subagentes nativos do Claude Code, sem alterar a configuração pessoal do usuário.
 
 ## Modelo principal sugerido
 
@@ -39,7 +39,7 @@ histórico; a delegação indisponível deve ser reportada com o bloqueio concre
 
 ## Instalação por projeto e global
 
-O pacote é um payload para instalação tanto em um repositório de projeto quanto globalmente no `$HOME` do usuário. Os instaladores estão incluídos em `scripts/` (Bash, Fish, PowerShell e Python 3.10+):
+O pacote é um payload para instalação tanto em um repositório de projeto quanto globalmente no `$HOME` do usuário. Os instaladores estão incluídos em `scripts/` (Bash, Fish e PowerShell); em `scripts/`, o Python é usado pelos testes offline (`test_install.py`), enquanto o pacote pode conter o coletor Python opcional do Zabbix:
 - **No projeto (`--target /caminho/projeto`)**: `CLAUDE.md` é copiado para a raiz do repositório e os subagentes para `.claude/agents/`.
 - **Global no `$HOME` (`--global` ou `--target ~`)**: `CLAUDE.md` e os subagentes ficam **dentro** de `~/.claude/` (`~/.claude/CLAUDE.md` e `~/.claude/agents/`), mantendo o `$HOME` limpo.
 
@@ -110,7 +110,7 @@ claude-code-global-framework-v5/
 - Isto é configuração declarativa: o Claude Code decide a delegação a partir de `description`, portanto a política orienta o comportamento e não é um roteador externo que garanta a pontuação ou a chamada de cada modelo.
 - `effort` depende de versão, plano e disponibilidade do modelo no ambiente. Se um valor não for suportado, ajuste-o à lista aceita pela instalação local.
 - O pacote inclui testes offline do instalador (`python scripts/test_install.py`), mas não foi executado em sessão autenticada no Claude Code. Confirme a descoberta invocando um agente de leitura e confira o modelo efetivo em `/tasks`.
-- Apesar do nome histórico “global framework”, a distribuição desta variante é somente por projeto. Ela não migra configuração global, não instala hooks e não transporta Skills do Codex; esses recursos precisam de uma adaptação própria se forem desejados.
+- A distribuição suporta instalação por projeto e global, conforme os destinos descritos acima. Ela não migra configuração global existente, não instala hooks e não transporta Skills do Codex; esses recursos precisam de uma adaptação própria se forem desejados.
 - O escopo do projeto tem prioridade sobre agentes pessoais quando os nomes colidem; evite duplicar os nomes deste pacote dentro da mesma árvore `.claude/agents/`.
 
 ## Fontes

@@ -16,7 +16,7 @@ a9c1db15e574a4e152bdb6517004b444564686c55560d7ffce32f4b1a779289a  ./.codex/agent
 80d6059f19efcea2872c556b029f2847b6d2795fc6a2e7edd9960a83288b1f73  ./.codex/agent-configs/terra_worker.toml
 0cd9f326c1f1c2843dd0b54d61745e3399edf336ae0ea36cb29183d50825a2f1  ./.codex/hooks/mandatory-router.ps1
 727ca9f4eff24f45808df8b9e1218e9131a9695205050265f69f18fec7972c1e  ./.codex/hooks/mandatory-router.sh
-50967418ff41c832a777e3d71e9d9a42b748dd49127e0a08512e8191070d3f46  ./README.md
+a7b43e041140465267080711ba600d440b00e88f7bbe20b4691dd26a00a259df  ./README.md
 1cc3d76ac7c21a664e79848fd481e9791016451b244e7de5feeeb9bea5fd2184  ./VERSION
 b6784fe0b12e997a2c881f02e7af68e5319882d3a90320bc6335bb3e79963306  ./docs/LINUX.md
 45474207105c0376a8df189b64709230f78d1e853484474b7154f9b364188ca0  ./docs/MIGRATION-V3-V4.md
@@ -81,6 +81,7 @@ f90e37d134ccecfefc8f02b8b89c8c47e2f3e3bbf8f221b490e5eabd612523da  ./optional/sre
 f01a2c1a512d0a5d6f75c2a190f20292337e23d08c8832099ad6de67fd7e77f2  ./optional/sre-incident-specialist/.agents/skills/sre-incident-specialist/troubleshooting.md
 6849c10c737a90729b91f8bc0dd8595b7d99d1ee20f297faa50d54c3bd34bceb  ./optional/sre-incident-specialist/evals/sre/001-routing.md
 828939d3a81db293ec61495e156fd927d62c40683226f68c3653a66e343200c8  ./optional/sre-incident-specialist/knowledge/sre/README.md
+55b6e2441866276f081774ce67892588bc0a26983e6bfe6877e66ee5d81aa259  ./optional/ux-ui-frontend-specialist/.agents/skills/ux-ui-frontend-specialist/SKILL.md
 9ca629720bc02e354ee761f150c771ea389cda34ebbc6e09eb2dd44c0bf87baa  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/SKILL.md
 10b9e82bad7a15ce653f4446fb1dca6a84c89fd210896a29358a3b3b858dcff0  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/api.md
 32a42f658243ddbbc8e3343e258ccdcd16eae5f83ab5f17669ebefeed08e0e9b  ./optional/zabbix-specialist/.agents/skills/zabbix-specialist/database.md
@@ -95,11 +96,12 @@ a6fd555bb094f0a7bf834bef3a013d47ac3e2fb8491d58acec438998aaf8538f  ./optional/zab
 6af2cd388535e45cbf98923e214069bf5847216f788d8883108e969b27b864df  ./scripts/diagnose.fish
 4d33c8204057412370cf610111021a8104faf422208e86394041e1999a6913ec  ./scripts/diagnose.ps1
 29376c7ff34be81f3d86c8b7f2120fe0987649a3abb6eaf5989e4b9116ae3c01  ./scripts/diagnose.sh
-a0802477764a3ee181630114bea76476aa55f7aa251f374b16dd2b21adeba3a2  ./scripts/install-wsl.ps1
+0202892d3e051af66a22c281762f26abb787040ba48afa12d3502aff178a0a10  ./scripts/install-wsl.ps1
 64ff4cadb9644c24b31b43fa9e0a4200be4290fc7f3942accd10eb9f7bacd002  ./scripts/install.fish
-23362e3fc4ddfed07d049bd1f7cde14aed379233e44898861c43a19a3b1ca2a7  ./scripts/install.ps1
-169f5eea79f21287bba66a239612386ffd41d8285c0de61b6dd064e1a650c595  ./scripts/install.sh
+7642cc8949e1172e3fdc07c3bc19812de23c2634ad2d6fe9fd3239b900825270  ./scripts/install.ps1
+e178af8f5a0c72eb8a126c07e13f5ea612b46a4c597d32c49b54dd5553ff7837  ./scripts/install.sh
+d8662ad8058087521139b2c3462ae491dd014296f53eeaf3c0cce5841de0060b  ./scripts/test_ux_ui_frontend_install.py
 13e7ec062aeb52ca5412842c1c19b08d7d3860b4110fa61fe11c50f6abb85bca  ./scripts/uninstall.fish
 c29f8a9886f46216c842767f54f930978c07aef4ec278daf15b90ff1dbbe0f71  ./scripts/uninstall.ps1
 77fed8c5b52a96e70861d484d39a676207ff32532a5c265fd8145b09a84742e2  ./scripts/uninstall.sh
-12714a350014bb95b328a7da92b1c5a1f8d6a03ef89b255bb5e6929851a0a6ac  ./scripts/validate.py
+29dddb9a17d80344c87b690bf0dc8f3f077b395ba612ce367aad06ffe12ee06c  ./scripts/validate.py

@@ -21,9 +21,11 @@ Não adicione caminhos pessoais, hostnames internos, tokens ou credenciais à do
 
 ## Especialistas opcionais
 
-Todo especialista de domínio novo ou alterado deve ser incluído neste repositório
-como extensão opcional compatível com as quatro distribuições (Codex, Claude
-Code, Gemini CLI e Cursor). A instalação padrão não pode ativá-lo. O
+Todo especialista de domínio novo ou alterado deve ser uma extensão opcional
+nas quatro distribuições, salvo instrução explícita em contrário. Os nove
+especialistas compartilhados seguem essa regra; o `ux-ui-frontend-specialist` é
+exclusivo do Codex por solicitação explícita. A instalação padrão não pode ativar
+especialistas. O
 especialista deve complementar o agente de capacidade que o roteamento já
 selecionou; não crie um perfil nativo de modelo fixo que contorne as faixas de
 risco. Atualize instaladores e testes de cada plataforma, manifestos e ZIPs
@@ -35,6 +37,7 @@ Use Python 3.11+ para a validação Codex e Python 3.10+ para os testes dos inst
 
 ```bash
 python3 codex-global-framework-v5/scripts/validate.py
+python3 codex-global-framework-v5/scripts/test_ux_ui_frontend_install.py
 python3 claude-code-global-framework-v5/scripts/test_install.py
 python3 gemini-cli-global-framework-v5/scripts/test_install.py
 python3 cursor-global-framework-v5/scripts/test_install.py

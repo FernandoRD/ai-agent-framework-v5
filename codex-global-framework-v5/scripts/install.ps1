@@ -3,13 +3,13 @@
     Script de instalação do Codex Global Framework v5.
 .DESCRIPTION
     Instala políticas, agentes e especialistas de domínio do Framework v5 para Codex.
-    Por padrão audita as alterações. Use -Apply para efetivar a instalação por projeto.
+    Aplica as alterações por padrão. Use -AuditOnly para somente auditar.
 .PARAMETER Target
     Caminho do diretório do projeto para instalação local.
 .PARAMETER Global
     Realiza a instalação no perfil global (~/.codex).
 .PARAMETER Apply
-    Aplica as alterações no disco.
+    Mantido por compatibilidade; a instalação já aplica por padrão.
 .PARAMETER AuditOnly
     Modo estrito de auditoria.
 .PARAMETER NoHook
@@ -32,25 +32,25 @@
     Instala a extensão opcional Database Tuning Specialist (PostgreSQL, queries, locks).
 .PARAMETER WithProxmoxSpecialist
     Instala a extensão opcional Proxmox Specialist (Proxmox VE 8.x/9.x, Corosync, Ceph, SDN, ZFS).
+.PARAMETER WithUxUiFrontendSpecialist
+    Instala a extensão opcional UX/UI e frontend.
 .PARAMETER WithAllSpecialists
-    Instala simultaneamente todos os 9 especialistas de domínio disponíveis.
+    Instala simultaneamente todos os 10 especialistas de domínio disponíveis.
 .PARAMETER Help
     Exibe a mensagem de ajuda com todas as opções.
 #>
 [CmdletBinding()]
 param(
     [Parameter(Position=0, Mandatory=$false)]
-    [Alias("target")]
     [string]$Target,
 
-    [Alias("global", "g")]
+    [Alias("g")]
     [switch]$Global,
 
     [string]$CodexHome,
     [string]$SkillsHome,
     [switch]$NoHook,
     [switch]$AuditOnly,
-    [Alias("apply")]
     [switch]$Apply,
 
     [Alias("with-zabbix-specialist")]
@@ -80,6 +80,9 @@ param(
     [Alias("with-proxmox-specialist")]
     [switch]$WithProxmoxSpecialist,
 
+    [Alias("with-ux-ui-frontend-specialist")]
+    [switch]$WithUxUiFrontendSpecialist,
+
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -95,7 +98,7 @@ Uso: .\install.ps1 [opções]
 Opções gerais:
   -Target <dir>       Diretório de destino (instalação por projeto)
   -Global, -g         Instalação no ambiente global do usuário (~/.codex)
-  -Apply              Aplica as alterações no disco (padrão é auditoria)
+  -Apply              Mantido por compatibilidade; a instalação já aplica por padrão
   -AuditOnly          Modo estrito de auditoria (não altera arquivos)
   -NoHook             Não instala o hook de roteamento obrigatório
   -CodexHome <dir>    Sobrescreve o diretório ~/.codex
@@ -114,7 +117,8 @@ Especialistas de domínio opcionais:
   -WithDbTuningSpecialist        Instala o especialista Database Tuning (PostgreSQL/queries/locks)
                                  (alias: -WithDatabaseTuningSpecialist)
   -WithProxmoxSpecialist         Instala o especialista Proxmox VE (PVE 8.x/9.x/Ceph/SDN/HA)
-  -WithAllSpecialists            Instala todos os 9 especialistas de domínio acima
+  -WithUxUiFrontendSpecialist    Instala o especialista UX/UI e frontend
+  -WithAllSpecialists            Instala todos os 10 especialistas de domínio acima
 "@
 }
 
@@ -146,7 +150,7 @@ function Get-OptionalInstallPlan([string]$Source, [string]$Destination) {
     foreach ($item in @(Get-ChildItem -LiteralPath $Source -Recurse -Force)) {
         if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) { throw "Optional package source contains a link or symlink: $($item.FullName)" }
         if ($item.PSIsContainer) { continue }
-        $relative = $item.FullName.Substring($Source.Length).TrimStart('\\', '/')
+        $relative = $item.FullName.Substring($Source.Length).TrimStart('\', '/')
         $target = Join-Path $Destination $relative
         Assert-OptionalDirectory (Split-Path -Parent $target) "Optional package destination"
         if (Test-Path -LiteralPath $target) {
@@ -210,6 +214,7 @@ if ($isProject) {
         @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
         @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
         @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
+        @{ Name = "ux-ui-frontend-specialist"; Enabled = ($WithUxUiFrontendSpecialist -or $WithAllSpecialists) }
     )
     foreach ($spec in $allSpecs) {
         if ($spec.Enabled) {
@@ -260,6 +265,7 @@ if (-not $isProject) {
         @{ Name = "sre-incident-specialist"; Enabled = ($WithSreSpecialist -or $WithAllSpecialists) }
         @{ Name = "database-tuning-specialist"; Enabled = ($WithDbTuningSpecialist -or $WithAllSpecialists) }
         @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
+        @{ Name = "ux-ui-frontend-specialist"; Enabled = ($WithUxUiFrontendSpecialist -or $WithAllSpecialists) }
     )
     foreach ($spec in $allSpecs) {
         if ($spec.Enabled) {

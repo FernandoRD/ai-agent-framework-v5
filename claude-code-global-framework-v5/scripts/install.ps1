@@ -32,8 +32,10 @@
     Instala a extensão opcional Shell & Python Specialist (Bash, POSIX sh, fish, Python 3.10+).
 .PARAMETER WithDockerKubernetesSpecialist
     Instala a extensão opcional Docker & Kubernetes Specialist (Docker Engine, Compose v2, Kubernetes, Helm).
+.PARAMETER WithUxUiFrontendSpecialist
+    Instala a extensão opcional UX/UI & Frontend Specialist (interfaces web e de aplicativos, WCAG 2.2).
 .PARAMETER WithAllSpecialists
-    Instala simultaneamente todos os 11 especialistas de domínio disponíveis.
+    Instala simultaneamente todos os 12 especialistas de domínio disponíveis.
 .PARAMETER Help
     Exibe a mensagem de ajuda com todas as opções.
 #>
@@ -80,6 +82,9 @@ param(
     [Alias("with-docker-kubernetes-specialist")]
     [switch]$WithDockerKubernetesSpecialist,
 
+    [Alias("with-ux-ui-frontend-specialist")]
+    [switch]$WithUxUiFrontendSpecialist,
+
     [Alias("with-all-specialists")]
     [switch]$WithAllSpecialists,
 
@@ -114,7 +119,8 @@ Especialistas de domínio opcionais:
   -WithShellPythonSpecialist     Instala o especialista Shell & Python (Bash/POSIX sh/Python 3.10+)
   -WithDockerKubernetesSpecialist
                                  Instala o especialista Docker & Kubernetes (Compose/K8s/Helm)
-  -WithAllSpecialists            Instala todos os 11 especialistas de domínio acima
+  -WithUxUiFrontendSpecialist    Instala o especialista UX/UI & Frontend (web/apps/WCAG 2.2)
+  -WithAllSpecialists            Instala todos os 12 especialistas de domínio acima
 "@
 }
 
@@ -177,6 +183,7 @@ $knownSpecialists = @(
     @{ Name = "proxmox-specialist"; Enabled = ($WithProxmoxSpecialist -or $WithAllSpecialists) }
     @{ Name = "shell-python-specialist"; Enabled = ($WithShellPythonSpecialist -or $WithAllSpecialists) }
     @{ Name = "docker-kubernetes-specialist"; Enabled = ($WithDockerKubernetesSpecialist -or $WithAllSpecialists) }
+    @{ Name = "ux-ui-frontend-specialist"; Enabled = ($WithUxUiFrontendSpecialist -or $WithAllSpecialists) }
 )
 
 foreach ($spec in $knownSpecialists) {

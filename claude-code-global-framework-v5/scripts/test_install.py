@@ -11,6 +11,7 @@ SCRIPT = Path(__file__).with_name('install.sh').resolve()
 PAYLOAD = SCRIPT.parents[1] / 'payload'
 OPTIONAL_PAYLOAD = SCRIPT.parents[1] / 'optional' / 'zabbix-specialist' / 'payload'
 GRAFANA_PAYLOAD = SCRIPT.parents[1] / 'optional' / 'grafana-specialist' / 'payload'
+UX_UI_PAYLOAD = SCRIPT.parents[1] / 'optional' / 'ux-ui-frontend-specialist' / 'payload'
 
 
 class InstallerTests(unittest.TestCase):
@@ -48,6 +49,29 @@ class InstallerTests(unittest.TestCase):
             self.assertTrue(native_agent.exists(), 'specialist must install its native agent')
             self.assertIn('skills:\n', native_agent.read_text(encoding='utf-8'))
 
+    def test_ux_ui_frontend_specialist_is_opt_in(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            target = Path(temporary) / 'project'
+            base = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--apply'], capture_output=True, text=True)
+            self.assertEqual(base.returncode, 0)
+            specialist = target / '.claude' / 'skills' / 'ux-ui-frontend-specialist' / 'SKILL.md'
+            native_agent = target / '.claude' / 'agents' / 'ux-ui-frontend-specialist.md'
+            knowledge = target / 'knowledge' / 'ux-ui-frontend' / 'README.md'
+            self.assertFalse(specialist.exists())
+            self.assertFalse(knowledge.exists())
+            audit = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-ux-ui-frontend-specialist'], capture_output=True, text=True)
+            self.assertEqual(audit.returncode, 0)
+            self.assertFalse(specialist.exists(), 'optional audit must not write')
+            install = subprocess.run(['bash', str(SCRIPT), '--target', str(target), '--with-ux-ui-frontend-specialist', '--apply'], capture_output=True, text=True)
+            self.assertEqual(install.returncode, 0)
+            for source in (UX_UI_PAYLOAD / '.claude' / 'skills' / 'ux-ui-frontend-specialist').iterdir():
+                installed = target / '.claude' / 'skills' / 'ux-ui-frontend-specialist' / source.name
+                self.assertEqual(installed.read_bytes(), source.read_bytes())
+            self.assertTrue(native_agent.exists(), 'specialist must install its native agent')
+            self.assertIn('skills:\n  - ux-ui-frontend-specialist\n', native_agent.read_text(encoding='utf-8'))
+            self.assertTrue(knowledge.exists())
+            self.assertTrue((target / 'evals' / 'ux-ui-frontend' / '001-routing.md').exists())
+
     def test_with_all_specialists(self):
         with tempfile.TemporaryDirectory() as temporary:
             target = Path(temporary) / 'project_all'
@@ -58,7 +82,7 @@ class InstallerTests(unittest.TestCase):
                 "loki-specialist", "prometheus-specialist", "netops-specialist",
                 "sre-incident-specialist", "database-tuning-specialist",
                 "proxmox-specialist", "shell-python-specialist",
-                "docker-kubernetes-specialist"
+                "docker-kubernetes-specialist", "ux-ui-frontend-specialist"
             ]
             for s in specs:
                 skill_file = target / '.claude' / 'skills' / s / 'SKILL.md'

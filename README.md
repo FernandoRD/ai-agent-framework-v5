@@ -8,7 +8,7 @@ Em todas as variantes, a publicação é roteada separadamente: commits e pushes
 
 ## Pacotes
 
-Versões atuais (arquivo `VERSION`): Codex 5.0.0, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor, Hermes 5.0.0-hermes, Kimi Code 5.0.0-kimi-code. As variantes não têm paridade funcional; veja [VARIANTES-V5.md](VARIANTES-V5.md).
+Versões atuais (arquivo `VERSION`): Codex 5.0.1, Claude Code 5.2.0-claude-code, Gemini CLI 5.0.0-gemini-cli, Cursor 5.0.0-cursor, Hermes 5.0.0-hermes, Kimi Code 5.0.0-kimi-code. As variantes não têm paridade funcional; veja [VARIANTES-V5.md](VARIANTES-V5.md).
 
 | Pacote | Destino | Instalação | Modelos mapeados |
 | --- | --- | --- | --- |

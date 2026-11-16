@@ -21,13 +21,13 @@ for band in ("- 0-34: Luna tier.", "- 35-69: Terra tier.", "- 70-100: Sol tier."
     check(band in agents_md, f"score band missing: {band}")
 
 expected = {
-    "luna_explorer": ("gpt-5.6-luna", "medium", "read-only"),
-    "luna_worker": ("gpt-5.6-luna", "low", "workspace-write"),
-    "terra_worker": ("gpt-5.6-terra", "medium", "workspace-write"),
-    "terra_reviewer": ("gpt-5.6-terra", "high", "read-only"),
-    "sol_specialist": ("gpt-5.6-sol", "high", "workspace-write"),
-    "sol_reviewer": ("gpt-5.6-sol", "xhigh", "read-only"),
-    "sol_critical": ("gpt-5.6-sol", "max", "read-only"),
+    "luna_explorer": ("gpt-6-luna", "medium", "read-only"),
+    "luna_worker": ("gpt-6-luna", "low", "workspace-write"),
+    "terra_worker": ("gpt-6.1-terra", "medium", "workspace-write"),
+    "terra_reviewer": ("gpt-6.1-terra", "high", "read-only"),
+    "sol_specialist": ("gpt-6.1-sol", "high", "workspace-write"),
+    "sol_reviewer": ("gpt-6.1-sol", "xhigh", "read-only"),
+    "sol_critical": ("gpt-6.1-sol", "max", "read-only"),
 }
 check(not any((ROOT / ".codex" / "agents").glob("*.toml")), "package must not ship auto-discovered framework agents")
 for role, values in expected.items():

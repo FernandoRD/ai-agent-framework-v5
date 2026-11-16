@@ -20,6 +20,35 @@ Use **Sonnet com effort `high`** como agente principal para a maior parte dos pr
 
 Os sete agentes usam frontmatter nativo com `name`, `description`, `tools`, `model`, `permissionMode` e `effort` quando configurado. Os nomes usam letras minúsculas e hífens, conforme a regra do Claude Code. Agentes de descoberta e revisão recebem somente ferramentas de leitura; os workers podem editar. Todos usam `permissionMode: default`; este pacote não usa `bypassPermissions`, `dontAsk` ou outro bypass de permissões.
 
+### Modelos da família 5.5
+
+Os agentes usam os aliases `haiku`, `sonnet` e `opus`, e não IDs fixos, para que a mesma distribuição funcione em qualquer provedor. Segundo a [configuração de modelos do Claude Code](https://code.claude.com/docs/en/model-config), consultada em 2026-11-16, os aliases resolvem assim:
+
+| Provedor | `haiku` | `sonnet` | `opus` |
+|---|---|---|---|
+| API da Anthropic (inclui planos Pro, Max, Team e Enterprise) | Haiku 5.5 (`claude-haiku-5-5`) | Sonnet 5.5 (`claude-sonnet-5-5`) | Opus 5.5 (`claude-opus-5-5`) |
+| Claude Platform on AWS | Haiku 4.5 | Sonnet 4.6 | Opus 5.5 |
+| Amazon Bedrock e Google Cloud | Haiku 4.5 | Sonnet 4.5 | Opus 5.5 |
+| Microsoft Foundry | Haiku 4.5 | Sonnet 4.5 | Opus 4.6 |
+
+Na API da Anthropic as três faixas já usam a família 5.5 sem alterar o pacote. Quando o principal roda em um modelo da mesma família do alias (por exemplo, principal em `claude-opus-5-5` e agente com `model: opus`), o subagente usa exatamente o modelo do principal. Para fixar as faixas na família 5.5, configure os aliases nas suas configurações do Claude Code (o instalador não cria nem altera `settings.json`):
+
+```json
+{
+  "env": {
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-5-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-5-5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5"
+  }
+}
+```
+
+Use esses IDs apenas onde o provedor os oferece; em Bedrock, Google Cloud e Foundry os IDs e a disponibilidade diferem, e a escolha cabe à configuração local. Esta distribuição não fixa IDs no frontmatter para não quebrar esses provedores.
+
+Effort na família 5.5: Opus 5.5, Sonnet 5.5 e Haiku 5.5 aceitam `low`, `medium`, `high`, `xhigh` e `max`, com padrão `medium` no Claude Code (nos modelos anteriores o padrão era `high`). Por isso os agentes Opus e o `sonnet-reviewer` declaram `effort: high` e o `sonnet-worker` declara `effort: medium` explicitamente. Os agentes Haiku continuam sem `effort`: o Haiku 5.5 usa o padrão `medium`, e o Haiku 4.5, ainda usado pelo alias em outros provedores, não aceita effort.
+
+Fable (alias `fable`, hoje Fable 5.1 por padrão) não entra no roteamento: as três faixas do v5 continuam Haiku, Sonnet e Opus, e nenhum agente do pacote usa Fable. Você pode usá-lo como principal (`/model fable`), mas os subagentes continuam nas faixas por alias, sem herdar o Fable.
+
 ## Publicação autorizada
 
 Publicação rotineira é uma unidade separada da implementação. Com mudanças
@@ -156,6 +185,7 @@ claude-code-global-framework-v5/
 
 - Isto é configuração declarativa: o Claude Code decide a delegação a partir de `description`, portanto a política orienta o comportamento e não é um roteador externo que garanta a pontuação ou a chamada de cada modelo.
 - `effort` depende de versão, plano e disponibilidade do modelo no ambiente. Se um valor não for suportado, ajuste-o à lista aceita pela instalação local.
+- O mapeamento dos aliases para a família 5.5 vem da documentação do Claude Code, não de uma sessão autenticada. Confira o modelo efetivo de cada subagente em `/tasks` depois de instalar.
 - O pacote inclui testes offline do instalador (`python3 scripts/test_install.py`), mas não foi executado em sessão autenticada no Claude Code. Confirme a descoberta invocando um agente de leitura e confira o modelo efetivo em `/tasks`.
 - A instalação pode ser por projeto ou global. O pacote não migra configuração existente, não instala hooks e não transporta Skills do Codex; as skills incluídas são as dos especialistas opcionais.
 - O campo `skills` dos agentes especialistas depende de uma versão do Claude Code que suporte pré-carregamento de skills em subagentes. Se a skill não carregar, o agente ainda pode invocá-la pela ferramenta `Skill`.
@@ -165,6 +195,7 @@ claude-code-global-framework-v5/
 ## Fontes
 
 - [Claude Code: Create custom subagents](https://code.claude.com/docs/en/sub-agents) — local de agentes por projeto, frontmatter, modelos, ferramentas, permissões e limites de `effort` quando configurado.
+- [Claude Code: Model configuration](https://code.claude.com/docs/en/model-config) — resolução dos aliases por provedor, variáveis `ANTHROPIC_DEFAULT_*_MODEL` e níveis de `effort` por modelo.
 - Política fonte Codex v5 (`codex-global-framework-v5/.codex/AGENTS.md` no repositório de distribuição) — classificação, fatores de risco, pisos, estratégia de delegação e validação preservados nesta adaptação.
 
-Haiku não recebe effort explícito nesta distribuição; Sonnet worker usa medium, reviewer high e os agentes Opus usam high. Não há equivalência automática com os esforços do Codex. Os aliases seguem os modelos disponíveis na instalação. Revisores sem Bash recebem diff e evidências do principal; verificações executáveis ficam a cargo do principal. O instalador recusa conflitos e links simbólicos; não faz mesclagem automática.
+Haiku não recebe effort explícito nesta distribuição; Sonnet worker usa medium, reviewer high e os agentes Opus usam high (valores explícitos porque o padrão da família 5.5 é medium). Não há equivalência automática com os esforços do Codex. Os aliases seguem os modelos disponíveis na instalação. Revisores sem Bash recebem diff e evidências do principal; verificações executáveis ficam a cargo do principal. O instalador recusa conflitos e links simbólicos; não faz mesclagem automática.
